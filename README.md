@@ -50,6 +50,16 @@ python lessons/01_basics/01_hello_world.py
      and dunder methods (`__repr__`, `__eq__`, `__add__`, etc.)
    - `04_abstract_classes_and_dataclasses.py` – abstract base classes,
      `@dataclass` and `enum.Enum`
+7. **Advanced Python** (`lessons/07_advanced_python/`)
+   - `01_decorators.py` – function decorators, decorator factories and
+     `functools.wraps`
+   - `02_generators_and_iterators.py` – `yield`, generator expressions and
+     the iterator protocol (`__iter__` / `__next__`)
+   - `03_type_hints.py` – annotating variables, functions and classes with
+     the `typing` module
+8. **Testing** (`lessons/08_testing/`)
+   - `01_unittest_basics.py` – writing and running tests with the
+     `unittest` standard-library framework
 
 Work through the lessons in order, read the comments, then try modifying the
 code to experiment with the concepts.
