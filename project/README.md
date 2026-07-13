@@ -1,7 +1,18 @@
-# Project
+# Projects
 
-The capstone project for this course: a small, complete Python
-application that ties together concepts from every module.
+Small, complete Python applications for practicing the course material.
+
+## Simple CLI Application
+
+[`simple_cli/`](simple_cli/README.md) contains a text statistics tool built with
+`argparse`. It is a beginner-friendly example of terminal input, file I/O,
+error handling, and testable application structure.
+
+## Simple REST API
+
+[`simple_rest_api/`](simple_rest_api/README.md) contains an in-memory notes API
+built entirely with the standard library. It demonstrates HTTP methods,
+routing, JSON, validation, status codes, and integration tests.
 
 ## Task Manager
 
@@ -18,7 +29,7 @@ manager combining:
 See [`task_manager/README.md`](task_manager/README.md) for how to run it,
 its file layout, and ideas for extending it yourself.
 
-## When to build this
+## When to build the capstone
 
 Work through all ten [`lessons/`](../lessons/README.md) modules and their
 matching [`exercises/`](../exercises/README.md) first. This project is

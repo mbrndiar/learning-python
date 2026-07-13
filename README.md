@@ -76,6 +76,10 @@ the extension list one at a time, writing a test before or alongside each
 change. This turns the project from a code-reading exercise into an assessment
 of the whole course.
 
+For smaller application examples, see the
+[simple CLI application](project/simple_cli/README.md) and
+[simple REST API](project/simple_rest_api/README.md).
+
 ## Cheat sheet
 
 [`CHEATSHEET.md`](CHEATSHEET.md) is a one-page glossary and syntax quick
