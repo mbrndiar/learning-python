@@ -12,10 +12,12 @@ def celsius_to_fahrenheit(celsius):
 
 def is_palindrome(text):
     normalized = text.lower()
+    # A step of -1 creates a reversed copy for comparison.
     return normalized == normalized[::-1]
 
 
 def count_vowels(text):
+    # The generator produces one value per vowel without building a list.
     return sum(1 for char in text.lower() if char in "aeiou")
 
 

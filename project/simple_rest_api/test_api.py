@@ -15,7 +15,9 @@ class TestNotesAPI(unittest.TestCase):
     def setUpClass(cls):
         file_descriptor, cls.database_path = tempfile.mkstemp(suffix=".db")
         os.close(file_descriptor)
+        # Port 0 asks the operating system for an unused test port.
         cls.server = create_server(port=0, database_path=cls.database_path)
+        # serve_forever blocks, so the test server runs beside the test thread.
         cls.thread = threading.Thread(target=cls.server.serve_forever)
         cls.thread.start()
 
