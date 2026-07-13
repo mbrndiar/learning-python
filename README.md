@@ -39,6 +39,10 @@ python lessons/01_basics/01_hello_world.py
    - `01_classes_and_objects.py` – classes, attributes, methods and properties
    - `02_inheritance_and_polymorphism.py` – inheritance, `super()` and
      polymorphism
+   - `03_encapsulation_and_magic_methods.py` – protected/private attributes
+     and dunder methods (`__repr__`, `__eq__`, `__add__`, etc.)
+   - `04_abstract_classes_and_dataclasses.py` – abstract base classes,
+     `@dataclass` and `enum.Enum`
 
 Work through the lessons in order, read the comments, then try modifying the
 code to experiment with the concepts.
