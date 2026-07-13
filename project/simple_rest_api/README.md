@@ -1,8 +1,8 @@
 # Simple REST API
 
-A dependency-free JSON API that stores notes in memory. It demonstrates HTTP
-methods, URL routing, status codes, request validation, and JSON responses using
-Python's standard library.
+A dependency-free JSON API that stores notes in SQLite. It demonstrates HTTP
+methods, URL routing, status codes, request validation, JSON responses, SQL, and
+persistent storage using Python's standard library.
 
 ## Run the API
 
@@ -37,7 +37,8 @@ Supported routes:
 | `PUT` | `/notes/{id}` | Replace one note |
 | `DELETE` | `/notes/{id}` | Delete one note |
 
-Data is intentionally not persisted: restarting the server clears all notes.
+Notes persist in `notes.db` by default. Use another database file with
+`python api.py --database /path/to/notes.db`.
 
 ## Run the tests
 

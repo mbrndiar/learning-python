@@ -1,31 +1,43 @@
 # Simple CLI Application
 
-`text_stats.py` is a small command-line application that counts lines, words,
-and characters. It demonstrates functions, `argparse`, file I/O, error
-handling, exit codes, and unit testing.
+`notes_cli.py` is a client for the neighboring
+[notes REST API](../simple_rest_api/README.md). It demonstrates `argparse`,
+HTTP requests, JSON files, error handling, exit codes, and integration testing.
 
 ## Run it
 
-From this directory, pass text directly:
+Start the REST API first. Then, from this directory:
 
 ```bash
-python text_stats.py --text "Hello from Python"
+python notes_cli.py add "Learn Python" --body "Build two connected projects"
+python notes_cli.py list
+python notes_cli.py get 1
+python notes_cli.py update 1 "Learn Python" --body "Finished"
+python notes_cli.py delete 1
 ```
 
-Or read a UTF-8 text file:
+Use `--api-url` when the API does not run at `http://127.0.0.1:8000`.
+
+## Work with files
+
+Export all notes to a UTF-8 JSON file:
 
 ```bash
-python text_stats.py --file README.md
+python notes_cli.py export notes.json
 ```
 
-Use the built-in help to discover all options:
+Import notes from that file:
 
 ```bash
-python text_stats.py --help
+python notes_cli.py import notes.json
 ```
+
+The import file must contain a JSON list. Each item needs a string `title` and
+may include a string `body`. IDs in exported files are ignored during import,
+because the API assigns new IDs.
 
 ## Run the tests
 
 ```bash
-python test_text_stats.py
+python test_notes_cli.py
 ```

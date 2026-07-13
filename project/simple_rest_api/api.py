@@ -1,39 +1,73 @@
-"""A small, dependency-free REST API for an in-memory notes collection."""
+"""A small, dependency-free REST API backed by SQLite."""
 
 import argparse
 import json
+import sqlite3
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 from urllib.parse import urlsplit
 
 MAX_BODY_SIZE = 1_000_000
+DEFAULT_DATABASE_PATH = Path(__file__).with_name("notes.db")
 
 
 class NoteStore:
-    def __init__(self):
-        self.notes = {}
-        self.next_id = 1
+    def __init__(self, database_path):
+        self.database_path = database_path
+        with self._connect() as connection:
+            connection.execute(
+                """
+                CREATE TABLE IF NOT EXISTS notes (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    title TEXT NOT NULL,
+                    body TEXT NOT NULL
+                )
+                """
+            )
+
+    def _connect(self):
+        connection = sqlite3.connect(self.database_path)
+        connection.row_factory = sqlite3.Row
+        return connection
+
+    @staticmethod
+    def _as_dict(row):
+        return dict(row) if row is not None else None
 
     def list(self):
-        return list(self.notes.values())
+        with self._connect() as connection:
+            rows = connection.execute(
+                "SELECT id, title, body FROM notes ORDER BY id"
+            ).fetchall()
+        return [self._as_dict(row) for row in rows]
 
     def get(self, note_id):
-        return self.notes.get(note_id)
+        with self._connect() as connection:
+            row = connection.execute(
+                "SELECT id, title, body FROM notes WHERE id = ?", (note_id,)
+            ).fetchone()
+        return self._as_dict(row)
 
     def create(self, title, body):
-        note = {"id": self.next_id, "title": title, "body": body}
-        self.notes[note["id"]] = note
-        self.next_id += 1
-        return note
+        with self._connect() as connection:
+            cursor = connection.execute(
+                "INSERT INTO notes (title, body) VALUES (?, ?)", (title, body)
+            )
+            note_id = cursor.lastrowid
+        return self.get(note_id)
 
     def update(self, note_id, title, body):
-        note = self.get(note_id)
-        if note is None:
-            return None
-        note.update(title=title, body=body)
-        return note
+        with self._connect() as connection:
+            cursor = connection.execute(
+                "UPDATE notes SET title = ?, body = ? WHERE id = ?",
+                (title, body, note_id),
+            )
+        return self.get(note_id) if cursor.rowcount else None
 
     def delete(self, note_id):
-        return self.notes.pop(note_id, None) is not None
+        with self._connect() as connection:
+            cursor = connection.execute("DELETE FROM notes WHERE id = ?", (note_id,))
+        return cursor.rowcount > 0
 
 
 class NotesHandler(BaseHTTPRequestHandler):
@@ -141,9 +175,9 @@ class NotesHandler(BaseHTTPRequestHandler):
         return
 
 
-def create_server(host="127.0.0.1", port=8000):
+def create_server(host="127.0.0.1", port=8000, database_path=DEFAULT_DATABASE_PATH):
     server = ThreadingHTTPServer((host, port), NotesHandler)
-    server.store = NoteStore()
+    server.store = NoteStore(database_path)
     return server
 
 
@@ -151,9 +185,15 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description="Run the notes REST API")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)
+    parser.add_argument(
+        "--database",
+        type=Path,
+        default=DEFAULT_DATABASE_PATH,
+        help="Path to the SQLite database",
+    )
     args = parser.parse_args(argv)
 
-    server = create_server(args.host, args.port)
+    server = create_server(args.host, args.port, args.database)
     print(f"Notes API listening on http://{args.host}:{server.server_port}")
     try:
         server.serve_forever()

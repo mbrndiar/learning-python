@@ -49,8 +49,8 @@ jobs:
 
       - name: Run example project tests
         run: |
-          python project/simple_cli/test_text_stats.py
           python project/simple_rest_api/test_api.py
+          python project/simple_cli/test_notes_cli.py
 
       - name: Run pytest lesson with pytest
         run: pytest lessons/09_tooling_and_debugging/04_pytest_basics.py -v

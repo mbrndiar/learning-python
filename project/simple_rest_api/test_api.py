@@ -2,16 +2,20 @@
 
 import http.client
 import json
+import os
+import tempfile
 import threading
 import unittest
 
-from api import create_server
+from api import NoteStore, create_server
 
 
 class TestNotesAPI(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.server = create_server(port=0)
+        file_descriptor, cls.database_path = tempfile.mkstemp(suffix=".db")
+        os.close(file_descriptor)
+        cls.server = create_server(port=0, database_path=cls.database_path)
         cls.thread = threading.Thread(target=cls.server.serve_forever)
         cls.thread.start()
 
@@ -20,10 +24,12 @@ class TestNotesAPI(unittest.TestCase):
         cls.server.shutdown()
         cls.server.server_close()
         cls.thread.join()
+        os.remove(cls.database_path)
 
     def setUp(self):
-        self.server.store.notes.clear()
-        self.server.store.next_id = 1
+        with self.server.store._connect() as connection:
+            connection.execute("DELETE FROM notes")
+            connection.execute("DELETE FROM sqlite_sequence WHERE name = 'notes'")
 
     def request(self, method, path, data=None):
         connection = http.client.HTTPConnection(
@@ -67,6 +73,11 @@ class TestNotesAPI(unittest.TestCase):
         status, content = self.request("GET", "/notes/999")
         self.assertEqual(status, 404)
         self.assertEqual(content, {"error": "Note not found"})
+
+    def test_notes_persist_in_sqlite(self):
+        self.request("POST", "/notes", {"title": "Persist me"})
+        reopened_store = NoteStore(self.database_path)
+        self.assertEqual(reopened_store.list()[0]["title"], "Persist me")
 
 
 if __name__ == "__main__":

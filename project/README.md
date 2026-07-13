@@ -4,15 +4,15 @@ Small, complete Python applications for practicing the course material.
 
 ## Simple CLI Application
 
-[`simple_cli/`](simple_cli/README.md) contains a text statistics tool built with
-`argparse`. It is a beginner-friendly example of terminal input, file I/O,
-error handling, and testable application structure.
+[`simple_cli/`](simple_cli/README.md) contains an `argparse` client for the notes
+API. It provides CRUD commands and imports or exports notes as JSON files.
 
 ## Simple REST API
 
-[`simple_rest_api/`](simple_rest_api/README.md) contains an in-memory notes API
-built entirely with the standard library. It demonstrates HTTP methods,
-routing, JSON, validation, status codes, and integration tests.
+[`simple_rest_api/`](simple_rest_api/README.md) contains a notes API backed by
+SQLite and built entirely with the standard library. It demonstrates HTTP
+methods, routing, JSON, validation, status codes, persistence, and integration
+tests.
 
 ## Task Manager
 
