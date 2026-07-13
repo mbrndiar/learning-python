@@ -77,8 +77,9 @@ change. This turns the project from a code-reading exercise into an assessment
 of the whole course.
 
 For smaller application examples, see the
-[simple CLI application](project/simple_cli/README.md) and
-[simple REST API](project/simple_rest_api/README.md).
+[Task REST client](project/task_rest_client/README.md),
+[Task REST API](project/task_rest_api/README.md), and storage-selectable
+[Task Manager](project/task_manager/README.md).
 
 ## Cheat sheet
 

@@ -1,72 +1,115 @@
-"""
-Tests for the Task Manager capstone project.
-
-Run with:
-    python -m unittest project.task_manager.test_task_manager -v
-or, from inside project/task_manager/:
-    python test_task_manager.py
-"""
+"""Contract and integration tests for Task Manager storage strategies."""
 
 import os
 import tempfile
+import threading
 import unittest
+from pathlib import Path
 
-from task_manager import Task, TaskManager, TaskNotFoundError
+from project.task_manager.storage import FileTaskStorage, RestTaskStorage
+from project.task_manager.task_manager import Task, TaskManager, TaskNotFoundError
+from project.task_rest_api.api import create_server
+from project.task_rest_client.client import TaskRestClient
 
 
 class TestTask(unittest.TestCase):
-    def test_mark_done(self):
-        task = Task(id=1, title="Write tests")
-        self.assertFalse(task.done)
+    def test_dictionary_round_trip_and_completion(self):
+        task = Task(id=2, title="Ship it")
         task.mark_done()
-        self.assertTrue(task.done)
+        self.assertEqual(Task.from_dict(task.to_dict()), task)
 
-    def test_to_dict_and_from_dict_round_trip(self):
-        task = Task(id=2, title="Ship it", done=True)
-        rebuilt = Task.from_dict(task.to_dict())
-        self.assertEqual(task, rebuilt)
+
+class StorageContract:
+    """Assertions every storage strategy must satisfy."""
+
+    def make_storage(self):
+        raise NotImplementedError
+
+    def setUp(self):
+        self.storage = self.make_storage()
+
+    def test_add_list_complete_remove_and_missing(self):
+        first = self.storage.add("First")
+        second = self.storage.add("Second")
+        self.assertEqual((first.id, second.id), (1, 2))
+        self.assertEqual(len(self.storage.list_tasks()), 2)
+        self.assertTrue(self.storage.complete(first.id).done)
+        self.storage.remove(second.id)
+        self.assertEqual([task.id for task in self.storage.list_tasks()], [first.id])
+        with self.assertRaises(TaskNotFoundError):
+            self.storage.get(999)
+
+
+class TestFileTaskStorage(StorageContract, unittest.TestCase):
+    def setUp(self):
+        self.directory = tempfile.TemporaryDirectory()
+        super().setUp()
+
+    def tearDown(self):
+        self.directory.cleanup()
+
+    def make_storage(self):
+        return FileTaskStorage(Path(self.directory.name) / "tasks.json")
+
+    def test_persistence_and_id_ownership(self):
+        first = self.storage.add("Persisted")
+        self.storage.add("Removed")
+        self.storage.remove(2)
+        reopened = FileTaskStorage(self.storage.storage_path)
+        self.assertEqual(reopened.list_tasks(), [first])
+        self.assertEqual(reopened.add("Next").id, 3)
+
+
+class TestRestTaskStorage(StorageContract, unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        descriptor, cls.database_path = tempfile.mkstemp(suffix=".db")
+        os.close(descriptor)
+        cls.server = create_server(port=0, database_path=cls.database_path)
+        cls.thread = threading.Thread(target=cls.server.serve_forever)
+        cls.thread.start()
+        cls.client = TaskRestClient(
+            f"http://127.0.0.1:{cls.server.server_port}"
+        )
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.server.shutdown()
+        cls.server.server_close()
+        cls.thread.join()
+        os.remove(cls.database_path)
+
+    def setUp(self):
+        with self.server.store._connect() as connection:
+            connection.execute("DELETE FROM tasks")
+            connection.execute("DELETE FROM sqlite_sequence WHERE name = 'tasks'")
+        super().setUp()
+
+    def make_storage(self):
+        return RestTaskStorage(self.client)
 
 
 class TestTaskManager(unittest.TestCase):
     def setUp(self):
-        fd, self.storage_path = tempfile.mkstemp(suffix=".json")
-        os.close(fd)
-        os.remove(self.storage_path)  # start from a clean slate
-        self.manager = TaskManager(self.storage_path)
+        self.directory = tempfile.TemporaryDirectory()
+        storage = FileTaskStorage(Path(self.directory.name) / "tasks.json")
+        self.manager = TaskManager(storage)
 
     def tearDown(self):
-        if os.path.exists(self.storage_path):
-            os.remove(self.storage_path)
+        self.directory.cleanup()
 
-    def test_add_creates_incrementing_ids(self):
-        first = self.manager.add("Task one")
-        second = self.manager.add("Task two")
-        self.assertEqual(first.id, 1)
-        self.assertEqual(second.id, 2)
+    def test_pending_filter_is_domain_logic(self):
+        self.manager.add("Pending")
+        done = self.manager.add("Done")
+        self.manager.complete(done.id)
+        self.assertEqual(
+            [task.title for task in self.manager.list_tasks(include_done=False)],
+            ["Pending"],
+        )
 
-    def test_list_tasks_pending_only(self):
-        self.manager.add("Pending task")
-        done_task = self.manager.add("Done task")
-        self.manager.complete(done_task.id)
-
-        pending = self.manager.list_tasks(include_done=False)
-        self.assertEqual(len(pending), 1)
-        self.assertEqual(pending[0].title, "Pending task")
-
-    def test_complete_unknown_task_raises(self):
-        with self.assertRaises(TaskNotFoundError):
-            self.manager.complete(999)
-
-    def test_remove_task(self):
-        task = self.manager.add("Temporary task")
-        self.manager.remove(task.id)
-        self.assertEqual(self.manager.list_tasks(), [])
-
-    def test_persistence_across_instances(self):
-        self.manager.add("Persisted task")
-        reloaded = TaskManager(self.storage_path)
-        self.assertEqual(len(reloaded.list_tasks()), 1)
-        self.assertEqual(reloaded.list_tasks()[0].title, "Persisted task")
+    def test_rejects_empty_title_before_calling_storage(self):
+        with self.assertRaisesRegex(ValueError, "non-empty"):
+            self.manager.add("  ")
 
 
 if __name__ == "__main__":
