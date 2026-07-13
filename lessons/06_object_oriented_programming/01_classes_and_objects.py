@@ -1,15 +1,17 @@
 """
 Lesson 6.1: Classes and Objects
 
-Classes let you bundle data (attributes) and behavior (methods) together
-into a single blueprint for creating objects.
+Classes define new types that bundle state (attributes) and behavior (methods).
+Calling a class creates an instance and passes it to __init__ as `self`.
 """
 
 
 class Dog:
     """A simple class representing a dog."""
 
-    species = "Canis familiaris"  # class attribute, shared by all instances
+    # Class attributes are found through every instance. Mutable per-dog state
+    # should instead be initialized on `self` inside __init__.
+    species = "Canis familiaris"
 
     def __init__(self, name, age):
         """Initialize a new Dog instance with a name and age."""
@@ -37,12 +39,12 @@ class Circle:
 
     @property
     def area(self):
-        """Compute the area on the fly whenever it is accessed."""
+        """Compute an attribute-like value without storing duplicate state."""
         return 3.14159 * self.radius ** 2
 
     @staticmethod
     def unit_circle():
-        """Demonstrate a static method: doesn't need `self` or an instance."""
+        """Construct a circle without needing an existing instance."""
         return Circle(1)
 
 

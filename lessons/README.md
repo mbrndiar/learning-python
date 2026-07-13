@@ -38,3 +38,44 @@ python lessons/01_basics/01_hello_world.py
 3. Tweak the code and re-run it to check your understanding.
 4. Complete the matching exercises in
    [`exercises/`](../exercises/README.md) before moving to the next module.
+
+## Recommended study loop
+
+Use active recall instead of only reading:
+
+1. **Preview:** read the objectives and identify unfamiliar terms.
+2. **Predict:** before running each example, write down its expected output.
+3. **Experiment:** change one thing at a time and explain the result.
+4. **Practice:** solve the exercises without copying the lesson.
+5. **Review:** answer the questions at the end of the module aloud or in
+   writing.
+6. **Reflect:** note one concept you can use and one you need to revisit.
+
+Code that seems obvious while visible can still be difficult to reproduce.
+Close the lesson and rebuild a small example from memory before moving on.
+
+## How the examples are structured
+
+Each `.py` file starts with a module docstring describing its topic. Inline
+comments explain the reason for an operation rather than merely repeating the
+code. Most demonstrations execute when the file is run. Files containing
+reusable functions commonly protect demonstrations with:
+
+```python
+if __name__ == "__main__":
+    # Runs only when this file is executed directly.
+    ...
+```
+
+This distinction becomes important when modules are imported in module 5.
+
+## Checkpoints
+
+- After modules 1–2, write a number-guessing or menu-driven program.
+- After modules 3–4, build a text analyzer using functions and collections.
+- After modules 5–6, model and persist a small collection of objects.
+- After modules 7–9, add annotations, tests, logging, and a CLI.
+- After module 10, explain which concurrency model—if any—fits the program.
+
+These checkpoints are deliberately open-ended. Define expected inputs and
+outputs first, split the work into functions, and test important edge cases.

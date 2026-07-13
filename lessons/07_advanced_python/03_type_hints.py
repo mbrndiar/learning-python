@@ -1,10 +1,10 @@
 """
 Lesson 7.3: Type Hints
 
-Type hints are optional annotations that document the expected types of
-variables, function arguments and return values. Python does not enforce
-them at runtime, but tools like `mypy` and IDEs use them to catch bugs
-before the code even runs.
+Type hints are optional annotations documenting expected types. Python does
+not enforce them at runtime; separate static analyzers and IDEs use them to
+find inconsistent calls before execution. This file uses typing aliases that
+remain compatible with the course's minimum Python 3.9.
 """
 
 from typing import Dict, List, Optional, Union
@@ -21,7 +21,7 @@ def greet(name: str, greeting: str = "Hello") -> str:
 
 
 def find_user(user_id: int, users: Dict[int, str]) -> Optional[str]:
-    """`Optional[str]` means the return value is either `str` or `None`."""
+    """Return a name or None; Optional[str] is Union[str, None]."""
     return users.get(user_id)
 
 

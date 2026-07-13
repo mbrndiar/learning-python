@@ -26,7 +26,7 @@ after finishing the course, or while working through the exercises.
 | Generator | A function using `yield` to produce values lazily |
 | Type hint | An annotation describing expected types (`def f(x: int) -> str`) |
 | Module | A single `.py` file that can be imported |
-| Package | A folder of modules with an `__init__.py` |
+| Package | A namespace grouping importable modules; regular packages commonly contain `__init__.py` |
 | Virtual environment | An isolated Python installation for a single project (`venv`) |
 | `pip` | Python's package installer |
 | Unit test | An automated test that checks a small piece of code in isolation |
@@ -109,6 +109,106 @@ def add(a: int, b: int) -> int:
     return a + b
 ```
 
+## Core type operations
+
+| Goal | Example |
+| --- | --- |
+| inspect a type | `type(value)`, `isinstance(value, str)` |
+| convert a value | `int("42")`, `str(42)`, `list(items)` |
+| length | `len(items)` |
+| membership | `item in items`, `key in mapping` |
+| index and slice | `items[0]`, `items[-1]`, `items[1:4]` |
+| enumerate values | `enumerate(items, start=1)` |
+| pair iterables | `zip(names, scores)` |
+| sort without mutation | `sorted(items, key=..., reverse=True)` |
+| aggregate numbers | `sum(values)`, `min(values)`, `max(values)` |
+| test conditions | `any(checks)`, `all(checks)` |
+
+### Common collection methods
+
+```python
+items.append(value)
+items.extend(more_items)
+items.pop()                    # remove and return final item
+
+mapping.get(key, default)
+mapping.items()                # dynamic (key, value) view
+mapping.setdefault(key, value)
+
+unique.add(value)
+left | right                   # union
+left & right                   # intersection
+left - right                   # difference
+```
+
+Most methods that mutate a collection return `None`. `list.sort()` mutates;
+`sorted(iterable)` returns a new list.
+
+## Scope, copying, and identity
+
+Names resolve in Local, Enclosing, Global, then Built-in scope (LEGB).
+Assignment binds another name to the same object:
+
+```python
+alias = original
+shallow = original.copy()      # nested values may remain shared
+
+left == right                  # equivalent values
+left is right                  # the same object
+value is None                  # canonical identity check
+```
+
+Use `copy.deepcopy()` only when an independent recursive copy is required.
+
+## Exceptions and context managers
+
+```python
+try:
+    value = int(raw)
+except ValueError as error:
+    print(error)
+else:
+    print("conversion succeeded")
+finally:
+    print("always runs")
+
+with open("file.txt", encoding="utf-8") as file:
+    text = file.read()
+```
+
+Catch the narrowest exception you can meaningfully handle. Use `raise` to
+signal failure and `raise NewError(...) from error` to preserve its cause.
+
+## Imports and script entry points
+
+```python
+import math
+from pathlib import Path
+
+if __name__ == "__main__":
+    main()
+```
+
+Top-level module code executes on first import. Protect application startup so
+the module can also be imported safely by tests or other modules.
+
+## Testing reminders
+
+```python
+import unittest
+
+class TestExample(unittest.TestCase):
+    def test_result(self):
+        self.assertEqual(calculate(2), 4)
+
+    def test_invalid_input(self):
+        with self.assertRaises(ValueError):
+            calculate(-1)
+```
+
+Test normal behavior, boundaries, empty input, and expected failures. Keep
+tests independent and deterministic.
+
 ## Command-line quick reference
 
 ```bash
@@ -116,6 +216,7 @@ python3 --version                 # check Python version
 python3 -m venv .venv             # create a virtual environment
 source .venv/bin/activate         # activate it (Linux/macOS)
 pip install <package>             # install a package
+python -m pip install <package>   # use pip belonging to this Python
 pip freeze > requirements.txt     # save installed packages
 python script.py arg1 --flag      # run a script with arguments
 python -m unittest discover       # run all unittest tests
@@ -127,3 +228,6 @@ pytest                            # run all pytest tests
 - [Python official documentation](https://docs.python.org/3/)
 - [Real Python](https://realpython.com/) - in-depth tutorials
 - [PEP 8](https://peps.python.org/pep-0008/) - the official style guide
+
+When references disagree, prefer the documentation for the Python version you
+are running. Check it with `python --version`.
