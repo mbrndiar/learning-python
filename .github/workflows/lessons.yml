@@ -1,0 +1,51 @@
+name: Run lessons and tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  run-lessons:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install optional dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run every lesson script
+        run: |
+          set -e
+          for file in $(find lessons -name "*.py" | sort); do
+            echo "::group::python $file"
+            python "$file"
+            echo "::endgroup::"
+          done
+
+      - name: Run every exercise solution
+        run: |
+          set -e
+          for file in $(find exercises -name "solutions.py" | sort); do
+            echo "::group::python $file"
+            python "$file"
+            echo "::endgroup::"
+          done
+
+      - name: Run capstone project tests
+        run: python project/task_manager/test_task_manager.py
+
+      - name: Run pytest lesson with pytest
+        run: pytest lessons/09_tooling_and_debugging/04_pytest_basics.py -v

@@ -2,11 +2,19 @@
 
 A collection of hands-on lessons for learning Python from scratch. Each lesson
 is a small, self-contained, runnable script with comments explaining the
-concepts.
+concepts. The course also includes practice exercises with solutions, a
+capstone project, and a cheat sheet, so it can be used as a standalone,
+self-taught path to learning Python.
 
 ## Requirements
 
-- Python 3.9+ (no external dependencies required)
+- Python 3.9+ (the lessons themselves need no external dependencies)
+- A couple of lessons and the exercises optionally use `pytest`; install it
+  with `pip install -r requirements-dev.txt`
+
+New to Python or setting up for the first time? See
+[`docs/SETUP.md`](docs/SETUP.md) for installing Python, creating a virtual
+environment, and choosing an editor.
 
 ## How to run a lesson
 
@@ -15,6 +23,24 @@ From the repository root, run any lesson file with:
 ```bash
 python lessons/01_basics/01_hello_world.py
 ```
+
+## Practice exercises
+
+Each module has a matching folder under [`exercises/`](exercises/README.md)
+with hands-on problems to implement yourself, plus reference solutions to
+check your work. After finishing a lesson, do its exercises before moving on.
+
+## Capstone project
+
+Once you've completed the course, build on what you've learned with the
+[Task Manager capstone project](project/task_manager/README.md) - a small
+command-line to-do app that combines classes, custom exceptions, file
+persistence, argparse, and unit tests.
+
+## Cheat sheet
+
+[`CHEATSHEET.md`](CHEATSHEET.md) is a one-page glossary and syntax quick
+reference to jog your memory after finishing the course.
 
 ## Course outline
 
@@ -60,6 +86,21 @@ python lessons/01_basics/01_hello_world.py
 8. **Testing** (`lessons/08_testing/`)
    - `01_unittest_basics.py` – writing and running tests with the
      `unittest` standard-library framework
+9. **Tooling and Debugging** (`lessons/09_tooling_and_debugging/`)
+   - `01_virtual_environments_and_pip.py` – virtual environments, `pip`,
+     and why to use them
+   - `02_debugging_and_tracebacks.py` – reading tracebacks, common
+     errors, and the interactive debugger
+   - `03_command_line_arguments.py` – `input()` and parsing CLI
+     arguments with `argparse`
+   - `04_pytest_basics.py` – an introduction to `pytest` as an
+     alternative to `unittest`
+10. **Concurrency** (`lessons/10_concurrency/`)
+    - `01_threading_and_multiprocessing.py` – `threading` for I/O-bound
+      work and `multiprocessing` for CPU-bound work
+    - `02_asyncio_basics.py` – `async`/`await` and `asyncio.gather`
 
 Work through the lessons in order, read the comments, then try modifying the
-code to experiment with the concepts.
+code to experiment with the concepts. After each module, complete the
+matching exercises in [`exercises/`](exercises/README.md) to practice what
+you learned.
