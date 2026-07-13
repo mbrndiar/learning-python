@@ -29,12 +29,19 @@ python lessons/01_basics/01_hello_world.py
 3. **Functions** (`lessons/03_functions/`)
    - `01_functions.py` – defining and calling functions, default/keyword
      arguments, `*args` and `**kwargs`
+   - `02_lambdas_closures_and_recursion.py` – lambda expressions, closures
+     (including `nonlocal`) and recursive functions
 4. **Data Structures** (`lessons/04_data_structures/`)
    - `01_lists_and_tuples.py` – lists, tuples and list comprehensions
    - `02_dictionaries_and_sets.py` – dictionaries and sets
+   - `03_comprehensions_and_collections.py` – list/dict/set/generator
+     comprehensions and the `collections` module (`Counter`, `defaultdict`,
+     `namedtuple`, `OrderedDict`)
 5. **Modules and Files** (`lessons/05_modules_and_files/`)
    - `01_modules.py` – using the standard library (`math`, `random`, `datetime`)
    - `02_files_and_exceptions.py` – reading/writing files and handling errors
+   - `03_custom_exceptions_and_context_managers.py` – defining custom
+     exception classes and writing your own context managers
 6. **Object-Oriented Programming** (`lessons/06_object_oriented_programming/`)
    - `01_classes_and_objects.py` – classes, attributes, methods and properties
    - `02_inheritance_and_polymorphism.py` – inheritance, `super()` and
