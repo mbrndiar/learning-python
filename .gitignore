@@ -219,3 +219,6 @@ __marimo__/
 
 # Task Manager capstone project data
 project/task_manager/tasks.json
+
+# Example REST API data
+project/simple_rest_api/notes.db
