@@ -1,8 +1,9 @@
 """
 Lesson 4.1: Lists and Tuples
 
-Lists are mutable (changeable) ordered collections.
-Tuples are immutable (unchangeable) ordered collections.
+Lists are mutable ordered collections; methods can change the same list
+object. Tuples are immutable ordered collections, although a tuple may still
+contain a mutable object such as a list.
 """
 
 # Lists
@@ -15,6 +16,8 @@ print("after append(10):", numbers)
 numbers.remove(1)  # removes the first occurrence of 1
 print("after remove(1):", numbers)
 
+# list.sort() mutates `numbers` and returns None. sorted(numbers) would return
+# a new list and leave the original order unchanged.
 numbers.sort()
 print("sorted:", numbers)
 
@@ -22,7 +25,9 @@ print("first element:", numbers[0])
 print("last element:", numbers[-1])
 print("slice [1:4]:", numbers[1:4])
 
-squares = [n ** 2 for n in numbers]  # list comprehension
+# A comprehension builds a new list by evaluating its expression once for
+# each input value.
+squares = [n ** 2 for n in numbers]
 print("squares:", squares)
 
 # Tuples

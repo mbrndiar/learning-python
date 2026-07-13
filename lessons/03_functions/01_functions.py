@@ -1,7 +1,9 @@
 """
 Lesson 3.1: Functions
 
-Functions let you package reusable blocks of logic.
+Functions package reusable logic behind a name and a contract. Parameters are
+local names bound to arguments supplied by the caller; return passes a result
+back and immediately ends the call.
 """
 
 
@@ -11,7 +13,7 @@ def greet(name):
 
 
 def add(a, b=0):
-    """Add two numbers together. `b` defaults to 0 if not provided."""
+    """Add two numbers together. Defaults are evaluated when `def` runs."""
     return a + b
 
 
@@ -21,12 +23,12 @@ def describe_person(name, age, city="Unknown"):
 
 
 def sum_all(*numbers):
-    """Demonstrate *args: accept any number of positional arguments."""
+    """Accept positional arguments collected into the tuple `numbers`."""
     return sum(numbers)
 
 
 def print_info(**details):
-    """Demonstrate **kwargs: accept any number of keyword arguments."""
+    """Accept keyword arguments collected into the dictionary `details`."""
     for key, value in details.items():
         print(f"  {key}: {value}")
 

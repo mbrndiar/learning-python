@@ -1,10 +1,10 @@
 """
 Lesson 10.2: asyncio Basics
 
-`asyncio` provides single-threaded, cooperative concurrency using
-`async`/`await`. It's ideal for many I/O-bound tasks (network calls,
-file access) running at once without the overhead of threads or
-processes.
+`asyncio` provides cooperative concurrency using async/await. A coroutine
+voluntarily yields at an await, allowing other tasks to run. Blocking code
+inside a coroutine blocks the event-loop thread, so real programs must use
+async-aware I/O libraries or explicitly offload blocking work.
 """
 
 import asyncio
@@ -22,13 +22,14 @@ async def fetch_data(name, delay):
 async def main():
     start = time.perf_counter()
 
-    # Running tasks sequentially (slow: awaits block one after another)
+    # Each await suspends main until that operation finishes, so these calls
+    # do not overlap even though fetch_data itself is asynchronous.
     print("Sequential (awaiting one at a time):")
     await fetch_data("A", 0.2)
     await fetch_data("B", 0.2)
     print(f"  Sequential total: {time.perf_counter() - start:.2f}s\n")
 
-    # Running tasks concurrently with asyncio.gather
+    # gather schedules both coroutine objects and waits for all their results.
     start = time.perf_counter()
     print("Concurrent (asyncio.gather):")
     results = await asyncio.gather(
