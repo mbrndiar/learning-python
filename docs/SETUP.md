@@ -15,6 +15,10 @@ ready. This only needs to be done once.
 
    On Windows the command is usually `python --version`.
 
+   If several Python versions are installed, prefer invoking tools through the
+   selected interpreter, for example `python3 -m pip`, rather than relying on a
+   separate `pip` command that may belong to another installation.
+
 ## 2. Get the code
 
 Clone this repository (or download it as a ZIP) and open a terminal in the
@@ -38,7 +42,8 @@ python3 -m venv .venv
 
 # Activate it
 source .venv/bin/activate        # macOS / Linux
-.venv\Scripts\activate           # Windows (Command Prompt / PowerShell)
+.venv\Scripts\activate.bat       # Windows Command Prompt
+.venv\Scripts\Activate.ps1      # Windows PowerShell
 ```
 
 Once activated, your shell prompt is usually prefixed with `(.venv)`. To
@@ -53,6 +58,12 @@ addition:
 
 ```bash
 pip install -r requirements-dev.txt
+```
+
+The more reliable interpreter-specific form is:
+
+```bash
+python -m pip install -r requirements-dev.txt
 ```
 
 ## 5. Choose an editor
@@ -70,3 +81,34 @@ python lessons/01_basics/01_hello_world.py
 
 If you see `Hello, World!` printed, you're ready to start. Continue to the
 [course outline in the README](../README.md#course-outline).
+
+## Troubleshooting
+
+### `python` or `python3` is not found
+
+Close and reopen the terminal after installation. On Windows, ensure the
+installer's **Add Python to PATH** option was selected. You can also try the
+Python launcher: `py --version` and `py -m venv .venv`.
+
+### Activating the environment is blocked in PowerShell
+
+PowerShell execution policy may block `Activate.ps1`. You can still use the
+environment without activation:
+
+```powershell
+.\.venv\Scripts\python.exe lessons\01_basics\01_hello_world.py
+```
+
+Activation is a convenience; it mainly puts the environment's executables
+first on `PATH`.
+
+### `pip` installs into the wrong Python
+
+Run `python -m pip --version` and check the displayed path. It should point
+inside `.venv` while the environment is active.
+
+### Leaving or recreating an environment
+
+Run `deactivate` to leave it. A virtual environment contains generated files,
+so it is safe to delete `.venv` and recreate it from
+`requirements-dev.txt`; do not commit `.venv` to version control.

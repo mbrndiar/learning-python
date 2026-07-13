@@ -1,10 +1,23 @@
 # learning-python
 
-A collection of hands-on lessons for learning Python from scratch. Each lesson
-is a small, self-contained, runnable script with comments explaining the
-concepts. The course also includes practice exercises with solutions, a
-capstone project, and a cheat sheet, so it can be used as a standalone,
-self-taught path to learning Python.
+A complete, hands-on introduction to Python for independent learners. The
+course combines written explanations, small runnable programs, exercises with
+solutions, review questions, a capstone project, and a syntax reference. No
+previous programming experience is assumed.
+
+## What you will learn
+
+By the end of the course, you will be able to:
+
+- read, write, run, and debug Python programs;
+- choose suitable data types and control program flow;
+- decompose problems into functions, modules, and classes;
+- read and write files and handle failures safely;
+- use Python's iterator, generator, decorator, and type-hinting features;
+- create isolated environments and install third-party packages;
+- test programs with `unittest` and `pytest`;
+- select an appropriate concurrency model for I/O- or CPU-bound work; and
+- design, implement, test, and extend a command-line application.
 
 ## Requirements
 
@@ -24,6 +37,27 @@ From the repository root, run any lesson file with:
 python lessons/01_basics/01_hello_world.py
 ```
 
+Do not only run the files. For each module:
+
+1. Read its `README.md`, including the examples and common mistakes.
+2. Predict a lesson script's output before running it.
+3. Run the script, then change values and observe what changes.
+4. Answer the module's review questions without looking back.
+5. Complete its exercises before reading `solutions.py`.
+6. Revisit anything you could not explain in your own words.
+
+The modules build on one another. Beginners should follow them in order.
+
+## Conventions used in this course
+
+- Code intended for a terminal is marked `bash`; Python code is marked
+  `python`.
+- `>>>` denotes an interactive Python prompt. Do not type the prompt itself.
+- `...` in a code sample means omitted code; it is not always literal input.
+- Names such as `value` or `items` are placeholders you may replace.
+- Examples use four spaces for indentation, as Python convention requires.
+- An exception shown intentionally is part of the lesson, not a broken example.
+
 ## Practice exercises
 
 Each module has a matching folder under [`exercises/`](exercises/README.md)
@@ -36,6 +70,11 @@ Once you've completed the course, build on what you've learned with the
 [Task Manager capstone project](project/task_manager/README.md) - a small
 command-line to-do app that combines classes, custom exceptions, file
 persistence, argparse, and unit tests.
+
+The supplied implementation is a readable starting point. Build features from
+the extension list one at a time, writing a test before or alongside each
+change. This turns the project from a code-reading exercise into an assessment
+of the whole course.
 
 ## Cheat sheet
 
@@ -104,3 +143,24 @@ Work through the lessons in order, read the comments, then try modifying the
 code to experiment with the concepts. After each module, complete the
 matching exercises in [`exercises/`](exercises/README.md) to practice what
 you learned.
+
+## Getting help from the material
+
+When something fails, read the final line of the traceback first: it names the
+exception and usually explains the immediate cause. Then inspect the referenced
+line in your code and work upward through the traceback. Search this repository
+for the exception or concept before consulting another source. Module 9 gives a
+systematic debugging process.
+
+Solutions are examples, not the only correct answers. Compare behavior,
+readability, handling of edge cases, and tests rather than requiring identical
+code.
+
+## Course boundaries
+
+This course aims to make a beginner independently productive with core Python.
+Python's ecosystem is much larger than any single introductory course:
+specialized work such as web development, data science, machine learning,
+desktop interfaces, and cloud deployment requires domain-specific study after
+the foundations here. The final section of [`CHEATSHEET.md`](CHEATSHEET.md)
+points to authoritative references for continued learning.
