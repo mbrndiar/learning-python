@@ -14,9 +14,11 @@ class APIError(Exception):
 
 class NotesClient:
     def __init__(self, base_url):
+        # Normalize once to avoid accidental double slashes in every request.
         self.base_url = base_url.rstrip("/")
 
     def request(self, method, path, data=None):
+        # urllib sends bytes on the wire, not Python dictionaries or strings.
         body = json.dumps(data).encode("utf-8") if data is not None else None
         request = Request(
             f"{self.base_url}{path}",
@@ -25,6 +27,7 @@ class NotesClient:
             headers={"Content-Type": "application/json"} if body else {},
         )
         try:
+            # A timeout prevents an unavailable server from blocking forever.
             with urlopen(request, timeout=5) as response:
                 content = response.read()
                 return json.loads(content) if content else None
@@ -94,6 +97,8 @@ def read_notes(path):
     data = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(data, list):
         raise ValueError("Import file must contain a JSON list")
+    # Validate the whole file before creating anything, avoiding a partial
+    # import when a later item is malformed.
     for note in data:
         if not isinstance(note, dict) or not isinstance(note.get("title"), str):
             raise ValueError("Every imported note must have a string title")
@@ -130,6 +135,7 @@ def main(argv=None):
             print(f"Imported {len(notes)} note(s)")
     except (APIError, OSError, UnicodeError, json.JSONDecodeError, ValueError) as error:
         print(f"Error: {error}", file=sys.stderr)
+        # Returning a nonzero status lets shells and scripts detect failure.
         return 1
     return 0
 

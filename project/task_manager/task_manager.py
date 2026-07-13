@@ -53,6 +53,7 @@ class TaskManager:
             raw_tasks = json.load(file)
         self._tasks = [Task.from_dict(item) for item in raw_tasks]
         if self._tasks:
+            # Continue after the highest stored id instead of reusing deleted ids.
             self._next_id = max(task.id for task in self._tasks) + 1
 
     def save(self):
@@ -63,11 +64,13 @@ class TaskManager:
         task = Task(id=self._next_id, title=title)
         self._tasks.append(task)
         self._next_id += 1
+        # Persist each successful mutation so CLI invocations see the same data.
         self.save()
         return task
 
     def list_tasks(self, include_done=True):
         if include_done:
+            # Return a copy so callers cannot add or remove internal tasks.
             return list(self._tasks)
         return [task for task in self._tasks if not task.done]
 
@@ -75,6 +78,7 @@ class TaskManager:
         for task in self._tasks:
             if task.id == task_id:
                 return task
+        # A domain-specific error lets the CLI report expected user mistakes.
         raise TaskNotFoundError(f"No task with id {task_id}")
 
     def complete(self, task_id):

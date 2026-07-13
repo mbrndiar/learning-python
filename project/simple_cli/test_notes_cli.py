@@ -10,6 +10,7 @@ import unittest
 from pathlib import Path
 
 REST_API_DIRECTORY = Path(__file__).parents[1] / "simple_rest_api"
+# The examples are deliberately plain scripts rather than installed packages.
 sys.path.insert(0, str(REST_API_DIRECTORY))
 
 from api import create_server
@@ -21,6 +22,7 @@ class TestNotesCLI(unittest.TestCase):
     def setUpClass(cls):
         file_descriptor, cls.database_path = tempfile.mkstemp(suffix=".db")
         os.close(file_descriptor)
+        # Let the operating system choose a free port for this isolated server.
         cls.server = create_server(port=0, database_path=cls.database_path)
         cls.thread = threading.Thread(target=cls.server.serve_forever)
         cls.thread.start()

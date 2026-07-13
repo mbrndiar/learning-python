@@ -27,6 +27,8 @@ class NoteStore:
 
     def _connect(self):
         connection = sqlite3.connect(self.database_path)
+        # Row objects preserve column names, so API responses do not depend on
+        # remembering each column's numeric position.
         connection.row_factory = sqlite3.Row
         return connection
 
@@ -43,6 +45,7 @@ class NoteStore:
 
     def get(self, note_id):
         with self._connect() as connection:
+            # SQL placeholders keep data separate from the query itself.
             row = connection.execute(
                 "SELECT id, title, body FROM notes WHERE id = ?", (note_id,)
             ).fetchone()
@@ -74,6 +77,7 @@ class NotesHandler(BaseHTTPRequestHandler):
     server_version = "NotesAPI/1.0"
 
     def _route(self):
+        # Route only on the URL path; a query string is not a path segment.
         parts = [part for part in urlsplit(self.path).path.split("/") if part]
         if parts == ["notes"]:
             return "collection", None
@@ -85,6 +89,7 @@ class NotesHandler(BaseHTTPRequestHandler):
         return None, None
 
     def _send_json(self, status, data):
+        # HTTP transmits bytes, so serialize first and advertise the byte count.
         body = json.dumps(data).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
@@ -99,6 +104,7 @@ class NotesHandler(BaseHTTPRequestHandler):
             raise ValueError("Content-Length must be a number")
         if length <= 0:
             raise ValueError("Request body must contain JSON")
+        # Reject oversized input before reading it into memory.
         if length > MAX_BODY_SIZE:
             raise ValueError("Request body is too large")
 
@@ -176,7 +182,9 @@ class NotesHandler(BaseHTTPRequestHandler):
 
 
 def create_server(host="127.0.0.1", port=8000, database_path=DEFAULT_DATABASE_PATH):
+    # A threaded server can handle another request while one client is waiting.
     server = ThreadingHTTPServer((host, port), NotesHandler)
+    # The handler receives shared application state through its server instance.
     server.store = NoteStore(database_path)
     return server
 

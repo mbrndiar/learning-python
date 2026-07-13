@@ -57,6 +57,7 @@ def format_task(task):
 def main(argv=None):
     parser = build_parser()
     args = parser.parse_args(argv)
+    # Argument parsing stays at the boundary; TaskManager contains the logic.
     manager = TaskManager(args.storage)
 
     try:
@@ -76,6 +77,7 @@ def main(argv=None):
             manager.remove(args.task_id)
             print(f"Removed task #{args.task_id}")
     except TaskNotFoundError as error:
+        # Diagnostics go to stderr, leaving stdout available for normal output.
         print(f"Error: {error}", file=sys.stderr)
         return 1
     return 0
