@@ -82,6 +82,43 @@ python lessons/01_basics/01_hello_world.py
 If you see `Hello, World!` printed, you're ready to start. Continue to the
 [course outline in the README](../README.md#course-outline).
 
+## Optional modern setup with uv
+
+The `venv` and `pip` workflow above is built into Python, widely available, and
+worth understanding. [uv](https://docs.astral.sh/uv/) is a popular
+third-party alternative that can install Python versions, create environments,
+and install packages through one fast command-line tool.
+
+After installing uv by following its official instructions, run from the
+repository root:
+
+```bash
+uv python install 3.12
+uv venv --python 3.12
+uv pip install -r requirements-dev.txt
+uv run python lessons/01_basics/01_hello_world.py
+uv run pytest lessons/09_tooling_and_debugging/04_pytest_basics.py
+```
+
+The explicit `uv venv` and `uv pip` commands mirror the course's existing
+workflow; they do not require converting this repository into a packaged
+project. uv also supports project metadata and lock files, which become useful
+when an application has runtime dependencies and needs reproducible installs.
+
+## Optional Python version managers
+
+[mise](https://mise.jdx.dev/) and [asdf](https://asdf-vm.com/) can select
+versions of Python and other development tools per project. They complement
+`venv`/`pip` or uv rather than replacing dependency isolation:
+
+- use mise or asdf when one tool should manage versions for several languages;
+- use uv when you want a Python-focused installer and environment workflow;
+- use the built-in approach when minimizing prerequisites matters most.
+
+Beginners only need one approach. Start with the standard-library instructions
+above; adopt an alternative after you understand which responsibility each
+tool handles.
+
 ## Troubleshooting
 
 ### `python` or `python3` is not found

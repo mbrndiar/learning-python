@@ -2,6 +2,19 @@
 
 Small, complete Python applications for practicing the course material.
 
+There are three directories because they serve two different learning goals:
+
+- `task_manager/` is the course capstone. It is a self-contained application
+  for combining the concepts taught across the lessons.
+- `simple_rest_api/` and `simple_cli/` form one client-server example. The API
+  owns and persists notes, while the CLI calls it over HTTP. Keeping them
+  separate demonstrates the boundary between a service and its client.
+
+All three deliberately begin with Python's standard library. This keeps the
+examples runnable after installing Python and makes the underlying HTTP, JSON,
+SQL, argument-parsing, and testing concepts visible. The project guides also
+point to popular third-party alternatives used in production applications.
+
 ## Simple CLI Application
 
 [`simple_cli/`](simple_cli/README.md) contains an `argparse` client for the notes
@@ -41,3 +54,7 @@ opening the implementation, sketch the model, operations, storage format, and
 important failures. Then compare your design with the supplied code. Follow
 the staged build and self-review checklist in the
 [`task_manager` guide](task_manager/README.md#build-it-as-a-staged-assessment).
+
+The notes API and client are optional application examples rather than
+prerequisites for the capstone. Read the API first, start it, and then use the
+CLI to observe how two independently running programs communicate.

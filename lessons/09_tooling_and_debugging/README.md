@@ -26,6 +26,14 @@ a lock file, when a project uses one, records a reproducible resolved set.
 Installing and importing are distinct: distribution names and import package
 names can differ.
 
+The built-in workflow is the portable baseline, not the only option. Tools such
+as uv can also install Python, create environments, and install dependencies;
+mise and asdf can select tool versions across several programming languages.
+These tools automate parts of the workflow but do not remove the need to
+understand interpreters, isolated environments, direct dependencies, and lock
+files. See the [setup guide](../../docs/SETUP.md#optional-modern-setup-with-uv)
+for an optional uv workflow.
+
 ## A debugging method
 
 1. Reproduce the smallest failing case.
