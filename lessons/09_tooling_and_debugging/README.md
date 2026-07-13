@@ -3,6 +3,69 @@
 The everyday tools that make writing, running and fixing Python code
 easier - beyond the language itself.
 
+## Learning objectives
+
+After this module, you should be able to isolate dependencies, invoke `pip`
+reliably, interpret tracebacks, investigate state with a debugger, design a
+command-line interface, and write concise `pytest` tests.
+
+## Environments and dependencies
+
+A virtual environment isolates one interpreter's installed packages. Create
+one per project and install from a recorded dependency file. Prefer
+`python -m pip` so `pip` is guaranteed to belong to the selected interpreter:
+
+```bash
+python -m venv .venv
+python -m pip install -r requirements-dev.txt
+python -m pip list
+```
+
+Do not commit `.venv`. A dependency declaration states direct requirements;
+a lock file, when a project uses one, records a reproducible resolved set.
+Installing and importing are distinct: distribution names and import package
+names can differ.
+
+## A debugging method
+
+1. Reproduce the smallest failing case.
+2. Read the exception type and message at the traceback's end.
+3. Find the first relevant frame in your own code.
+4. Inspect assumptions and values at that point.
+5. Form one hypothesis and test one change.
+6. Add a regression test after fixing the defect.
+
+`breakpoint()` pauses execution in `pdb`. Useful commands include `n` (next
+line), `s` (step into), `c` (continue), `p expression` (print), `l` (list
+source), and `q` (quit). Temporary print statements are useful, but structured
+`logging` is better for persistent diagnostics because it supports levels,
+destinations, and formatting.
+
+## Command-line programs
+
+`input()` is appropriate for an interactive conversation. `argparse` is better
+for repeatable commands, validates input, generates help, and returns a
+namespace. Define arguments in a parser, parse once near the application
+boundary, and pass ordinary values into core logic. Send diagnostics to
+standard error and use nonzero exit status for failure.
+
+## `pytest`
+
+`pytest` discovers `test_*.py` files and `test_*` functions, rewrites plain
+assertions to display useful differences, and provides fixtures for setup:
+
+```python
+import pytest
+
+@pytest.mark.parametrize(("value", "expected"), [(2, 4), (-3, 9)])
+def test_square(value, expected):
+    assert value * value == expected
+```
+
+Fixtures are requested by parameter name and can use `yield` for cleanup.
+Use `pytest.raises` for exceptions and `tmp_path` for isolated filesystem
+tests. Keep production logic independent of the test framework.
+
 ## Concepts covered
 
 - **`01_virtual_environments_and_pip.py`** - what virtual environments are
@@ -28,3 +91,19 @@ pytest lessons/09_tooling_and_debugging/04_pytest_basics.py
 
 Once you've read through all four files, practice what you learned in
 [`exercises/09_tooling_and_debugging/`](../../exercises/09_tooling_and_debugging/README.md).
+
+## Common mistakes
+
+- Installing packages globally or through a different Python's `pip`.
+- Reading only the first traceback line rather than the final exception.
+- Changing several things before rerunning a failing case.
+- Putting business logic directly inside argument-parsing branches.
+- Giving tests shared access to real user files or network services.
+
+## Review questions
+
+1. What problem does a virtual environment solve?
+2. Why is `python -m pip` safer than an unqualified `pip`?
+3. Which part of a traceback should you inspect first?
+4. What belongs in CLI parsing versus core application logic?
+5. How do parameterization and fixtures reduce test duplication?

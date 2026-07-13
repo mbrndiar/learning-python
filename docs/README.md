@@ -8,3 +8,7 @@ themselves.
   optional dependencies needed for a couple of lessons and the exercises
   (`pip install -r requirements-dev.txt`). Start here if you're new to
   Python or setting up a workspace for the first time.
+
+Core teaching material lives in each module's `README.md` and runnable lesson
+files. Start from the repository's [main course guide](../README.md), not this
+directory.

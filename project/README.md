@@ -24,3 +24,9 @@ Work through all ten [`lessons/`](../lessons/README.md) modules and their
 matching [`exercises/`](../exercises/README.md) first. This project is
 meant to be read and extended once you're comfortable with classes,
 exceptions, file I/O, argparse and testing.
+
+Treat the project as an assessment rather than another demonstration. Before
+opening the implementation, sketch the model, operations, storage format, and
+important failures. Then compare your design with the supplied code. Follow
+the staged build and self-review checklist in the
+[`task_manager` guide](task_manager/README.md#build-it-as-a-staged-assessment).
