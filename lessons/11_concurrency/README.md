@@ -1,15 +1,15 @@
-# Module 11: Concurrency
+# ⚡ Module 11: Concurrency
 
 Two complementary approaches to doing more than one thing at a time in
 Python.
 
-## Learning objectives
+## 🎯 Learning objectives
 
 After this module, you should be able to distinguish concurrency from
 parallelism, identify I/O- and CPU-bound workloads, select threads, processes,
 or asyncio, and recognize shared-state hazards.
 
-## Concurrency, parallelism, and workload
+## 🔀 Concurrency, parallelism, and workload
 
 Concurrency means multiple tasks make progress during overlapping periods;
 parallelism means work literally executes at the same instant. First determine
@@ -17,7 +17,7 @@ whether a program waits mostly for external I/O or spends time computing.
 Concurrency adds scheduling, coordination, cancellation, and debugging costs,
 so sequential code is the best default when it is fast enough.
 
-## Threads and processes
+## 🧵 Threads and processes
 
 Threads share a process's memory, making communication convenient and data
 races possible. A lock protects an invariant involving shared mutable state;
@@ -33,7 +33,7 @@ serialized, startup is more expensive, and worker entry points need a
 `__main__` guard—especially on platforms that start fresh interpreter
 processes.
 
-## Asyncio
+## 🌊 Asyncio
 
 `asyncio` runs coroutines cooperatively on an event loop. A coroutine yields
 control at `await`, so one coroutine that performs blocking work can freeze all
@@ -49,7 +49,7 @@ of the current task; `asyncio.create_task()` schedules it independently.
 Tasks should have clear ownership, error handling, cancellation, and cleanup.
 Limit fan-out with queues or semaphores rather than creating unbounded work.
 
-## Choosing a model
+## 🧭 Choosing a model
 
 | Situation | Good starting point |
 | --- | --- |
@@ -61,7 +61,7 @@ Limit fan-out with queues or semaphores rather than creating unbounded work.
 Measure before and after. Workload size, library behavior, serialization, and
 deployment constraints can change the answer.
 
-## Concepts covered
+## 📚 Concepts covered
 
 - **`01_threading_and_multiprocessing.py`** - `threading` for running
   multiple threads in one process, best for I/O-bound work (network
@@ -73,7 +73,7 @@ deployment constraints can change the answer.
   I/O-bound tasks running at once without the overhead of threads or
   processes.
 
-## Running
+## ▶️ Running
 
 ```bash
 python lessons/11_concurrency/01_threading_and_multiprocessing.py
@@ -86,7 +86,7 @@ Once you've read through both files, practice what you learned in
 This is the final module - once you're done, try building the
 [Task Manager capstone project](../../project/README.md).
 
-## Common mistakes
+## ⚠️ Common mistakes
 
 - Assuming concurrency automatically makes small programs faster.
 - Updating shared state without synchronization.
@@ -94,7 +94,7 @@ This is the final module - once you're done, try building the
 - Calling blocking functions directly inside coroutines.
 - Creating tasks and never awaiting their completion or observing failures.
 
-## Review questions
+## ❓ Review questions
 
 1. How do concurrency and parallelism differ?
 2. Why can threads help I/O-bound work despite the GIL?

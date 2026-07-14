@@ -1,9 +1,9 @@
-# Exercises: Module 1 - Basics
+# 🌱 Exercises: Module 1 - Basics
 
 Practice problems for [`lessons/01_basics/`](../../lessons/01_basics/README.md):
 variables, types, operators and strings.
 
-## Tasks in `exercises.py`
+## 🧩 Tasks in `exercises.py`
 
 - `celsius_to_fahrenheit(celsius)` - convert a temperature using
   arithmetic operators.
@@ -12,7 +12,7 @@ variables, types, operators and strings.
 - `count_vowels(text)` - count vowels in a string by iterating over its
   characters.
 
-## How to work through it
+## ▶️ How to work through it
 
 1. Read [`lessons/01_basics/`](../../lessons/01_basics/README.md) first.
 2. Open `exercises.py` and implement each function marked `# TODO`.

@@ -1,15 +1,15 @@
-# Module 9: Tooling and Debugging
+# 🛠️ Module 9: Tooling and Debugging
 
 The everyday tools that make writing, running and fixing Python code
 easier - beyond the language itself.
 
-## Learning objectives
+## 🎯 Learning objectives
 
 After this module, you should be able to isolate dependencies, invoke `pip`
 reliably, interpret tracebacks, investigate state with a debugger, design a
 command-line interface, and write concise `pytest` tests.
 
-## Environments and dependencies
+## 📦 Environments and dependencies
 
 A virtual environment isolates one interpreter's installed packages. Create
 one per project and install from a recorded dependency file. Prefer
@@ -34,7 +34,7 @@ understand interpreters, isolated environments, direct dependencies, and lock
 files. See the [setup guide](../../docs/SETUP.md#optional-modern-setup-with-uv)
 for an optional uv workflow.
 
-## A debugging method
+## 🐞 A debugging method
 
 1. Reproduce the smallest failing case.
 2. Read the exception type and message at the traceback's end.
@@ -49,7 +49,7 @@ source), and `q` (quit). Temporary print statements are useful, but structured
 `logging` is better for persistent diagnostics because it supports levels,
 destinations, and formatting.
 
-## Command-line programs
+## ⌨️ Command-line programs
 
 `input()` is appropriate for an interactive conversation. `argparse` is better
 for repeatable commands, validates input, generates help, and returns a
@@ -57,7 +57,7 @@ namespace. Define arguments in a parser, parse once near the application
 boundary, and pass ordinary values into core logic. Send diagnostics to
 standard error and use nonzero exit status for failure.
 
-## `pytest`
+## 🧪 `pytest`
 
 `pytest` discovers `test_*.py` files and `test_*` functions, rewrites plain
 assertions to display useful differences, and provides fixtures for setup:
@@ -74,7 +74,7 @@ Fixtures are requested by parameter name and can use `yield` for cleanup.
 Use `pytest.raises` for exceptions and `tmp_path` for isolated filesystem
 tests. Keep production logic independent of the test framework.
 
-## Logging and quality tools
+## 📋 Logging and quality tools
 
 Use `logging` for persistent diagnostics instead of scattering `print()` calls
 through reusable code. Log levels let callers decide how much detail to retain.
@@ -84,7 +84,7 @@ consistent formatting, `mypy` checks annotations without running the program,
 and coverage reports which lines tests executed. These tools complement one
 another; none proves that requirements or assertions are correct.
 
-## Concepts covered
+## 📚 Concepts covered
 
 - **`01_virtual_environments_and_pip.py`** - what virtual environments are
   and why to use them, `pip` as Python's package installer, and how to
@@ -100,7 +100,7 @@ another; none proves that requirements or assertions are correct.
 - **`05_logging_and_quality_tools.py`** - logging levels and the repository's
   Ruff, mypy and coverage workflow.
 
-## Running
+## ▶️ Running
 
 ```bash
 python lessons/09_tooling_and_debugging/01_virtual_environments_and_pip.py
@@ -113,7 +113,7 @@ python lessons/09_tooling_and_debugging/05_logging_and_quality_tools.py
 Once you've read through all four files, practice what you learned in
 [`exercises/09_tooling_and_debugging/`](../../exercises/09_tooling_and_debugging/README.md).
 
-## Common mistakes
+## ⚠️ Common mistakes
 
 - Installing packages globally or through a different Python's `pip`.
 - Reading only the first traceback line rather than the final exception.
@@ -123,7 +123,7 @@ Once you've read through all four files, practice what you learned in
 - Logging secrets or using the root logger as an unstructured print substitute.
 - Treating a clean linter or high coverage number as proof of correctness.
 
-## Review questions
+## ❓ Review questions
 
 1. What problem does a virtual environment solve?
 2. Why is `python -m pip` safer than an unqualified `pip`?

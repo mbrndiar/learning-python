@@ -1,10 +1,10 @@
-# Exercises: Module 10 - Application Integration
+# 🔌 Exercises: Module 10 - Application Integration
 
 Practice JSON validation, parameterized SQLite operations and HTTP-style route
 parsing after reading
 [`lessons/10_application_integration/`](../../lessons/10_application_integration/README.md).
 
-## Tasks in `exercises.py`
+## 🧩 Tasks in `exercises.py`
 
 - Encode and validate a task at a JSON boundary.
 - Initialize a SQLite schema and insert tasks with placeholders.

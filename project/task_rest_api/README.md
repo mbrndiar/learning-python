@@ -1,9 +1,9 @@
-# Task REST API
+# 🌐 Task REST API
 
 A dependency-free JSON API that persists tasks in SQLite. It is the server used
 by both `task_rest_client` and Task Manager's optional REST storage strategy.
 
-## Architecture and data flow
+## 🏗️ Architecture and data flow
 
 `TaskStore` owns SQL and returns plain dictionaries. `TasksHandler` owns HTTP
 routing, input validation, status codes, and JSON serialization.
@@ -21,7 +21,7 @@ SQLite stores `done` as `0` or `1`; `TaskStore` converts it to a JSON boolean at
 the data-layer boundary. Connections are short-lived and scoped with context
 managers.
 
-## Run
+## ▶️ Run
 
 From the repository root:
 
@@ -34,7 +34,7 @@ The default address is `127.0.0.1:8000`, and the default database is `tasks.db`
 beside `api.py`. This is an educational development server, not a hardened
 production deployment.
 
-## REST contract
+## 📜 REST contract
 
 Every task has the shape:
 
@@ -57,7 +57,7 @@ supports completing a task, not toggling arbitrary fields.
 Errors are JSON objects such as `{"error": "Task not found"}`. Invalid requests
 return `400`; unknown routes or task IDs return `404`.
 
-## Test
+## 🧪 Test
 
 ```bash
 python -m unittest project.task_rest_api.test_api -v

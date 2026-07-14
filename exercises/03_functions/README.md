@@ -1,9 +1,9 @@
-# Exercises: Module 3 - Functions
+# 🧩 Exercises: Module 3 - Functions
 
 Practice problems for [`lessons/03_functions/`](../../lessons/03_functions/README.md):
 functions, lambdas, closures and recursion.
 
-## Tasks in `exercises.py`
+## 🛠️ Tasks in `exercises.py`
 
 - `make_multiplier(factor)` - return a closure that multiplies its input
   by `factor`.
@@ -11,7 +11,7 @@ functions, lambdas, closures and recursion.
 - `describe(**kwargs)` - build a string from arbitrary keyword arguments.
 - `factorial(n)` - compute a factorial recursively.
 
-## How to work through it
+## ▶️ How to work through it
 
 1. Read [`lessons/03_functions/`](../../lessons/03_functions/README.md) first.
 2. Open `exercises.py` and implement each function marked `# TODO`.

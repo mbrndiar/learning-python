@@ -1,9 +1,9 @@
-# Exercises: Module 11 - Concurrency
+# ⚡ Exercises: Module 11 - Concurrency
 
 Practice problems for [`lessons/11_concurrency/`](../../lessons/11_concurrency/README.md):
 threading, multiprocessing and asyncio.
 
-## Tasks in `exercises.py`
+## 🧩 Tasks in `exercises.py`
 
 - `run_in_threads(func, items)` - run `func(item)` for every item
   concurrently using `threading.Thread`, collecting results in order.
@@ -14,7 +14,7 @@ threading, multiprocessing and asyncio.
 
 The thread exercise must also propagate worker exceptions to the caller.
 
-## How to work through it
+## ▶️ How to work through it
 
 1. Read [`lessons/11_concurrency/`](../../lessons/11_concurrency/README.md) first.
 2. Open `exercises.py` and implement each function marked `# TODO`.

@@ -1,4 +1,4 @@
-# Exercises
+# 🧠 Exercises
 
 Each lesson module in `lessons/` has a matching folder here with practice
 problems that reinforce what you just learned.
@@ -20,7 +20,7 @@ Every module folder contains:
 - `solutions.py` - a reference implementation, in case you get stuck or
   want to compare approaches. Try to solve each exercise yourself first!
 
-## How to work through an exercise
+## ▶️ How to work through an exercise
 
 1. Read the corresponding lesson in `lessons/`.
 2. Open `exercises/<module>/exercises.py` and implement each `TODO`.
@@ -28,7 +28,7 @@ Every module folder contains:
 4. Compare with `exercises/<module>/solutions.py` if you'd like a second
    opinion or got stuck.
 
-## A useful problem-solving process
+## 🧩 A useful problem-solving process
 
 1. Restate the task using concrete inputs and outputs.
 2. Write down normal cases, boundary cases, and invalid inputs.
@@ -42,7 +42,7 @@ variable, then generalize it into a function. Use `print()` or the debugger to
 inspect intermediate values. Look at the solution only after making a genuine
 attempt; then close it and recreate the idea independently.
 
-## Understanding the checks
+## ✅ Understanding the checks
 
 The supplied `assert` statements are lightweight feedback, not exhaustive
 proof. An assertion raises `AssertionError` when its condition is false:
@@ -55,7 +55,7 @@ Add your own assertions for empty values, zero, negative values, mixed case,
 and other boundaries when they make sense. Modules 8 and 9 turn this habit
 into structured automated testing.
 
-## Using reference solutions well
+## 🔍 Using reference solutions well
 
 A reference solution demonstrates one clear approach. Your answer may be
 equally correct even if it uses different names or operations. Compare:

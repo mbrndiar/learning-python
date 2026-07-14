@@ -1,4 +1,4 @@
-# Docs
+# 📚 Documentation
 
 Supplementary documentation for the course, separate from the lessons
 themselves.

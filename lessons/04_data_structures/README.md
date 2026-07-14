@@ -1,15 +1,15 @@
-# Module 4: Data Structures
+# 🗂️ Module 4: Data Structures
 
 Python's built-in collection types, and concise ways to build and
 transform them.
 
-## Learning objectives
+## 🎯 Learning objectives
 
 After this module, you should be able to select a collection by its semantics,
 copy and mutate collections intentionally, iterate through mappings, and write
 readable comprehensions.
 
-## Choosing a collection
+## 🧭 Choosing a collection
 
 | Type | Ordered | Mutable | Duplicates | Typical purpose |
 | --- | --- | --- | --- | --- |
@@ -22,7 +22,7 @@ readable comprehensions.
 Membership in a set or dictionary is usually faster than scanning a list.
 Choose by meaning first, then measure performance if it matters.
 
-## References, mutation, and copying
+## 🔗 References, mutation, and copying
 
 Assignment does not copy an object:
 
@@ -44,7 +44,7 @@ from `.keys()`, `.values()`, and `.items()` reflect later dictionary changes.
 Keys must be hashable, which normally means their equality-relevant state
 cannot change.
 
-## Comprehensions
+## ✨ Comprehensions
 
 A comprehension describes a transformation and optional filter:
 
@@ -56,7 +56,7 @@ Use a normal loop when the expression has side effects, multiple steps, or
 becomes difficult to read. A generator expression uses parentheses and
 produces values lazily instead of storing all of them.
 
-## Concepts covered
+## 📚 Concepts covered
 
 - **`01_lists_and_tuples.py`** - lists (mutable, ordered) and tuples
   (immutable, ordered): creating, indexing, slicing and common methods.
@@ -66,7 +66,7 @@ produces values lazily instead of storing all of them.
   comprehensions, and useful classes from the `collections` module:
   `Counter`, `defaultdict`, `namedtuple` and `OrderedDict`.
 
-## Running
+## ▶️ Running
 
 ```bash
 python lessons/04_data_structures/01_lists_and_tuples.py
@@ -77,7 +77,7 @@ python lessons/04_data_structures/03_comprehensions_and_collections.py
 Once you've read through all three files, practice what you learned in
 [`exercises/04_data_structures/`](../../exercises/04_data_structures/README.md).
 
-## Common mistakes
+## ⚠️ Common mistakes
 
 - Expecting assignment or a shallow copy to duplicate nested objects.
 - Relying on set iteration order.
@@ -86,7 +86,7 @@ Once you've read through all three files, practice what you learned in
 - Modifying collection size while iterating over it.
 - Using a comprehension so complex that a loop would be clearer.
 
-## Review questions
+## ❓ Review questions
 
 1. Which collection best represents unique tags, and why?
 2. What is shared after making a shallow copy of a nested list?

@@ -1,9 +1,9 @@
-# Exercises: Module 8 - Testing
+# 🧪 Exercises: Module 8 - Testing
 
 Practice problems for [`lessons/08_testing/`](../../lessons/08_testing/README.md):
 testing with `unittest`.
 
-## Tasks in `exercises.py`
+## 🧩 Tasks in `exercises.py`
 
 Unlike the other modules, this exercise is about writing tests
 yourself, not implementing functions. A small `Calculator` class is
@@ -14,7 +14,7 @@ given; add test methods to `TestCalculator`:
 - `test_divide_by_zero_raises` - assert that `divide(1, 0)` raises
   `ValueError` (use `self.assertRaises`).
 
-## How to work through it
+## ▶️ How to work through it
 
 1. Read [`lessons/08_testing/`](../../lessons/08_testing/README.md) first.
 2. Open `exercises.py` and implement each test method marked `# TODO`.

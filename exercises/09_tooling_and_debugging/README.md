@@ -1,9 +1,9 @@
-# Exercises: Module 9 - Tooling and Debugging
+# 🛠️ Exercises: Module 9 - Tooling and Debugging
 
 Practice problems for [`lessons/09_tooling_and_debugging/`](../../lessons/09_tooling_and_debugging/README.md):
 virtual environments, debugging, CLI arguments and `pytest`.
 
-## Tasks in `exercises.py`
+## 🧩 Tasks in `exercises.py`
 
 - `build_arg_parser()` - build an `argparse.ArgumentParser` with a
   required positional argument and an optional flag.
@@ -12,7 +12,7 @@ virtual environments, debugging, CLI arguments and `pytest`.
 - `safe_int(text)` - catch only the conversion error you can handle.
 - `configure_logger(verbose)` - select an appropriate logging level.
 
-## How to work through it
+## ▶️ How to work through it
 
 1. Read [`lessons/09_tooling_and_debugging/`](../../lessons/09_tooling_and_debugging/README.md) first.
 2. Open `exercises.py` and implement each function marked `# TODO`.

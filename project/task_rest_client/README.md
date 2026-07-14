@@ -1,10 +1,10 @@
-# Task REST Client
+# 📡 Task REST Client
 
 This paired project consumes the neighboring
 [Task REST API](../task_rest_api/README.md) using only Python's standard library.
 It deliberately separates reusable HTTP communication from terminal behavior.
 
-## Files and responsibilities
+## 🗂️ Files and responsibilities
 
 - `client.py` defines `TaskRestClient` and `APIError`. Applications can import
   this module without parsing arguments or printing.
@@ -23,7 +23,7 @@ Task Manager reuses this class through `RestTaskStorage`. The adapter converts
 the client's JSON dictionaries into domain `Task` objects; the client remains
 independent of Task Manager.
 
-## Run
+## ▶️ Run
 
 Start the API in one terminal:
 
@@ -44,13 +44,13 @@ Pass `--api-url http://127.0.0.1:9000` before the command when the server uses
 another port. A missing task or unavailable server is printed to standard error
 and produces exit status `1`.
 
-## Reuse as a module
+## ♻️ Reuse as a module
 
 Import `TaskRestClient` from `project.task_rest_client.client`, construct it
 with the API base URL, and call its task methods. The server remains the sole
 authority for identifiers.
 
-## Test
+## 🧪 Test
 
 ```bash
 python -m unittest project.task_rest_client.test_client -v

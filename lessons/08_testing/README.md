@@ -1,15 +1,15 @@
-# Module 8: Testing
+# 🧪 Module 8: Testing
 
 Why automated tests matter, and how to write them with Python's built-in
 testing framework.
 
-## Learning objectives
+## 🎯 Learning objectives
 
 After this module, you should be able to define test cases, arrange independent
 fixtures, choose precise assertions, test expected failures, and explain what
 makes a test suite trustworthy.
 
-## Why and what to test
+## 🔍 Why and what to test
 
 A test executes behavior and compares the observed result with an expectation.
 Good tests are deterministic, isolated, readable, and fast enough to run
@@ -30,7 +30,7 @@ Cover representative normal cases, boundaries, empty input, and meaningful
 failure paths. Coverage can reveal unexecuted code but cannot prove that
 assertions are correct or requirements are complete.
 
-## `unittest` lifecycle and assertions
+## 🔄 `unittest` lifecycle and assertions
 
 Test methods start with `test_`. `setUp()` runs before each test and
 `tearDown()` afterward; each test should receive fresh mutable state. Use
@@ -50,14 +50,14 @@ collaborators at boundaries such as clocks or network clients; patch the name
 where the code under test looks it up, and avoid mocking the behavior actually
 being tested.
 
-## Concepts covered
+## 📚 Concepts covered
 
 - **`01_unittest_basics.py`** - `unittest`, part of the standard library,
   for writing test cases as classes (`unittest.TestCase`), using
   assertion methods (`assertEqual`, `assertRaises`, etc.), and running
   tests from the command line.
 
-## Running
+## ▶️ Running
 
 ```bash
 python lessons/08_testing/01_unittest_basics.py
@@ -69,7 +69,7 @@ Once you've read through the file, practice what you learned in
 See also module 9's [`04_pytest_basics.py`](../09_tooling_and_debugging/04_pytest_basics.py)
 for an alternative, more lightweight testing framework.
 
-## Common mistakes
+## ⚠️ Common mistakes
 
 - Making tests depend on execution order or shared mutable state.
 - Asserting only that code ran without checking the result.
@@ -77,7 +77,7 @@ for an alternative, more lightweight testing framework.
 - Catching an exception manually and letting the test pass if none is raised.
 - Mocking so much that the test no longer exercises meaningful behavior.
 
-## Review questions
+## ❓ Review questions
 
 1. What do arrange, act, and assert mean?
 2. Why should tests be isolated from one another?

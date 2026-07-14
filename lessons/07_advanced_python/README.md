@@ -1,15 +1,15 @@
-# Module 7: Advanced Python
+# ✨ Module 7: Advanced Python
 
 A few more powerful, distinctly "Pythonic" tools that build on functions
 and OOP.
 
-## Learning objectives
+## 🎯 Learning objectives
 
 After this module, you should be able to wrap behavior with decorators,
 distinguish iterables, iterators, and generators, evaluate lazy processing, and
 write useful modern type annotations.
 
-## Decorators
+## 🎁 Decorators
 
 A decorator receives a callable and returns a callable. `@decorator` syntax
 rebinds the function name to the decorator's result:
@@ -27,7 +27,7 @@ preserve metadata such as the original name and docstring. A decorator factory
 adds another function layer to accept configuration. Decoration normally
 happens when the containing module is imported, not on each function call.
 
-## Iteration and lazy evaluation
+## ♻️ Iteration and lazy evaluation
 
 An iterable can produce an iterator with `iter()`. An iterator returns its next
 value from `next()` and raises `StopIteration` when exhausted. Iterators are
@@ -39,7 +39,7 @@ errors may occur later during consumption and exhausted values cannot simply
 be replayed. `yield from` delegates to another iterable. Generator `.send()`
 and `.throw()` exist, but ordinary iteration covers most application needs.
 
-## Type hints
+## 🏷️ Type hints
 
 Annotations document intent and support static analysis; Python does not
 enforce them at runtime. Modern Python parameterizes built-in collections and
@@ -57,7 +57,7 @@ when reading legacy code, but prefer `list[T]` and `T | None` in new Python
 boundaries and non-obvious structures. Static type checkers need their own
 configuration and are separate from tests.
 
-## Concepts covered
+## 📚 Concepts covered
 
 - **`01_decorators.py`** - functions that wrap another function (or
   class) to add behavior without modifying its source, built on closures
@@ -73,7 +73,7 @@ configuration and are separate from tests.
   `Protocol`, injecting collaborators instead of constructing them inside
   business logic, and adapting one interface to another.
 
-## Running
+## ▶️ Running
 
 ```bash
 python lessons/07_advanced_python/01_decorators.py
@@ -85,7 +85,7 @@ python lessons/07_advanced_python/04_protocols_and_dependency_injection.py
 Once you've read through all three files, practice what you learned in
 [`exercises/07_advanced_python/`](../../exercises/07_advanced_python/README.md).
 
-## Common mistakes
+## ⚠️ Common mistakes
 
 - Omitting `functools.wraps` from a function wrapper.
 - Calling the decorated function while decorating it instead of returning a
@@ -94,7 +94,7 @@ Once you've read through all three files, practice what you learned in
 - Assuming annotations convert or validate values.
 - Annotating concrete containers where a broader input protocol is intended.
 
-## Review questions
+## ❓ Review questions
 
 1. When is a decorator applied?
 2. How do an iterable and an iterator differ?

@@ -1,15 +1,15 @@
-# Module 1: Basics
+# 🌱 Module 1: Basics
 
 An introduction to the fundamental building blocks of Python. This module
 has no prerequisites - it's the starting point for the whole course.
 
-## Learning objectives
+## 🎯 Learning objectives
 
 After this module, you should be able to run a script, bind values to names,
 recognize Python's core scalar types, perform calculations, compare values, and
 transform text.
 
-## Values, objects, and names
+## 🏷️ Values, objects, and names
 
 Every Python value is an object with a type. Assignment binds a name to an
 object; it does not declare a storage box with a permanent type:
@@ -29,7 +29,7 @@ Names are case-sensitive. Choose descriptive `snake_case` names, do not start
 them with a digit, and avoid replacing built-ins such as `str`, `list`, or
 `sum`.
 
-## Operators and expressions
+## ➗ Operators and expressions
 
 An expression produces a value. Arithmetic includes `+`, `-`, `*`, `/`,
 floor division `//`, remainder `%`, and exponentiation `**`. `/` always
@@ -49,7 +49,7 @@ Floating-point numbers are approximations. For example, `0.1 + 0.2` may not
 compare exactly equal to `0.3`; later programs can use `math.isclose()` for
 approximate comparison.
 
-## Strings
+## 🔤 Strings
 
 Strings are immutable sequences of Unicode characters. Indexing selects one
 character; slicing selects a range and excludes the stop index:
@@ -66,7 +66,7 @@ F-strings embed expressions in readable text: `f"{name} scored {score}"`.
 Escape sequences such as `\n` represent special characters; raw strings
 (`r"C:\new"`) suppress most escape processing.
 
-## Concepts covered
+## 📚 Concepts covered
 
 - **`01_hello_world.py`** - running a script and printing your first
   message with `print()`.
@@ -78,7 +78,7 @@ Escape sequences such as `\n` represent special characters; raw strings
 - **`04_strings.py`** - strings as sequences of characters: concatenation,
   f-strings, indexing/slicing and common string methods.
 
-## Running
+## ▶️ Running
 
 ```bash
 python lessons/01_basics/01_hello_world.py
@@ -90,7 +90,7 @@ python lessons/01_basics/04_strings.py
 Once you've read through all four files, practice what you learned in
 [`exercises/01_basics/`](../../exercises/01_basics/README.md).
 
-## Common mistakes
+## ⚠️ Common mistakes
 
 - Using `=` (assignment) when `==` (equality comparison) is intended.
 - Combining text and numbers with `+` without conversion; prefer an f-string.
@@ -98,7 +98,7 @@ Once you've read through all four files, practice what you learned in
 - Assuming a string method changes the original string.
 - Naming a variable `type`, `str`, or `print`, hiding the built-in function.
 
-## Review questions
+## ❓ Review questions
 
 1. What is the difference between a name, a value, and a type?
 2. How do `/`, `//`, and `%` differ?

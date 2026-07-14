@@ -1,11 +1,11 @@
-# learning-python
+# 🐍 learning-python
 
 A complete, hands-on introduction to Python for independent learners. The
 course combines written explanations, small runnable programs, exercises with
 solutions, review questions, a capstone project, and a syntax reference. No
 previous programming experience is assumed.
 
-## What you will learn
+## 🎯 What you will learn
 
 By the end of the course, you will be able to:
 
@@ -21,7 +21,7 @@ By the end of the course, you will be able to:
 - select an appropriate concurrency model for I/O- or CPU-bound work; and
 - design, implement, test, and extend a command-line application.
 
-## Requirements
+## ✅ Requirements
 
 - Python 3.11+ (the lessons themselves need no external dependencies)
 - The lessons use only the standard library at runtime. Install the development
@@ -32,7 +32,7 @@ New to Python or setting up for the first time? See
 [`docs/SETUP.md`](docs/SETUP.md) for installing Python, creating a virtual
 environment, and choosing an editor.
 
-## How to run a lesson
+## ▶️ How to run a lesson
 
 From the repository root, run any lesson file with:
 
@@ -51,7 +51,7 @@ Do not only run the files. For each module:
 
 The modules build on one another. Beginners should follow them in order.
 
-## Conventions used in this course
+## 📐 Conventions used in this course
 
 - Code intended for a terminal is marked `bash`; Python code is marked
   `python`.
@@ -61,13 +61,13 @@ The modules build on one another. Beginners should follow them in order.
 - Examples use four spaces for indentation, as Python convention requires.
 - An exception shown intentionally is part of the lesson, not a broken example.
 
-## Practice exercises
+## 🧠 Practice exercises
 
 Each module has a matching folder under [`exercises/`](exercises/README.md)
 with hands-on problems to implement yourself, plus reference solutions to
 check your work. After finishing a lesson, do its exercises before moving on.
 
-## Capstone project
+## 🏆 Capstone project
 
 Once you've completed the course, build on what you've learned with the
 [Task Manager capstone project](project/task_manager/README.md) - a small
@@ -84,39 +84,39 @@ For smaller application examples, see the
 [Task REST API](project/task_rest_api/README.md), and storage-selectable
 [Task Manager](project/task_manager/README.md).
 
-## Cheat sheet
+## 🗒️ Cheat sheet
 
 [`CHEATSHEET.md`](CHEATSHEET.md) is a one-page glossary and syntax quick
 reference to jog your memory after finishing the course.
 
-## Course outline
+## 🗺️ Course outline
 
-1. **Basics** (`lessons/01_basics/`)
+1. **[Basics](lessons/01_basics/)**
    - [`01_hello_world.py`](lessons/01_basics/01_hello_world.py) – printing your first message
    - [`02_variables_and_types.py`](lessons/01_basics/02_variables_and_types.py) – variables and basic data types
    - [`03_operators.py`](lessons/01_basics/03_operators.py) – arithmetic, comparison and logical operators
    - [`04_strings.py`](lessons/01_basics/04_strings.py) – working with strings
-2. **Control Flow** (`lessons/02_control_flow/`)
+2. **[Control Flow](lessons/02_control_flow/)**
    - [`01_conditionals.py`](lessons/02_control_flow/01_conditionals.py) – `if` / `elif` / `else`
    - [`02_loops.py`](lessons/02_control_flow/02_loops.py) – `for` and `while` loops
-3. **Functions** (`lessons/03_functions/`)
+3. **[Functions](lessons/03_functions/)**
    - [`01_functions.py`](lessons/03_functions/01_functions.py) – defining and calling functions, default/keyword
      arguments, `*args` and `**kwargs`
    - [`02_lambdas_closures_and_recursion.py`](lessons/03_functions/02_lambdas_closures_and_recursion.py) – lambda expressions, closures
      (including `nonlocal`) and recursive functions
-4. **Data Structures** (`lessons/04_data_structures/`)
+4. **[Data Structures](lessons/04_data_structures/)**
    - [`01_lists_and_tuples.py`](lessons/04_data_structures/01_lists_and_tuples.py) – lists, tuples and list comprehensions
    - [`02_dictionaries_and_sets.py`](lessons/04_data_structures/02_dictionaries_and_sets.py) – dictionaries and sets
    - [`03_comprehensions_and_collections.py`](lessons/04_data_structures/03_comprehensions_and_collections.py) – list/dict/set/generator
      comprehensions and the `collections` module (`Counter`, `defaultdict`,
      `namedtuple`, `OrderedDict`)
-5. **Modules and Files** (`lessons/05_modules_and_files/`)
+5. **[Modules and Files](lessons/05_modules_and_files/)**
    - [`01_modules.py`](lessons/05_modules_and_files/01_modules.py) – using the standard library (`math`, `random`, `datetime`)
    - [`02_files_and_exceptions.py`](lessons/05_modules_and_files/02_files_and_exceptions.py) – reading/writing files and handling errors
    - [`03_custom_exceptions_and_context_managers.py`](lessons/05_modules_and_files/03_custom_exceptions_and_context_managers.py) – defining custom
      exception classes and writing your own context managers
    - [`04_json_and_structured_data.py`](lessons/05_modules_and_files/04_json_and_structured_data.py) – serializing structured data with JSON
-6. **Object-Oriented Programming** (`lessons/06_object_oriented_programming/`)
+6. **[Object-Oriented Programming](lessons/06_object_oriented_programming/)**
    - [`01_classes_and_objects.py`](lessons/06_object_oriented_programming/01_classes_and_objects.py) – classes, attributes, methods and properties
    - [`02_inheritance_and_polymorphism.py`](lessons/06_object_oriented_programming/02_inheritance_and_polymorphism.py) – inheritance, `super()` and
      polymorphism
@@ -124,7 +124,7 @@ reference to jog your memory after finishing the course.
      and dunder methods (`__repr__`, `__eq__`, `__add__`, etc.)
    - [`04_abstract_classes_and_dataclasses.py`](lessons/06_object_oriented_programming/04_abstract_classes_and_dataclasses.py) – abstract base classes,
      `@dataclass` and `enum.Enum`
-7. **Advanced Python** (`lessons/07_advanced_python/`)
+7. **[Advanced Python](lessons/07_advanced_python/)**
    - [`01_decorators.py`](lessons/07_advanced_python/01_decorators.py) – function decorators, decorator factories and
      `functools.wraps`
    - [`02_generators_and_iterators.py`](lessons/07_advanced_python/02_generators_and_iterators.py) – `yield`, generator expressions and
@@ -133,10 +133,10 @@ reference to jog your memory after finishing the course.
      modern Python type syntax
    - [`04_protocols_and_dependency_injection.py`](lessons/07_advanced_python/04_protocols_and_dependency_injection.py) – structural interfaces,
      dependency injection and adapters
-8. **Testing** (`lessons/08_testing/`)
+8. **[Testing](lessons/08_testing/)**
    - [`01_unittest_basics.py`](lessons/08_testing/01_unittest_basics.py) – writing and running tests with the
      `unittest` standard-library framework
-9. **Tooling and Debugging** (`lessons/09_tooling_and_debugging/`)
+9. **[Tooling and Debugging](lessons/09_tooling_and_debugging/)**
    - [`01_virtual_environments_and_pip.py`](lessons/09_tooling_and_debugging/01_virtual_environments_and_pip.py) – virtual environments, `pip`,
      and why to use them
    - [`02_debugging_and_tracebacks.py`](lessons/09_tooling_and_debugging/02_debugging_and_tracebacks.py) – reading tracebacks, common
@@ -147,10 +147,10 @@ reference to jog your memory after finishing the course.
      alternative to `unittest`
    - [`05_logging_and_quality_tools.py`](lessons/09_tooling_and_debugging/05_logging_and_quality_tools.py) – structured diagnostics, Ruff, mypy
     and coverage
-10. **Application Integration** (`lessons/10_application_integration/`)
+10. **[Application Integration](lessons/10_application_integration/)**
     - [`01_sqlite_basics.py`](lessons/10_application_integration/01_sqlite_basics.py) – storing and querying records with SQLite
     - [`02_http_and_json.py`](lessons/10_application_integration/02_http_and_json.py) – HTTP routes, JSON boundaries and clients
-11. **Concurrency** (`lessons/11_concurrency/`)
+11. **[Concurrency](lessons/11_concurrency/)**
     - [`01_threading_and_multiprocessing.py`](lessons/11_concurrency/01_threading_and_multiprocessing.py) – `threading` for I/O-bound
       work and `multiprocessing` for CPU-bound work
     - [`02_asyncio_basics.py`](lessons/11_concurrency/02_asyncio_basics.py) – `async`/`await` and `asyncio.gather`
@@ -160,7 +160,7 @@ code to experiment with the concepts. After each module, complete the
 matching exercises in [`exercises/`](exercises/README.md) to practice what
 you learned.
 
-## Getting help from the material
+## 🆘 Getting help from the material
 
 When something fails, read the final line of the traceback first: it names the
 exception and usually explains the immediate cause. Then inspect the referenced
@@ -172,7 +172,7 @@ Solutions are examples, not the only correct answers. Compare behavior,
 readability, handling of edge cases, and tests rather than requiring identical
 code.
 
-## Course boundaries
+## 🧭 Course boundaries
 
 This course aims to make a beginner independently productive with core Python.
 Python's ecosystem is much larger than any single introductory course:

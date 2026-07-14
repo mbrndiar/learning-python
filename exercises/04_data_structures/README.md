@@ -1,9 +1,9 @@
-# Exercises: Module 4 - Data Structures
+# 🗂️ Exercises: Module 4 - Data Structures
 
 Practice problems for [`lessons/04_data_structures/`](../../lessons/04_data_structures/README.md):
 lists, tuples, dictionaries, sets, comprehensions and `collections`.
 
-## Tasks in `exercises.py`
+## 🧩 Tasks in `exercises.py`
 
 - `unique_sorted(numbers)` - deduplicate and sort a list, using a set and
   `sorted()`.
@@ -14,7 +14,7 @@ lists, tuples, dictionaries, sets, comprehensions and `collections`.
 - `most_common_words(words, count)` - use `Counter.most_common()`.
 - `group_by_length(words)` - collect values with `defaultdict(list)`.
 
-## How to work through it
+## ▶️ How to work through it
 
 1. Read [`lessons/04_data_structures/`](../../lessons/04_data_structures/README.md) first.
 2. Open `exercises.py` and implement each function marked `# TODO`.

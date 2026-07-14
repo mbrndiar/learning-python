@@ -1,10 +1,10 @@
-# Capstone Project: Task Manager
+# ✅ Capstone Project: Task Manager
 
 Task Manager combines the course concepts in one application while allowing its
 persistence mechanism to change. It can store tasks in a local JSON file or use
 the paired Task REST API.
 
-## Architecture
+## 🏗️ Architecture
 
 The dependency direction is:
 
@@ -26,7 +26,7 @@ requests, allocate IDs, parse arguments, or print. Each storage implementation
 owns ID allocation: `FileTaskStorage` computes local IDs, while
 `RestTaskStorage` accepts the ID returned by SQLite through the API.
 
-## Local file backend
+## 💾 Local file backend
 
 The default requires no running service:
 
@@ -52,7 +52,7 @@ next write. The loader rejects duplicate or invalid identifiers. UTF-8 writes
 use a temporary file followed by an atomic replacement so interruption cannot
 leave a partially written destination.
 
-## REST backend
+## 🌐 REST backend
 
 First start the server:
 
@@ -76,7 +76,7 @@ crosses a process boundary and the server persists in SQLite. Network and API
 errors therefore apply only to REST mode. Client errors preserve the HTTP
 status code, allowing adapters to translate `404` without comparing text.
 
-## Storage contract
+## 📜 Storage contract
 
 A strategy must list, retrieve, add, complete, and remove tasks. Unknown IDs
 raise `TaskNotFoundError` at the Task Manager boundary. Adding returns the
@@ -85,7 +85,7 @@ complete stored task, including the ID assigned by that strategy.
 This protocol makes another backend—such as an in-memory teaching double or a
 cloud database adapter—possible without changing domain logic.
 
-## Test
+## 🧪 Test
 
 ```bash
 python -m unittest project.task_manager.test_task_manager -v
@@ -96,7 +96,7 @@ round-trip persistence, server integration, ID ownership, missing tasks, and
 pending-task filtering. Temporary files, databases, and ports keep tests
 isolated from user data.
 
-## Learning checklist
+## ✅ Learning checklist
 
 - Explain why `TaskManager` receives storage rather than constructing it.
 - Trace a REST-backed `complete` operation through every layer.
@@ -104,7 +104,7 @@ isolated from user data.
 - Compare local I/O failures with HTTP failures.
 - Add a strategy while leaving `TaskManager` unchanged.
 
-## Extension exercises
+## 🚀 Extension exercises
 
 Implement these in order. Add or update a test before, or alongside, each
 behavior change.

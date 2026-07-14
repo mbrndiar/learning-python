@@ -1,4 +1,4 @@
-# Lessons
+# 🎓 Lessons
 
 This is the main course content: eleven modules of small, self-contained,
 runnable scripts that teach Python from the ground up. Each module builds on
@@ -10,7 +10,7 @@ Run any lesson file from the repository root, for example:
 python lessons/01_basics/01_hello_world.py
 ```
 
-## Modules
+## 🗂️ Modules
 
 1. [`01_basics/`](01_basics/README.md) - printing, variables, types,
    operators and strings
@@ -33,7 +33,7 @@ python lessons/01_basics/01_hello_world.py
 11. [`11_concurrency/`](11_concurrency/README.md) - threading,
     multiprocessing and asyncio
 
-## How to use a module
+## ▶️ How to use a module
 
 1. Open the lesson file(s) in order and read the docstrings and comments.
 2. Run the file to see the output.
@@ -41,7 +41,7 @@ python lessons/01_basics/01_hello_world.py
 4. Complete the matching exercises in
    [`exercises/`](../exercises/README.md) before moving to the next module.
 
-## Recommended study loop
+## 🔁 Recommended study loop
 
 Use active recall instead of only reading:
 
@@ -56,7 +56,7 @@ Use active recall instead of only reading:
 Code that seems obvious while visible can still be difficult to reproduce.
 Close the lesson and rebuild a small example from memory before moving on.
 
-## How the examples are structured
+## 🧱 How the examples are structured
 
 Each `.py` file starts with a module docstring describing its topic. Inline
 comments explain the reason for an operation rather than merely repeating the
@@ -71,7 +71,7 @@ if __name__ == "__main__":
 
 This distinction becomes important when modules are imported in module 5.
 
-## Checkpoints
+## 🚩 Checkpoints
 
 - After modules 1–2, write a number-guessing or menu-driven program.
 - After modules 3–4, build a text analyzer using functions and collections.

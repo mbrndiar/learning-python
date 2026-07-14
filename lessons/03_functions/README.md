@@ -1,15 +1,15 @@
-# Module 3: Functions
+# 🧩 Module 3: Functions
 
 How to package reusable logic into functions, and a few more advanced
 function-related tools.
 
-## Learning objectives
+## 🎯 Learning objectives
 
 After this module, you should be able to define focused functions, pass
 arguments correctly, return results, reason about scope, and recognize
 closures, lambdas, and recursion.
 
-## Defining a function
+## 🛠️ Defining a function
 
 A function is an object created by `def`. Parameters name incoming values;
 `return` sends one result to the caller and immediately ends the call. A
@@ -36,7 +36,7 @@ def append_item(item, items=None):
     return items
 ```
 
-## Scope and the LEGB rule
+## 🔭 Scope and the LEGB rule
 
 Name lookup proceeds through Local, Enclosing, Global, and Built-in scopes.
 Assignment inside a function creates a local name unless `global` or
@@ -44,7 +44,7 @@ Assignment inside a function creates a local name unless `global` or
 A closure is an inner function that retains access to names from an enclosing
 function even after that function returns.
 
-## Flexible calls and higher-order functions
+## 🧰 Flexible calls and higher-order functions
 
 `*args` collects extra positional arguments into a tuple; `**kwargs` collects
 extra keyword arguments into a dictionary. The same `*` and `**` syntax
@@ -57,7 +57,7 @@ Recursion solves a problem through smaller instances of itself. It requires a
 base case and progress toward that case. Python does not optimize tail calls,
 so iteration is usually safer for deeply repeated work.
 
-## Concepts covered
+## 📚 Concepts covered
 
 - **`01_functions.py`** - defining and calling functions, default and
   keyword arguments, and variable-length arguments with `*args` and
@@ -67,7 +67,7 @@ so iteration is usually safer for deeply repeated work.
   `filter()`), closures (including the `nonlocal` keyword) and recursive
   functions.
 
-## Running
+## ▶️ Running
 
 ```bash
 python lessons/03_functions/01_functions.py
@@ -77,7 +77,7 @@ python lessons/03_functions/02_lambdas_closures_and_recursion.py
 Once you've read through both files, practice what you learned in
 [`exercises/03_functions/`](../../exercises/03_functions/README.md).
 
-## Common mistakes
+## ⚠️ Common mistakes
 
 - Printing a value when the caller needs the function to return it.
 - Calling a function in a default argument and expecting it to run per call.
@@ -85,7 +85,7 @@ Once you've read through both files, practice what you learned in
 - Forgetting the base case in recursion.
 - Giving a function multiple unrelated responsibilities.
 
-## Review questions
+## ❓ Review questions
 
 1. What does a function return when it reaches the end without `return`?
 2. In what order does Python resolve an unqualified name?

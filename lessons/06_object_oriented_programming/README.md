@@ -1,16 +1,16 @@
-# Module 6: Object-Oriented Programming
+# 🏗️ Module 6: Object-Oriented Programming
 
 How to bundle data and behavior together into classes, and the main OOP
 tools Python offers.
 
-## Learning objectives
+## 🎯 Learning objectives
 
 After this module, you should be able to model related state and behavior,
 distinguish class and instance data, use composition or inheritance
 deliberately, define useful object protocols, and reduce data-class
 boilerplate.
 
-## Objects and classes
+## 🧱 Objects and classes
 
 A class creates a new type; calling it constructs an instance. `self` is the
 instance receiving a method call and is supplied automatically:
@@ -34,7 +34,7 @@ mutable class attributes for per-instance state. A property exposes method
 logic through attribute syntax and is useful for a computed value or a stable
 interface—not merely to imitate getters and setters from another language.
 
-## Composition and inheritance
+## 🧩 Composition and inheritance
 
 Composition gives one object another object to delegate work to ("has a").
 Inheritance specializes a genuine subtype ("is a"). Prefer composition when
@@ -46,7 +46,7 @@ Python uses naming conventions rather than absolute access restrictions:
 `_name` means non-public API, while `__name` triggers name mangling to reduce
 accidental clashes in subclasses. Neither mechanism makes data secure.
 
-## Object protocols
+## ✨ Object protocols
 
 Special methods let instances participate in Python syntax. `__repr__` should
 give a developer-oriented representation; `__str__` gives user-facing text.
@@ -59,7 +59,7 @@ Abstract base classes can require methods from concrete subclasses.
 data-oriented classes. Use `field(default_factory=list)` rather than `[]` for
 mutable defaults. An `Enum` represents a closed set of named values.
 
-## Concepts covered
+## 📚 Concepts covered
 
 - **`01_classes_and_objects.py`** - defining classes, `__init__`,
   instance vs. class attributes, methods and properties.
@@ -76,7 +76,7 @@ mutable defaults. An `Enum` represents a closed set of named values.
   to reduce boilerplate for data-holding classes, and `enum.Enum` for
   fixed sets of named constants.
 
-## Running
+## ▶️ Running
 
 ```bash
 python lessons/06_object_oriented_programming/01_classes_and_objects.py
@@ -88,7 +88,7 @@ python lessons/06_object_oriented_programming/04_abstract_classes_and_dataclasse
 Once you've read through all four files, practice what you learned in
 [`exercises/06_object_oriented_programming/`](../../exercises/06_object_oriented_programming/README.md).
 
-## Common mistakes
+## ⚠️ Common mistakes
 
 - Storing per-instance mutable state as a class attribute.
 - Using inheritance only to share implementation.
@@ -96,7 +96,7 @@ Once you've read through all four files, practice what you learned in
 - Expecting a leading underscore to enforce privacy.
 - Giving a data class a mutable default without `default_factory`.
 
-## Review questions
+## ❓ Review questions
 
 1. Where should state unique to one object be initialized?
 2. How do composition and inheritance express different relationships?

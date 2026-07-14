@@ -1,4 +1,4 @@
-# Connected Task Projects
+# 🔗 Connected Task Projects
 
 These three standard-library projects form one progressive example:
 
@@ -13,7 +13,7 @@ The projects demonstrate classes, dataclasses, protocols, dependency injection,
 JSON and file I/O, HTTP, SQLite, `argparse`, exceptions, and integration tests
 without hiding those concepts behind third-party frameworks.
 
-## How the projects connect
+## 🧭 How the projects connect
 
 File mode is a single process:
 
@@ -31,7 +31,7 @@ Task Manager CLI -> TaskManager -> RestTaskStorage
 The standalone REST client CLI is another front end over the same
 `TaskRestClient`. Both front ends therefore share the same remote data.
 
-## Quick start
+## 🚀 Quick start
 
 Run Task Manager locally:
 
@@ -51,7 +51,7 @@ python -m project.task_manager.cli --backend rest list
 Commands are run from the repository root so Python can resolve the `project`
 package consistently.
 
-## Run all project tests
+## 🧪 Run all project tests
 
 ```bash
 python -m unittest \

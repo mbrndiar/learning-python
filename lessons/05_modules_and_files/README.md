@@ -1,15 +1,15 @@
-# Module 5: Modules and Files
+# 📦 Module 5: Modules and Files
 
 Organizing code across files, using the standard library, and handling
 files and errors robustly.
 
-## Learning objectives
+## 🎯 Learning objectives
 
 After this module, you should be able to import code without accidental side
 effects, organize modules, work safely with paths and files, exchange structured
 JSON data, handle expected errors, and implement deterministic cleanup.
 
-## Modules, packages, and imports
+## 🧩 Modules, packages, and imports
 
 A module is normally one `.py` file. A package groups importable modules in a
 directory; modern namespace packages do not always require `__init__.py`,
@@ -28,7 +28,7 @@ behind `if __name__ == "__main__":` so importing the module does not run them.
 Python searches locations in `sys.path`; run commands from the documented
 project directory rather than modifying the path inside source code.
 
-## Paths, files, and encodings
+## 📁 Paths, files, and encodings
 
 `pathlib.Path` provides cross-platform path operations:
 
@@ -45,7 +45,7 @@ Text mode decodes bytes into strings; binary mode (`"rb"`/`"wb"`) leaves bytes
 unchanged. State an encoding for persistent text. File modes include read
 `"r"`, overwrite `"w"`, append `"a"`, and exclusive create `"x"`.
 
-## Exceptions
+## 🚨 Exceptions
 
 Exceptions separate normal results from failure. Catch the narrowest exception
 you can handle, and keep the protected `try` block small:
@@ -70,14 +70,14 @@ A context manager's `__enter__` and `__exit__` methods define setup and
 cleanup. `with` is preferable to manual `try/finally` for files, locks,
 database transactions, and other managed resources.
 
-## JSON
+## 🧾 JSON
 
 JSON represents dictionaries, lists, strings, numbers, booleans and `null` as
 portable text. `json.dumps()`/`json.loads()` work with strings, while
 `json.dump()`/`json.load()` work with file objects. Decoding only proves that
 the JSON syntax is valid; applications must still validate the resulting shape.
 
-## Concepts covered
+## 📚 Concepts covered
 
 - **`01_modules.py`** - importing standard-library modules (`math`,
   `random`, `datetime`) and organizing your own code into modules.
@@ -91,7 +91,7 @@ the JSON syntax is valid; applications must still validate the resulting shape.
 - **`04_json_and_structured_data.py`** - serializing dictionaries and lists,
   writing readable JSON files, and validating decoded top-level structures.
 
-## Running
+## ▶️ Running
 
 ```bash
 python lessons/05_modules_and_files/01_modules.py
@@ -103,7 +103,7 @@ python lessons/05_modules_and_files/04_json_and_structured_data.py
 Once you've read through all three files, practice what you learned in
 [`exercises/05_modules_and_files/`](../../exercises/05_modules_and_files/README.md).
 
-## Common mistakes
+## ⚠️ Common mistakes
 
 - Running substantial work at import time.
 - Assuming the current working directory is the source file's directory.
@@ -111,7 +111,7 @@ Once you've read through all three files, practice what you learned in
 - Catching `Exception` and silently continuing.
 - Opening a resource without ensuring it will be closed.
 
-## Review questions
+## ❓ Review questions
 
 1. Why protect demonstration code with a `__main__` check?
 2. How do text and binary file modes differ?

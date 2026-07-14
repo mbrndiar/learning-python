@@ -1,9 +1,9 @@
-# Exercises: Module 5 - Modules and Files
+# 📦 Exercises: Module 5 - Modules and Files
 
 Practice problems for [`lessons/05_modules_and_files/`](../../lessons/05_modules_and_files/README.md):
 modules, file I/O, exceptions, custom exceptions and context managers.
 
-## Tasks in `exercises.py`
+## 🧩 Tasks in `exercises.py`
 
 - `write_lines(path, lines)` / `read_lines(path)` - write a list of
   strings to a file and read them back, using `open()` and the `with`
@@ -16,7 +16,7 @@ modules, file I/O, exceptions, custom exceptions and context managers.
 - `temporary_value(mapping, key, value)` - implement deterministic cleanup
   with `@contextmanager`.
 
-## How to work through it
+## ▶️ How to work through it
 
 1. Read [`lessons/05_modules_and_files/`](../../lessons/05_modules_and_files/README.md) first.
 2. Open `exercises.py` and implement each function marked `# TODO`.
