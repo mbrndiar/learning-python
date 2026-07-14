@@ -1,52 +1,56 @@
-"""
-Capstone Project: Task Manager CLI
-
-A command-line interface built on top of task_manager.py, using
-argparse (module 9) to parse subcommands.
-
-Usage examples (from the project's `task_manager/` directory):
-
-    python cli.py add "Buy milk"
-    python cli.py list
-    python cli.py complete 1
-    python cli.py remove 1
-"""
+"""Command-line Task Manager with selectable file or REST persistence."""
 
 import argparse
-import os
 import sys
+from pathlib import Path
 
-from task_manager import TaskManager, TaskNotFoundError
+from project.task_rest_client.client import APIError, TaskRestClient
 
-DEFAULT_STORAGE_PATH = os.path.join(os.path.dirname(__file__), "tasks.json")
+from .storage import FileTaskStorage, RestTaskStorage
+from .task_manager import TaskManager, TaskNotFoundError
+
+DEFAULT_STORAGE_PATH = Path(__file__).with_name("tasks.json")
 
 
 def build_parser():
-    parser = argparse.ArgumentParser(description="A simple task manager")
+    parser = argparse.ArgumentParser(description="A task manager")
+    parser.add_argument(
+        "--backend",
+        choices=("file", "rest"),
+        default="file",
+        help="Persistence strategy (default: file)",
+    )
     parser.add_argument(
         "--storage",
+        type=Path,
         default=DEFAULT_STORAGE_PATH,
-        help="Path to the JSON file used to store tasks",
+        help="JSON path used by the file backend",
     )
-    subparsers = parser.add_subparsers(dest="command", required=True)
-
-    add_parser = subparsers.add_parser("add", help="Add a new task")
-    add_parser.add_argument("title", help="Title of the task")
-
-    list_parser = subparsers.add_parser("list", help="List tasks")
-    list_parser.add_argument(
-        "--pending-only",
-        action="store_true",
-        help="Only show tasks that are not done",
+    parser.add_argument(
+        "--api-url",
+        default="http://127.0.0.1:8000",
+        help="Server URL used by the REST backend",
     )
-
-    complete_parser = subparsers.add_parser("complete", help="Mark a task done")
+    commands = parser.add_subparsers(dest="command", required=True)
+    add_parser = commands.add_parser("add", help="Add a new task")
+    add_parser.add_argument("title")
+    list_parser = commands.add_parser("list", help="List tasks")
+    list_parser.add_argument("--pending-only", action="store_true")
+    complete_parser = commands.add_parser("complete", help="Mark a task done")
     complete_parser.add_argument("task_id", type=int)
-
-    remove_parser = subparsers.add_parser("remove", help="Remove a task")
+    remove_parser = commands.add_parser("remove", help="Remove a task")
     remove_parser.add_argument("task_id", type=int)
-
     return parser
+
+
+def create_manager(args):
+    """Build only the strategy selected at the command-line boundary."""
+
+    if args.backend == "rest":
+        storage = RestTaskStorage(TaskRestClient(args.api_url))
+    else:
+        storage = FileTaskStorage(args.storage)
+    return TaskManager(storage)
 
 
 def format_task(task):
@@ -55,33 +59,26 @@ def format_task(task):
 
 
 def main(argv=None):
-    parser = build_parser()
-    args = parser.parse_args(argv)
-    # Argument parsing stays at the boundary; TaskManager contains the logic.
-    manager = TaskManager(args.storage)
-
+    args = build_parser().parse_args(argv)
     try:
+        manager = create_manager(args)
         if args.command == "add":
             task = manager.add(args.title)
             print(f"Added task #{task.id}: {task.title}")
         elif args.command == "list":
             tasks = manager.list_tasks(include_done=not args.pending_only)
-            if not tasks:
-                print("No tasks yet.")
-            for task in tasks:
-                print(format_task(task))
+            print("\n".join(format_task(task) for task in tasks) or "No tasks yet.")
         elif args.command == "complete":
             task = manager.complete(args.task_id)
             print(f"Completed task #{task.id}: {task.title}")
         elif args.command == "remove":
             manager.remove(args.task_id)
             print(f"Removed task #{args.task_id}")
-    except TaskNotFoundError as error:
-        # Diagnostics go to stderr, leaving stdout available for normal output.
+    except (APIError, OSError, ValueError, TaskNotFoundError) as error:
         print(f"Error: {error}", file=sys.stderr)
         return 1
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

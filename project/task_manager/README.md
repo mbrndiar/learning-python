@@ -1,91 +1,102 @@
 # Capstone Project: Task Manager
 
-A small command-line to-do list manager that ties together concepts
-from across the whole course:
+Task Manager combines the course concepts in one application while allowing its
+persistence mechanism to change. It can store tasks in a local JSON file or use
+the paired Task REST API.
 
-- **classes & `@dataclass`** (module 6) for the `Task` model
-- **custom exceptions** (module 5) for `TaskNotFoundError`
-- **file I/O with JSON** (module 5) for persistence between runs
-- **comprehensions & type hints** (modules 4 and 7)
-- **argparse subcommands** (module 9) for the CLI
-- **unittest** (module 8) for the test suite
+## Architecture
 
-## Files
+The dependency direction is:
 
-- `task_manager.py` - the `Task` and `TaskManager` classes (the core
-  logic, with no I/O beyond reading/writing the JSON storage file).
-- `cli.py` - a command-line interface built on top of `task_manager.py`.
-- `test_task_manager.py` - unit tests for the core logic.
-
-## Running it
-
-From this directory (`project/task_manager/`):
-
-```bash
-python cli.py add "Buy milk"
-python cli.py add "Write more Python"
-python cli.py list
-python cli.py complete 1
-python cli.py list --pending-only
-python cli.py remove 2
+```text
+CLI -> TaskManager -> TaskStorage
+                         |-- FileTaskStorage -> JSON file
+                         `-- RestTaskStorage -> TaskRestClient -> HTTP API -> SQLite
 ```
 
-Tasks are stored in `tasks.json` in this directory by default (pass
-`--storage /path/to/file.json` to use a different location). Delete
-that file to start fresh.
+- `task_manager.py` contains the `Task` model, `TaskStorage` protocol,
+  `TaskNotFoundError`, and storage-independent `TaskManager`.
+- `storage.py` contains the file strategy and the adapter around
+  `TaskRestClient`.
+- `cli.py` selects and constructs a strategy at the application boundary.
+- `test_task_manager.py` applies one contract suite to both storage strategies.
 
-## Running the tests
+`TaskManager` filters pending tasks but does not read files, issue HTTP
+requests, allocate IDs, parse arguments, or print. Each storage implementation
+owns ID allocation: `FileTaskStorage` computes local IDs, while
+`RestTaskStorage` accepts the ID returned by SQLite through the API.
+
+## Local file backend
+
+The default requires no running service:
 
 ```bash
-python test_task_manager.py
+python -m project.task_manager.cli add "Buy milk"
+python -m project.task_manager.cli list
+python -m project.task_manager.cli complete 1
+python -m project.task_manager.cli list --pending-only
+python -m project.task_manager.cli remove 1
 ```
 
-## Ideas to extend it yourself
+Tasks persist in `project/task_manager/tasks.json`. Select another file by
+placing `--storage PATH` before the command:
 
-- Add due dates and sort tasks by them.
-- Add priorities (low/medium/high) using an `enum.Enum` (module 6).
-- Add a `--format json` option to `list` that prints tasks as JSON.
-- Rewrite the storage layer to use `sqlite3` instead of a JSON file.
+```bash
+python -m project.task_manager.cli --storage /tmp/tasks.json add "Local task"
+```
 
-## Build it as a staged assessment
+The file contains a JSON object with `next_id` and a `tasks` list. Persisting
+`next_id` prevents deleted identifiers from being reused after a restart. Bare
+task lists from the earlier version remain readable and are upgraded on the
+next write. Writes use UTF-8 and occur after each successful mutation.
 
-Reading the finished implementation is useful, but rebuilding or extending it
-provides stronger evidence that you understand the course. Work in small
-stages:
+## REST backend
 
-1. **Model:** create a `Task` with a description and completion state.
-2. **Collection:** add, list, complete, and remove tasks in memory.
-3. **Failures:** reject invalid data and report unknown task identifiers with
-   a domain-specific exception.
-4. **Persistence:** serialize tasks to JSON and reconstruct them on startup.
-5. **Interface:** connect the operations to `argparse` subcommands.
-6. **Tests:** cover each operation, empty storage, invalid JSON, and round-trip
-   persistence using a temporary file.
-7. **Polish:** improve help text and error messages without mixing terminal
-   output into the core model.
+First start the server:
 
-After each stage, run the tests and use the application manually. Commit a
-working stage before beginning the next one.
+```bash
+python -m project.task_rest_api.api
+```
 
-## Requirements to preserve
+Then choose REST storage:
 
-- Task identifiers remain unique after loading and deleting tasks.
-- Completing an already-completed task has predictable behavior.
-- Removing or completing an unknown identifier raises `TaskNotFoundError`.
-- Saving and loading preserve every user-visible field.
-- Core classes do not parse arguments or print output.
-- Tests never read or overwrite a user's real task file.
+```bash
+python -m project.task_manager.cli --backend rest add "Shared task"
+python -m project.task_manager.cli --backend rest list
+python -m project.task_manager.cli --backend rest complete 1
+python -m project.task_manager.cli --backend rest remove 1
+```
 
-Write down any new behavior before implementing an extension. For example,
-decide how missing due dates sort, which priority is the default, or how invalid
-stored data is reported.
+Use `--api-url URL` before the command for a non-default server. The same
+commands and `Task` objects are available with either backend. The important
+difference is ownership: file mode persists directly in JSON, whereas REST mode
+crosses a process boundary and the server persists in SQLite. Network and API
+errors therefore apply only to REST mode.
 
-## Self-review checklist
+## Storage contract
 
-- Can you explain every class and function without reading its body?
-- Does each function have one clear responsibility?
-- Are expected failures represented by useful exceptions?
-- Are files always closed and test files isolated?
-- Do tests include boundaries and failure paths, not only normal use?
-- Could another programmer discover every command through `--help`?
-- Can the program be imported without starting the CLI?
+A strategy must list, retrieve, add, complete, and remove tasks. Unknown IDs
+raise `TaskNotFoundError` at the Task Manager boundary. Adding returns the
+complete stored task, including the ID assigned by that strategy.
+
+This protocol makes another backend—such as an in-memory teaching double or a
+cloud database adapter—possible without changing domain logic.
+
+## Test
+
+```bash
+python -m unittest project.task_manager.test_task_manager -v
+```
+
+The suite checks the shared contract against both implementations, local
+round-trip persistence, server integration, ID ownership, missing tasks, and
+pending-task filtering. Temporary files, databases, and ports keep tests
+isolated from user data.
+
+## Learning checklist
+
+- Explain why `TaskManager` receives storage rather than constructing it.
+- Trace a REST-backed `complete` operation through every layer.
+- Identify where dictionaries become `Task` objects.
+- Compare local I/O failures with HTTP failures.
+- Add a strategy while leaving `TaskManager` unchanged.

@@ -45,12 +45,12 @@ jobs:
           done
 
       - name: Run capstone project tests
-        run: python project/task_manager/test_task_manager.py
+        run: python -m unittest project.task_manager.test_task_manager -v
 
       - name: Run example project tests
         run: |
-          python project/simple_rest_api/test_api.py
-          python project/simple_cli/test_notes_cli.py
+          python -m unittest project.task_rest_api.test_api -v
+          python -m unittest project.task_rest_client.test_client -v
 
       - name: Run pytest lesson with pytest
         run: pytest lessons/09_tooling_and_debugging/04_pytest_basics.py -v

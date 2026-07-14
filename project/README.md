@@ -1,43 +1,63 @@
-# Projects
+# Connected Task Projects
 
-Small, complete Python applications for practicing the course material.
+These three standard-library projects form one progressive example:
 
-## Simple CLI Application
+- [`task_rest_api/`](task_rest_api/README.md) owns remote task data in SQLite
+  and exposes it through JSON over HTTP.
+- [`task_rest_client/`](task_rest_client/README.md) provides a reusable Python
+  client plus a dedicated command-line interface.
+- [`task_manager/`](task_manager/README.md) contains the domain model and can
+  select either local JSON persistence or the REST client adapter.
 
-[`simple_cli/`](simple_cli/README.md) contains an `argparse` client for the notes
-API. It provides CRUD commands and imports or exports notes as JSON files.
+The projects demonstrate classes, dataclasses, protocols, dependency injection,
+JSON and file I/O, HTTP, SQLite, `argparse`, exceptions, and integration tests
+without hiding those concepts behind third-party frameworks.
 
-## Simple REST API
+## How the projects connect
 
-[`simple_rest_api/`](simple_rest_api/README.md) contains a notes API backed by
-SQLite and built entirely with the standard library. It demonstrates HTTP
-methods, routing, JSON, validation, status codes, persistence, and integration
-tests.
+File mode is a single process:
 
-## Task Manager
+```text
+Task Manager CLI -> TaskManager -> FileTaskStorage -> tasks.json
+```
 
-[`task_manager/`](task_manager/README.md) is a command-line to-do list
-manager combining:
+REST mode connects all three projects:
 
-- classes and `@dataclass` (module 6) for the `Task` model
-- custom exceptions (module 5) for `TaskNotFoundError`
-- file I/O with JSON (module 5) for persistence between runs
-- comprehensions and type hints (modules 4 and 7)
-- `argparse` subcommands (module 9) for the CLI
-- `unittest` (module 8) for the test suite
+```text
+Task Manager CLI -> TaskManager -> RestTaskStorage
+    -> TaskRestClient -> Task REST API -> TaskStore -> tasks.db
+```
 
-See [`task_manager/README.md`](task_manager/README.md) for how to run it,
-its file layout, and ideas for extending it yourself.
+The standalone REST client CLI is another front end over the same
+`TaskRestClient`. Both front ends therefore share the same remote data.
 
-## When to build the capstone
+## Quick start
 
-Work through all ten [`lessons/`](../lessons/README.md) modules and their
-matching [`exercises/`](../exercises/README.md) first. This project is
-meant to be read and extended once you're comfortable with classes,
-exceptions, file I/O, argparse and testing.
+Run Task Manager locally:
 
-Treat the project as an assessment rather than another demonstration. Before
-opening the implementation, sketch the model, operations, storage format, and
-important failures. Then compare your design with the supplied code. Follow
-the staged build and self-review checklist in the
-[`task_manager` guide](task_manager/README.md#build-it-as-a-staged-assessment).
+```bash
+python -m project.task_manager.cli add "Local task"
+python -m project.task_manager.cli list
+```
+
+Or start the API and use either remote front end:
+
+```bash
+python -m project.task_rest_api.api
+python -m project.task_rest_client.cli add "Remote task"
+python -m project.task_manager.cli --backend rest list
+```
+
+Commands are run from the repository root so Python can resolve the `project`
+package consistently.
+
+## Run all project tests
+
+```bash
+python -m unittest \
+  project.task_rest_api.test_api \
+  project.task_rest_client.test_client \
+  project.task_manager.test_task_manager -v
+```
+
+The tests use temporary JSON and SQLite files and ephemeral local ports.

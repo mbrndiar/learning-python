@@ -1,26 +1,16 @@
-"""
-Capstone Project: Task Manager
+"""Task Manager domain model and storage-independent business operations."""
 
-Core data model and business logic for a simple command-line task
-manager. This module combines concepts from across the course:
-classes and dataclasses (module 6), custom exceptions (module 5),
-JSON file persistence (module 5), comprehensions (module 4) and type
-hints (module 7).
-"""
-
-import json
-import os
 from dataclasses import asdict, dataclass
-from typing import List, Optional
+from typing import Protocol
 
 
 class TaskNotFoundError(Exception):
-    """Raised when a task id does not exist in the task manager."""
+    """Raised when a requested task identifier does not exist."""
 
 
 @dataclass
 class Task:
-    """A single to-do item."""
+    """A single to-do item shared by every storage strategy."""
 
     id: int
     title: str
@@ -37,60 +27,40 @@ class Task:
         return cls(id=data["id"], title=data["title"], done=data["done"])
 
 
+class TaskStorage(Protocol):
+    """Contract implemented by local and remote persistence strategies."""
+
+    def list_tasks(self): ...
+
+    def get(self, task_id): ...
+
+    def add(self, title): ...
+
+    def complete(self, task_id): ...
+
+    def remove(self, task_id): ...
+
+
 class TaskManager:
-    """Stores tasks in memory and persists them to a JSON file."""
+    """Apply task operations through an injected persistence strategy."""
 
-    def __init__(self, storage_path):
-        self.storage_path = storage_path
-        self._tasks: List[Task] = []
-        self._next_id = 1
-        self._load()
-
-    def _load(self):
-        if not os.path.exists(self.storage_path):
-            return
-        with open(self.storage_path, "r", encoding="utf-8") as file:
-            raw_tasks = json.load(file)
-        self._tasks = [Task.from_dict(item) for item in raw_tasks]
-        if self._tasks:
-            # Continue after the highest stored id instead of reusing deleted ids.
-            self._next_id = max(task.id for task in self._tasks) + 1
-
-    def save(self):
-        with open(self.storage_path, "w", encoding="utf-8") as file:
-            json.dump([task.to_dict() for task in self._tasks], file, indent=2)
+    def __init__(self, storage: TaskStorage):
+        self.storage = storage
 
     def add(self, title):
-        task = Task(id=self._next_id, title=title)
-        self._tasks.append(task)
-        self._next_id += 1
-        # Persist each successful mutation so CLI invocations see the same data.
-        self.save()
-        return task
+        if not isinstance(title, str) or not title.strip():
+            raise ValueError("Task title must be a non-empty string")
+        return self.storage.add(title.strip())
 
     def list_tasks(self, include_done=True):
-        if include_done:
-            # Return a copy so callers cannot add or remove internal tasks.
-            return list(self._tasks)
-        return [task for task in self._tasks if not task.done]
+        tasks = self.storage.list_tasks()
+        return tasks if include_done else [task for task in tasks if not task.done]
 
-    def _find(self, task_id):
-        for task in self._tasks:
-            if task.id == task_id:
-                return task
-        # A domain-specific error lets the CLI report expected user mistakes.
-        raise TaskNotFoundError(f"No task with id {task_id}")
+    def get(self, task_id):
+        return self.storage.get(task_id)
 
     def complete(self, task_id):
-        task = self._find(task_id)
-        task.mark_done()
-        self.save()
-        return task
+        return self.storage.complete(task_id)
 
     def remove(self, task_id):
-        task = self._find(task_id)
-        self._tasks.remove(task)
-        self.save()
-
-    def get(self, task_id) -> Optional[Task]:
-        return self._find(task_id)
+        return self.storage.remove(task_id)
