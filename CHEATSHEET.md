@@ -25,12 +25,16 @@ after finishing the course, or while working through the exercises.
 | Decorator | A function that wraps another function to add behavior (`@decorator`) |
 | Generator | A function using `yield` to produce values lazily |
 | Type hint | An annotation describing expected types (`def f(x: int) -> str`) |
+| Protocol | A structural interface describing required behavior |
+| Dependency injection | Giving an object its collaborator instead of constructing it internally |
 | Module | A single `.py` file that can be imported |
 | Package | A namespace grouping importable modules; regular packages commonly contain `__init__.py` |
 | Virtual environment | An isolated Python installation for a single project (`venv`) |
 | `pip` | Python's package installer |
 | Unit test | An automated test that checks a small piece of code in isolation |
 | Coroutine | An `async def` function, used with `await` for concurrency |
+| JSON | A portable text representation of structured values |
+| SQLite | An embedded relational database available through `sqlite3` |
 
 ## Quick syntax reference
 
@@ -87,9 +91,18 @@ except ZeroDivisionError as error:
 finally:
     print("Always runs")
 
-# Files
-with open("file.txt", "w", encoding="utf-8") as file:
+# Files and paths
+from pathlib import Path
+
+path = Path("file.txt")
+with path.open("w", encoding="utf-8") as file:
     file.write("hello")
+
+# JSON
+import json
+
+text = json.dumps({"name": "Ada", "active": True})
+data = json.loads(text)
 
 # Decorators
 def logged(func):
@@ -107,6 +120,9 @@ def countdown(n):
 # Type hints
 def add(a: int, b: int) -> int:
     return a + b
+
+def find_name(user_id: int, names: dict[int, str]) -> str | None:
+    return names.get(user_id)
 ```
 
 ## Core type operations
@@ -220,7 +236,11 @@ python -m pip install <package>   # use pip belonging to this Python
 pip freeze > requirements.txt     # save installed packages
 python script.py arg1 --flag      # run a script with arguments
 python -m unittest discover       # run all unittest tests
-pytest                            # run all pytest tests
+python -m pytest                  # run all pytest tests
+ruff check .                      # lint
+ruff format --check .             # verify formatting
+mypy                              # statically check project annotations
+coverage report                   # show measured test coverage
 ```
 
 ## Where to go next

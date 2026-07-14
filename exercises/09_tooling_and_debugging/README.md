@@ -7,8 +7,10 @@ virtual environments, debugging, CLI arguments and `pytest`.
 
 - `build_arg_parser()` - build an `argparse.ArgumentParser` with a
   required positional argument and an optional flag.
-- `safe_call(func, *args, **kwargs)` - call a function and return its
-  result, or `None` if it raises an exception (using `try`/`except`).
+- `build_command_parser()` - add `add` and `list` subcommands.
+- `positive_int(text)` - implement a reusable argparse validator.
+- `safe_int(text)` - catch only the conversion error you can handle.
+- `configure_logger(verbose)` - select an appropriate logging level.
 
 ## How to work through it
 

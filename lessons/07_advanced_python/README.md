@@ -42,20 +42,20 @@ and `.throw()` exist, but ordinary iteration covers most application needs.
 ## Type hints
 
 Annotations document intent and support static analysis; Python does not
-enforce them at runtime. On Python 3.9+, built-in collections can be
-parameterized:
+enforce them at runtime. Modern Python parameterizes built-in collections and
+uses `|` for unions:
 
 ```python
 def find_name(user_id: int, names: dict[int, str]) -> str | None:
     return names.get(user_id)
 ```
 
-The `|` union syntax requires Python 3.10, so this course's Python 3.9-compatible
-scripts use `Optional[str]` and `Union[...]`. Useful abstractions include
-`Iterable[T]`, `Sequence[T]`, `Mapping[K, V]`, `Callable[[A], R]`, and
-`TypeVar`. Annotate public boundaries and non-obvious structures; do not add
-annotations that merely repeat obvious local values. Static type checkers need
-their own configuration and are separate from tests.
+Older codebases may use `typing.List`, `Optional` and `Union`; understand them
+when reading legacy code, but prefer `list[T]` and `T | None` in new Python
+3.11+ code. Useful abstractions include `Iterable[T]`, `Sequence[T]`,
+`Mapping[K, V]`, `Callable[[A], R]`, `TypeVar`, and `Protocol`. Annotate public
+boundaries and non-obvious structures. Static type checkers need their own
+configuration and are separate from tests.
 
 ## Concepts covered
 
@@ -67,9 +67,11 @@ their own configuration and are separate from tests.
   (`__iter__` / `__next__`) and generators, the easiest way to create an
   iterator using `yield` instead of `return`.
 - **`03_type_hints.py`** - optional type annotations for variables,
-  function arguments and return values using the `typing` module (e.g.
-  `List`, `Dict`, `Optional`, `Union`); not enforced at runtime, but used
-  by tools like `mypy` and IDEs.
+  function arguments and return values using modern built-in generics and
+  union syntax; not enforced at runtime, but used by tools like `mypy`.
+- **`04_protocols_and_dependency_injection.py`** - structural interfaces with
+  `Protocol`, injecting collaborators instead of constructing them inside
+  business logic, and adapting one interface to another.
 
 ## Running
 
@@ -77,6 +79,7 @@ their own configuration and are separate from tests.
 python lessons/07_advanced_python/01_decorators.py
 python lessons/07_advanced_python/02_generators_and_iterators.py
 python lessons/07_advanced_python/03_type_hints.py
+python lessons/07_advanced_python/04_protocols_and_dependency_injection.py
 ```
 
 Once you've read through all three files, practice what you learned in
@@ -98,3 +101,5 @@ Once you've read through all three files, practice what you learned in
 3. When does a generator function begin executing?
 4. What trade-off does lazy evaluation make?
 5. What is the difference between type checking and runtime testing?
+6. How does a protocol let callers depend on behavior instead of a concrete
+   class?

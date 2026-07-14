@@ -3,11 +3,9 @@ Lesson 7.3: Type Hints
 
 Type hints are optional annotations documenting expected types. Python does
 not enforce them at runtime; separate static analyzers and IDEs use them to
-find inconsistent calls before execution. This file uses typing aliases that
-remain compatible with the course's minimum Python 3.9.
+find inconsistent calls before execution. This file uses modern syntax
+available in the course's minimum Python 3.11.
 """
-
-from typing import Dict, List, Optional, Union
 
 
 def add(a: int, b: int) -> int:
@@ -20,18 +18,18 @@ def greet(name: str, greeting: str = "Hello") -> str:
     return f"{greeting}, {name}!"
 
 
-def find_user(user_id: int, users: Dict[int, str]) -> Optional[str]:
-    """Return a name or None; Optional[str] is Union[str, None]."""
+def find_user(user_id: int, users: dict[int, str]) -> str | None:
+    """Return a name or None using modern union syntax."""
     return users.get(user_id)
 
 
-def normalize(value: Union[int, float, str]) -> float:
-    """`Union` means the parameter can be any one of several types."""
+def normalize(value: int | float | str) -> float:
+    """A union means the parameter can be any one of several types."""
     return float(value)
 
 
-def average(numbers: List[float]) -> float:
-    """`List[float]` documents a list whose elements are expected to be floats."""
+def average(numbers: list[float]) -> float:
+    """`list[float]` documents the expected element type."""
     return sum(numbers) / len(numbers)
 
 

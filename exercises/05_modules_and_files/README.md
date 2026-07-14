@@ -12,6 +12,9 @@ modules, file I/O, exceptions, custom exceptions and context managers.
   with `try`/`except`.
 - `withdraw(balance, amount)` - raise a custom exception when a
   withdrawal exceeds the available balance.
+- `save_json(path, data)` / `load_json(path)` - persist structured data.
+- `temporary_value(mapping, key, value)` - implement deterministic cleanup
+  with `@contextmanager`.
 
 ## How to work through it
 

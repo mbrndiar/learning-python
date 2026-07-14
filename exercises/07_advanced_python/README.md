@@ -11,6 +11,9 @@ decorators, generators/iterators and type hints.
   `n` down to 1.
 - `annotate(name: str, age: int) -> str` - add type hints to a function
   signature.
+- `repeat(times)` - build a configurable decorator factory.
+- `CountUp` - implement the iterator protocol directly.
+- `send_welcome(sender, recipient)` - depend on an injected `Protocol`.
 
 ## How to work through it
 

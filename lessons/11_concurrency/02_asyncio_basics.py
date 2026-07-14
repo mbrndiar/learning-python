@@ -1,5 +1,5 @@
 """
-Lesson 10.2: asyncio Basics
+Lesson 11.2: asyncio Basics
 
 `asyncio` provides cooperative concurrency using async/await. A coroutine
 voluntarily yields at an await, allowing other tasks to run. Blocking code

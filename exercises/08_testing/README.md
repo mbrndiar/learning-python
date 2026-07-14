@@ -25,4 +25,6 @@ given; add test methods to `TestCalculator`:
    ```
 
    `unittest` reports which tests passed or failed.
+   If the methods are still missing, the exercise exits with an instruction
+   instead of reporting the misleading result `Ran 0 tests ... OK`.
 4. Compare with `solutions.py` if you get stuck or want a second opinion.

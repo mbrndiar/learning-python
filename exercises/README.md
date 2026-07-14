@@ -5,16 +5,17 @@ problems that reinforce what you just learned.
 
 Every module folder contains:
 
-- `exercises.py` - function stubs to implement yourself. Each raises
-  `NotImplementedError` with a `# TODO` comment describing the task.
-  Fill in the body, then run the file:
+- `exercises.py` - function/class stubs or tests to implement yourself. TODO
+  comments describe the missing behavior, and most unfinished functions raise
+  `NotImplementedError`. Fill in the requested parts, then run the file:
 
   ```bash
   python exercises/01_basics/exercises.py
   ```
 
-  The bottom of the file runs simple checks and prints `All checks
-  passed!` once every function is implemented correctly.
+  The bottom of the file runs checks and prints `All checks passed!` once the
+  requested behavior is implemented correctly. The testing module instead
+  refuses to report success until all requested test methods exist.
 
 - `solutions.py` - a reference implementation, in case you get stuck or
   want to compare approaches. Try to solve each exercise yourself first!

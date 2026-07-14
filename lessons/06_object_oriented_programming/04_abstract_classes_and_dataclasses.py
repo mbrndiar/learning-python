@@ -45,7 +45,11 @@ class Rectangle(Shape):
 
 
 class Square(Rectangle):
-    """Composition through inheritance: a Square is a special Rectangle."""
+    """Inheritance models a square as a specialized rectangle.
+
+    Real systems must also consider whether every operation allowed on a
+    rectangle preserves the square's width-equals-height invariant.
+    """
 
     def __init__(self, side):
         super().__init__(side, side)

@@ -1,6 +1,6 @@
-# Exercises: Module 10 - Concurrency
+# Exercises: Module 11 - Concurrency
 
-Practice problems for [`lessons/10_concurrency/`](../../lessons/10_concurrency/README.md):
+Practice problems for [`lessons/11_concurrency/`](../../lessons/11_concurrency/README.md):
 threading, multiprocessing and asyncio.
 
 ## Tasks in `exercises.py`
@@ -9,20 +9,26 @@ threading, multiprocessing and asyncio.
   concurrently using `threading.Thread`, collecting results in order.
 - `fetch_all(values)` - run the given `fetch` coroutine concurrently for
   every value using `asyncio.gather`, collecting results in order.
+- `fetch_all_limited(values, limit)` - bound fan-out with a semaphore.
+- `fetch_with_timeout(...)` - apply a finite timeout and observe cancellation.
+
+The thread exercise must also propagate worker exceptions to the caller.
 
 ## How to work through it
 
-1. Read [`lessons/10_concurrency/`](../../lessons/10_concurrency/README.md) first.
+1. Read [`lessons/11_concurrency/`](../../lessons/11_concurrency/README.md) first.
 2. Open `exercises.py` and implement each function marked `# TODO`.
 3. Run it:
 
    ```bash
-   python exercises/10_concurrency/exercises.py
+   python exercises/11_concurrency/exercises.py
    ```
 
    It prints `OK` for each check once everything is implemented
    correctly.
 4. Compare with `solutions.py` if you get stuck or want a second opinion.
 
-This is the final exercise module - once you're done, try building the
+This is the final optional exercise module. The Task Manager capstone follows
+module 10, while these exercises help you evaluate where concurrency fits:
+
 [Task Manager capstone project](../../project/README.md).

@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.12"]
+        python-version: ["3.11", "3.14"]
     steps:
       - uses: actions/checkout@v4
 
@@ -22,35 +22,54 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+          cache: pip
 
-      - name: Install optional dependencies
-        run: pip install -r requirements-dev.txt
+      - name: Install development dependencies
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Check formatting, linting, and types
+        if: matrix.python-version == '3.14'
+        run: |
+          ruff format --check .
+          ruff check .
+          mypy
 
       - name: Run every lesson script
         run: |
           set -e
-          for file in $(find lessons -name "*.py" | sort); do
+          while IFS= read -r -d '' file; do
             echo "::group::python $file"
             python "$file"
             echo "::endgroup::"
-          done
+          done < <(find lessons -name "*.py" -print0 | sort -z)
 
       - name: Run every exercise solution
         run: |
           set -e
-          for file in $(find exercises -name "solutions.py" | sort); do
+          while IFS= read -r -d '' file; do
             echo "::group::python $file"
             python "$file"
             echo "::endgroup::"
-          done
+          done < <(find exercises -name "solutions.py" -print0 | sort -z)
 
-      - name: Run capstone project tests
-        run: python -m unittest project.task_manager.test_task_manager -v
+      - name: Compile exercise starters
+        run: python -m compileall -q exercises
 
-      - name: Run example project tests
+      - name: Run project tests
         run: |
-          python -m unittest project.task_rest_api.test_api -v
-          python -m unittest project.task_rest_client.test_client -v
+          python -m unittest \
+            project.task_rest_api.test_api \
+            project.task_rest_client.test_client \
+            project.task_manager.test_task_manager -v
+
+      - name: Measure project coverage
+        if: matrix.python-version == '3.14'
+        run: |
+          coverage run -m unittest \
+            project.task_rest_api.test_api \
+            project.task_rest_client.test_client \
+            project.task_manager.test_task_manager
+          coverage report
 
       - name: Run pytest lesson with pytest
-        run: pytest lessons/09_tooling_and_debugging/04_pytest_basics.py -v
+        run: python -m pytest lessons/09_tooling_and_debugging/04_pytest_basics.py -v

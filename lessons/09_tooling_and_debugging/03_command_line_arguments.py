@@ -3,7 +3,7 @@ Lesson 9.3: Reading Input and Command-Line Arguments
 
 Two common ways a script receives data from its user: interactively via
 `input()`, and non-interactively via command-line arguments parsed with
-`argparse`.
+`argparse`, including subcommands for multi-operation programs.
 """
 
 import argparse
@@ -35,6 +35,17 @@ def build_greeting(name, shout=False):
     return message.upper() if shout else message
 
 
+def build_command_parser():
+    """Build a small multi-command interface like the capstone CLI."""
+    parser = argparse.ArgumentParser(description="Manage short notes")
+    commands = parser.add_subparsers(dest="command", required=True)
+
+    add_parser = commands.add_parser("add", help="Add a note")
+    add_parser.add_argument("text")
+    commands.add_parser("list", help="List notes")
+    return parser
+
+
 if __name__ == "__main__":
     parser = build_parser()
     # sys.argv[1:] holds whatever the script was invoked with, e.g.:
@@ -43,6 +54,9 @@ if __name__ == "__main__":
 
     for _ in range(args.count):
         print(build_greeting(args.name, shout=args.shout))
+
+    command_args = build_command_parser().parse_args(["add", "Read argparse help"])
+    print("\nParsed subcommand:", command_args.command, command_args.text)
 
     print(
         "\n`input()` reads a line of text typed by the user. It is "

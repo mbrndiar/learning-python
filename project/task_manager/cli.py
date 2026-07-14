@@ -2,17 +2,18 @@
 
 import argparse
 import sys
+from collections.abc import Sequence
 from pathlib import Path
 
 from project.task_rest_client.client import APIError, TaskRestClient
 
 from .storage import FileTaskStorage, RestTaskStorage
-from .task_manager import TaskManager, TaskNotFoundError
+from .task_manager import Task, TaskManager, TaskNotFoundError, TaskStorage
 
 DEFAULT_STORAGE_PATH = Path(__file__).with_name("tasks.json")
 
 
-def build_parser():
+def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="A task manager")
     parser.add_argument(
         "--backend",
@@ -43,9 +44,10 @@ def build_parser():
     return parser
 
 
-def create_manager(args):
+def create_manager(args: argparse.Namespace) -> TaskManager:
     """Build only the strategy selected at the command-line boundary."""
 
+    storage: TaskStorage
     if args.backend == "rest":
         storage = RestTaskStorage(TaskRestClient(args.api_url))
     else:
@@ -53,12 +55,12 @@ def create_manager(args):
     return TaskManager(storage)
 
 
-def format_task(task):
+def format_task(task: Task) -> str:
     status = "x" if task.done else " "
     return f"[{status}] #{task.id} {task.title}"
 
 
-def main(argv=None):
+def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
         manager = create_manager(args)

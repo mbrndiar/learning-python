@@ -13,17 +13,20 @@ By the end of the course, you will be able to:
 - choose suitable data types and control program flow;
 - decompose problems into functions, modules, and classes;
 - read and write files and handle failures safely;
+- exchange structured data with JSON and persist records in SQLite;
 - use Python's iterator, generator, decorator, and type-hinting features;
 - create isolated environments and install third-party packages;
 - test programs with `unittest` and `pytest`;
+- build command-line programs and small HTTP/JSON integrations;
 - select an appropriate concurrency model for I/O- or CPU-bound work; and
 - design, implement, test, and extend a command-line application.
 
 ## Requirements
 
-- Python 3.9+ (the lessons themselves need no external dependencies)
-- A couple of lessons and the exercises optionally use `pytest`; install it
-  with `pip install -r requirements-dev.txt`
+- Python 3.11+ (the lessons themselves need no external dependencies)
+- The lessons use only the standard library at runtime. Install the development
+  tools (`pytest`, Ruff, mypy and coverage) with
+  `python -m pip install -r requirements-dev.txt`.
 
 New to Python or setting up for the first time? See
 [`docs/SETUP.md`](docs/SETUP.md) for installing Python, creating a virtual
@@ -112,6 +115,7 @@ reference to jog your memory after finishing the course.
    - `02_files_and_exceptions.py` – reading/writing files and handling errors
    - `03_custom_exceptions_and_context_managers.py` – defining custom
      exception classes and writing your own context managers
+   - `04_json_and_structured_data.py` – serializing structured data with JSON
 6. **Object-Oriented Programming** (`lessons/06_object_oriented_programming/`)
    - `01_classes_and_objects.py` – classes, attributes, methods and properties
    - `02_inheritance_and_polymorphism.py` – inheritance, `super()` and
@@ -126,7 +130,9 @@ reference to jog your memory after finishing the course.
    - `02_generators_and_iterators.py` – `yield`, generator expressions and
      the iterator protocol (`__iter__` / `__next__`)
    - `03_type_hints.py` – annotating variables, functions and classes with
-     the `typing` module
+     modern Python type syntax
+   - `04_protocols_and_dependency_injection.py` – structural interfaces,
+     dependency injection and adapters
 8. **Testing** (`lessons/08_testing/`)
    - `01_unittest_basics.py` – writing and running tests with the
      `unittest` standard-library framework
@@ -139,7 +145,12 @@ reference to jog your memory after finishing the course.
      arguments with `argparse`
    - `04_pytest_basics.py` – an introduction to `pytest` as an
      alternative to `unittest`
-10. **Concurrency** (`lessons/10_concurrency/`)
+   - `05_logging_and_quality_tools.py` – structured diagnostics, Ruff, mypy
+    and coverage
+10. **Application Integration** (`lessons/10_application_integration/`)
+    - `01_sqlite_basics.py` – storing and querying records with SQLite
+    - `02_http_and_json.py` – HTTP routes, JSON boundaries and clients
+11. **Concurrency** (`lessons/11_concurrency/`)
     - `01_threading_and_multiprocessing.py` – `threading` for I/O-bound
       work and `multiprocessing` for CPU-bound work
     - `02_asyncio_basics.py` – `async`/`await` and `asyncio.gather`

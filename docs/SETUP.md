@@ -5,7 +5,7 @@ ready. This only needs to be done once.
 
 ## 1. Install Python
 
-1. Download Python 3.9 or newer from https://www.python.org/downloads/
+1. Download Python 3.11 or newer from https://www.python.org/downloads/
    (on Linux, use your package manager, e.g. `sudo apt install python3`).
 2. Verify the installation:
 
@@ -32,9 +32,8 @@ cd learning-python
 ## 3. Create a virtual environment
 
 A virtual environment keeps this project's Python packages isolated from
-the rest of your system. The lessons themselves have no external
-dependencies, but a virtual environment is still good practice and is
-required for the optional `pytest` lesson.
+the rest of your system. The lessons themselves have no runtime dependencies, but a virtual environment
+is still good practice and keeps the optional development tools isolated.
 
 ```bash
 # Create the environment (creates a .venv/ folder)
@@ -51,10 +50,9 @@ leave the virtual environment, run `deactivate`.
 
 ## 4. Install optional tools
 
-Everything in `lessons/` runs with the standard library alone. A few
-lessons (`lessons/09_tooling_and_debugging/04_pytest_basics.py`) and the
-exercises/tests use `pytest`, which is an optional but recommended
-addition:
+Everything in `lessons/` runs with the standard library alone. The development
+requirements add `pytest`, Ruff, mypy and coverage so you can practice testing,
+formatting, linting, static type checking and coverage measurement:
 
 ```bash
 pip install -r requirements-dev.txt
@@ -93,11 +91,13 @@ After installing uv by following its official instructions, run from the
 repository root:
 
 ```bash
-uv python install 3.12
-uv venv --python 3.12
+uv python install 3.14
+uv venv --python 3.14
 uv pip install -r requirements-dev.txt
 uv run python lessons/01_basics/01_hello_world.py
-uv run pytest lessons/09_tooling_and_debugging/04_pytest_basics.py
+uv run python -m pytest lessons/09_tooling_and_debugging/04_pytest_basics.py
+uv run ruff check .
+uv run mypy
 ```
 
 The explicit `uv venv` and `uv pip` commands mirror the course's existing

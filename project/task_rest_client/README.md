@@ -15,8 +15,9 @@ It deliberately separates reusable HTTP communication from terminal behavior.
 
 `TaskRestClient` serializes request dictionaries, applies a finite timeout,
 decodes responses, and translates both HTTP and connection failures to
-`APIError`. Its public operations are `list_tasks`, `get`, `add`, `complete`,
-and `remove`.
+`APIError`. Successful JSON responses are validated before they leave the
+client, and HTTP errors retain their status code. Its public operations are
+`list_tasks`, `get`, `add`, `complete`, and `remove`.
 
 Task Manager reuses this class through `RestTaskStorage`. The adapter converts
 the client's JSON dictionaries into domain `Task` objects; the client remains

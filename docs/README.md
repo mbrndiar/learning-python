@@ -5,9 +5,9 @@ themselves.
 
 - [`SETUP.md`](SETUP.md) - installing Python, cloning the repository,
   creating and activating a virtual environment, and installing the
-  optional dependencies needed for a couple of lessons and the exercises
-  (`pip install -r requirements-dev.txt`). Start here if you're new to
-  Python or setting up a workspace for the first time.
+  development tools used for testing and quality checks
+  (`python -m pip install -r requirements-dev.txt`). Start here if you're new
+  to Python or setting up a workspace for the first time.
 
 Core teaching material lives in each module's `README.md` and runnable lesson
 files. Start from the repository's [main course guide](../README.md), not this

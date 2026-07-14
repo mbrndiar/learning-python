@@ -9,6 +9,9 @@ classes, inheritance, encapsulation, abstract classes and dataclasses.
   implement an `area()` method.
 - `Animal` / `Dog` / `Cat` classes - practice inheritance with `super()`
   and polymorphism by overriding a `speak()` method.
+- `BankAccount` - expose validated behavior through a read-only property.
+- `Vector` - implement `__eq__` and `__add__`, including `NotImplemented`.
+- `Task` / `TaskStatus` - combine a dataclass with an enum.
 
 ## How to work through it
 

@@ -5,6 +5,8 @@ Classes define new types that bundle state (attributes) and behavior (methods).
 Calling a class creates an instance and passes it to __init__ as `self`.
 """
 
+import math
+
 
 class Dog:
     """A simple class representing a dog."""
@@ -40,7 +42,7 @@ class Circle:
     @property
     def area(self):
         """Compute an attribute-like value without storing duplicate state."""
-        return 3.14159 * self.radius ** 2
+        return math.pi * self.radius**2
 
     @staticmethod
     def unit_circle():

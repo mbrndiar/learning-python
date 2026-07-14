@@ -14,7 +14,7 @@ person = {
 
 print("name:", person["name"])
 person["occupation"] = "Computer Scientist"  # update a value
-person["nationality"] = "British"            # add a new key
+person["nationality"] = "British"  # add a new key
 print("updated person:", person)
 
 # items() provides key-value pairs that can be unpacked by the loop.

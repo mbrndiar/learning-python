@@ -2,11 +2,12 @@
 
 import argparse
 import sys
+from collections.abc import Sequence
 
-from .client import APIError, TaskRestClient
+from .client import APIError, TaskPayload, TaskRestClient
 
 
-def build_parser():
+def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Manage tasks through the REST API")
     parser.add_argument("--api-url", default="http://127.0.0.1:8000")
     commands = parser.add_subparsers(dest="command", required=True)
@@ -20,12 +21,12 @@ def build_parser():
     return parser
 
 
-def format_task(task):
+def format_task(task: TaskPayload) -> str:
     status = "x" if task["done"] else " "
     return f"[{status}] #{task['id']} {task['title']}"
 
 
-def main(argv=None):
+def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     client = TaskRestClient(args.api_url)
     try:

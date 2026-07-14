@@ -6,6 +6,7 @@ your work.
 """
 
 import argparse
+import logging
 
 
 def build_arg_parser():
@@ -17,9 +18,26 @@ def build_arg_parser():
     raise NotImplementedError
 
 
-def safe_call(func, *args, **kwargs):
-    """Call func(*args, **kwargs). If it raises any Exception, return
-    the string "Error: <message>" instead of letting it propagate."""
+def build_command_parser():
+    """Return a parser with `add TITLE` and `list --pending-only` commands."""
+    # TODO: implement this function with add_subparsers(required=True)
+    raise NotImplementedError
+
+
+def positive_int(text):
+    """Convert text to a positive int or raise argparse.ArgumentTypeError."""
+    # TODO: implement this function
+    raise NotImplementedError
+
+
+def safe_int(text):
+    """Return int(text), or None after catching only ValueError."""
+    # TODO: implement this function
+    raise NotImplementedError
+
+
+def configure_logger(verbose):
+    """Return a named logger set to DEBUG when verbose, otherwise INFO."""
     # TODO: implement this function
     raise NotImplementedError
 
@@ -33,8 +51,27 @@ if __name__ == "__main__":
     assert parsed_default.verbose is False
     print("build_arg_parser: OK")
 
-    assert safe_call(lambda: 1 / 0) == "Error: division by zero"
-    assert safe_call(lambda a, b: a + b, 2, 3) == 5
-    print("safe_call: OK")
+    command_parser = build_command_parser()
+    add_args = command_parser.parse_args(["add", "Learn argparse"])
+    assert (add_args.command, add_args.title) == ("add", "Learn argparse")
+    list_args = command_parser.parse_args(["list", "--pending-only"])
+    assert (list_args.command, list_args.pending_only) == ("list", True)
+    print("build_command_parser: OK")
+
+    assert positive_int("3") == 3
+    try:
+        positive_int("0")
+        raise AssertionError("expected argparse.ArgumentTypeError")
+    except argparse.ArgumentTypeError:
+        pass
+    print("positive_int: OK")
+
+    assert safe_int("42") == 42
+    assert safe_int("not a number") is None
+    print("safe_int: OK")
+
+    assert configure_logger(False).level == logging.INFO
+    assert configure_logger(True).level == logging.DEBUG
+    print("configure_logger: OK")
 
     print("\nAll checks passed!")

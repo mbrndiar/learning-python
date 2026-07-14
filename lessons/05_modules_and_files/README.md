@@ -6,8 +6,8 @@ files and errors robustly.
 ## Learning objectives
 
 After this module, you should be able to import code without accidental side
-effects, organize modules, work safely with paths and files, handle expected
-errors, and implement deterministic cleanup.
+effects, organize modules, work safely with paths and files, exchange structured
+JSON data, handle expected errors, and implement deterministic cleanup.
 
 ## Modules, packages, and imports
 
@@ -70,6 +70,13 @@ A context manager's `__enter__` and `__exit__` methods define setup and
 cleanup. `with` is preferable to manual `try/finally` for files, locks,
 database transactions, and other managed resources.
 
+## JSON
+
+JSON represents dictionaries, lists, strings, numbers, booleans and `null` as
+portable text. `json.dumps()`/`json.loads()` work with strings, while
+`json.dump()`/`json.load()` work with file objects. Decoding only proves that
+the JSON syntax is valid; applications must still validate the resulting shape.
+
 ## Concepts covered
 
 - **`01_modules.py`** - importing standard-library modules (`math`,
@@ -81,6 +88,8 @@ database transactions, and other managed resources.
   exception classes (subclassing `Exception`) and writing your own
   context managers (the objects that power the `with` statement), using
   both classes and `contextlib.contextmanager`.
+- **`04_json_and_structured_data.py`** - serializing dictionaries and lists,
+  writing readable JSON files, and validating decoded top-level structures.
 
 ## Running
 
@@ -88,6 +97,7 @@ database transactions, and other managed resources.
 python lessons/05_modules_and_files/01_modules.py
 python lessons/05_modules_and_files/02_files_and_exceptions.py
 python lessons/05_modules_and_files/03_custom_exceptions_and_context_managers.py
+python lessons/05_modules_and_files/04_json_and_structured_data.py
 ```
 
 Once you've read through all three files, practice what you learned in
@@ -108,3 +118,4 @@ Once you've read through all three files, practice what you learned in
 3. When do `else` and `finally` execute in a `try` statement?
 4. Why should exception handlers be narrow?
 5. What protocol makes an object usable in a `with` statement?
+6. Why must decoded JSON still be validated?

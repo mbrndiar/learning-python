@@ -1,0 +1,33 @@
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+"exercises/*/exercises.py" = ["F401"]
+"lessons/03_functions/02_lambdas_closures_and_recursion.py" = ["E731"]
+
+[tool.mypy]
+python_version = "3.11"
+files = [
+    "project/task_manager/task_manager.py",
+    "project/task_manager/storage.py",
+    "project/task_manager/cli.py",
+    "project/task_rest_api/api.py",
+    "project/task_rest_client/client.py",
+    "project/task_rest_client/cli.py",
+]
+strict = true
+warn_unused_configs = true
+
+[tool.coverage.run]
+branch = true
+source = ["project"]
+omit = ["project/**/test_*.py"]
+
+[tool.coverage.report]
+fail_under = 85
+show_missing = true
+skip_covered = true

@@ -1,5 +1,5 @@
 """
-Lesson 10.1: Threading and Multiprocessing
+Lesson 11.1: Threading and Multiprocessing
 
 Python offers two standard-library ways to run work concurrently:
 - `threading` - multiple threads in one process, best for I/O-bound work
@@ -29,8 +29,7 @@ def run_with_threads():
     print("Running I/O-bound tasks with threads:")
     start = time.perf_counter()
     threads = [
-        threading.Thread(target=io_bound_task, args=(f"T{i}", 0.2))
-        for i in range(3)
+        threading.Thread(target=io_bound_task, args=(f"T{i}", 0.2)) for i in range(3)
     ]
     for thread in threads:
         thread.start()

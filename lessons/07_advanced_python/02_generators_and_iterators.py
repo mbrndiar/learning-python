@@ -62,7 +62,7 @@ if __name__ == "__main__":
     print("  reusing the same generator:", list(gen))
 
     print("\nGenerator expression (like a list comprehension, but lazy):")
-    squares = (n ** 2 for n in range(5))
+    squares = (n**2 for n in range(5))
     print("  ", list(squares))
 
     print("\nClass-based iterator:")

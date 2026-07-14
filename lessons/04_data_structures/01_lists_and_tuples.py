@@ -27,7 +27,7 @@ print("slice [1:4]:", numbers[1:4])
 
 # A comprehension builds a new list by evaluating its expression once for
 # each input value.
-squares = [n ** 2 for n in numbers]
+squares = [n**2 for n in numbers]
 print("squares:", squares)
 
 # Tuples

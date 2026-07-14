@@ -5,10 +5,9 @@ This lesson goes beyond basic function definitions to cover three more
 advanced (but common) function-related concepts in Python.
 """
 
-
 # --- Lambda expressions -----------------------------------------------
 # A lambda is a small, anonymous, single-expression function.
-square = lambda x: x ** 2
+square = lambda x: x**2
 add = lambda a, b: a + b
 
 # Lambdas are often used with functions like sorted(), map() and filter().

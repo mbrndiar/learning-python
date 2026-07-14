@@ -74,6 +74,16 @@ Fixtures are requested by parameter name and can use `yield` for cleanup.
 Use `pytest.raises` for exceptions and `tmp_path` for isolated filesystem
 tests. Keep production logic independent of the test framework.
 
+## Logging and quality tools
+
+Use `logging` for persistent diagnostics instead of scattering `print()` calls
+through reusable code. Log levels let callers decide how much detail to retain.
+
+`ruff check` finds common defects and style problems, `ruff format` applies
+consistent formatting, `mypy` checks annotations without running the program,
+and coverage reports which lines tests executed. These tools complement one
+another; none proves that requirements or assertions are correct.
+
 ## Concepts covered
 
 - **`01_virtual_environments_and_pip.py`** - what virtual environments are
@@ -87,6 +97,8 @@ tests. Keep production logic independent of the test framework.
   widely used third-party testing framework, as an alternative to
   `unittest` (module 8). *Requires an optional dependency* - install it
   with `pip install -r requirements-dev.txt` from the repository root.
+- **`05_logging_and_quality_tools.py`** - logging levels and the repository's
+  Ruff, mypy and coverage workflow.
 
 ## Running
 
@@ -95,6 +107,7 @@ python lessons/09_tooling_and_debugging/01_virtual_environments_and_pip.py
 python lessons/09_tooling_and_debugging/02_debugging_and_tracebacks.py
 python lessons/09_tooling_and_debugging/03_command_line_arguments.py
 pytest lessons/09_tooling_and_debugging/04_pytest_basics.py
+python lessons/09_tooling_and_debugging/05_logging_and_quality_tools.py
 ```
 
 Once you've read through all four files, practice what you learned in
@@ -107,6 +120,8 @@ Once you've read through all four files, practice what you learned in
 - Changing several things before rerunning a failing case.
 - Putting business logic directly inside argument-parsing branches.
 - Giving tests shared access to real user files or network services.
+- Logging secrets or using the root logger as an unstructured print substitute.
+- Treating a clean linter or high coverage number as proof of correctness.
 
 ## Review questions
 
@@ -115,3 +130,5 @@ Once you've read through all four files, practice what you learned in
 3. Which part of a traceback should you inspect first?
 4. What belongs in CLI parsing versus core application logic?
 5. How do parameterization and fixtures reduce test duplication?
+6. How do linting, type checking, testing and coverage provide different
+   feedback?

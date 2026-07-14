@@ -8,14 +8,14 @@ makes code easier to understand.
 """
 
 # Numbers
-age = 25            # int
-height = 1.75        # float
+age = 25  # int
+height = 1.75  # float
 
 # Text
-name = "Ada"         # str
+name = "Ada"  # str
 
 # Boolean
-is_learning = True   # bool
+is_learning = True  # bool
 
 # None is a unique sentinel representing "no value"; it is not zero or "".
 favorite_color = None

@@ -12,10 +12,10 @@ b = 3
 print("a + b =", a + b)
 print("a - b =", a - b)
 print("a * b =", a * b)
-print("a / b =", a / b)    # true division -> float
+print("a / b =", a / b)  # true division -> float
 print("a // b =", a // b)  # floor division -> int
-print("a % b =", a % b)    # modulo (remainder)
-print("a ** b =", a ** b)  # exponentiation
+print("a % b =", a % b)  # modulo (remainder)
+print("a ** b =", a**b)  # exponentiation
 
 # Comparison operators (return a bool)
 print("a == b:", a == b)

@@ -31,17 +31,20 @@ class TestTasksAPI(unittest.TestCase):
             connection.execute("DELETE FROM tasks")
             connection.execute("DELETE FROM sqlite_sequence WHERE name = 'tasks'")
 
-    def request(self, method, path, data=None):
+    def raw_request(self, method, path, body=None, headers=None):
         connection = http.client.HTTPConnection(
             "127.0.0.1", self.server.server_port, timeout=2
         )
-        body = json.dumps(data) if data is not None else None
-        headers = {"Content-Type": "application/json"} if body else {}
-        connection.request(method, path, body=body, headers=headers)
+        connection.request(method, path, body=body, headers=headers or {})
         response = connection.getresponse()
         content = response.read()
         connection.close()
         return response.status, json.loads(content) if content else None
+
+    def request(self, method, path, data=None):
+        body = json.dumps(data) if data is not None else None
+        headers = {"Content-Type": "application/json"} if body else {}
+        return self.raw_request(method, path, body=body, headers=headers)
 
     def test_create_list_complete_and_delete_task(self):
         status, created = self.request("POST", "/tasks", {"title": "Learn HTTP"})
@@ -69,6 +72,34 @@ class TestTasksAPI(unittest.TestCase):
     def test_returns_not_found(self):
         status, content = self.request("GET", "/tasks/999")
         self.assertEqual((status, content), (404, {"error": "Task not found"}))
+        status, content = self.request("PATCH", "/tasks/999", {"done": True})
+        self.assertEqual((status, content), (404, {"error": "Task not found"}))
+        status, content = self.request("DELETE", "/tasks/999")
+        self.assertEqual((status, content), (404, {"error": "Task not found"}))
+
+    def test_rejects_unknown_routes_and_invalid_json_bodies(self):
+        for method in ("GET", "POST", "PATCH", "DELETE"):
+            with self.subTest(method=method):
+                status, content = self.request(method, "/unknown")
+                self.assertEqual(status, 404)
+                self.assertEqual(content, {"error": "Route not found"})
+
+        status, content = self.raw_request(
+            "POST",
+            "/tasks",
+            body="not json",
+            headers={"Content-Type": "application/json"},
+        )
+        self.assertEqual(status, 400)
+        self.assertIn("valid JSON", content["error"])
+
+        status, content = self.request("POST", "/tasks", ["not", "an", "object"])
+        self.assertEqual(status, 400)
+        self.assertIn("JSON object", content["error"])
+
+        status, content = self.raw_request("POST", "/tasks")
+        self.assertEqual(status, 400)
+        self.assertIn("contain JSON", content["error"])
 
     def test_tasks_persist_in_sqlite(self):
         self.request("POST", "/tasks", {"title": "Persist me"})

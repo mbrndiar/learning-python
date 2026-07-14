@@ -6,8 +6,8 @@ exception types and writing your own context managers (the objects
 that power the `with` statement).
 """
 
-import os
 from contextlib import contextmanager
+from pathlib import Path
 
 
 # --- Custom exceptions -----------------------------------------------------
@@ -17,9 +17,7 @@ class InsufficientFundsError(Exception):
     def __init__(self, balance, amount):
         self.balance = balance
         self.amount = amount
-        super().__init__(
-            f"Cannot withdraw {amount}: balance is only {balance}"
-        )
+        super().__init__(f"Cannot withdraw {amount}: balance is only {balance}")
 
 
 def withdraw(balance, amount):
@@ -71,7 +69,7 @@ if __name__ == "__main__":
         print("Caught custom error:", error)
         print("  balance was:", error.balance, "| requested:", error.amount)
 
-    file_path = os.path.join(os.path.dirname(__file__), "managed_sample.txt")
+    file_path = Path(__file__).with_name("managed_sample.txt")
 
     with ManagedFile(file_path, "w") as file:
         file.write("Written using a custom context manager.\n")
@@ -79,7 +77,7 @@ if __name__ == "__main__":
     with ManagedFile(file_path, "r") as file:
         print("\nFile contents:", file.read().strip())
 
-    os.remove(file_path)
+    file_path.unlink()
 
     print()
     with timer_message("processing data"):

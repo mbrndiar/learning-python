@@ -48,7 +48,9 @@ python -m project.task_manager.cli --storage /tmp/tasks.json add "Local task"
 The file contains a JSON object with `next_id` and a `tasks` list. Persisting
 `next_id` prevents deleted identifiers from being reused after a restart. Bare
 task lists from the earlier version remain readable and are upgraded on the
-next write. Writes use UTF-8 and occur after each successful mutation.
+next write. The loader rejects duplicate or invalid identifiers. UTF-8 writes
+use a temporary file followed by an atomic replacement so interruption cannot
+leave a partially written destination.
 
 ## REST backend
 
@@ -71,7 +73,8 @@ Use `--api-url URL` before the command for a non-default server. The same
 commands and `Task` objects are available with either backend. The important
 difference is ownership: file mode persists directly in JSON, whereas REST mode
 crosses a process boundary and the server persists in SQLite. Network and API
-errors therefore apply only to REST mode.
+errors therefore apply only to REST mode. Client errors preserve the HTTP
+status code, allowing adapters to translate `404` without comparing text.
 
 ## Storage contract
 
@@ -100,3 +103,29 @@ isolated from user data.
 - Identify where dictionaries become `Task` objects.
 - Compare local I/O failures with HTTP failures.
 - Add a strategy while leaving `TaskManager` unchanged.
+
+## Extension exercises
+
+Implement these in order. Add or update a test before, or alongside, each
+behavior change.
+
+1. **In-memory storage:** add `InMemoryTaskStorage` and run the existing storage
+   contract against it without changing `TaskManager`.
+2. **Edit a title:** add `edit TASK_ID TITLE` across the protocol, both storage
+   implementations, REST API/client and CLI.
+3. **Priorities:** add a small enum-backed priority and support filtering or
+   ordering tasks by it.
+4. **Due dates:** accept an ISO date, validate it at the boundary and display
+   overdue pending tasks.
+5. **Search and sorting:** add `list --contains TEXT` and a selectable sort
+   order without duplicating filtering logic in storage classes.
+6. **CSV export:** export the currently selected tasks using the standard
+   library `csv` module without changing persisted data.
+7. **Structured API errors:** preserve HTTP status codes in `APIError` and make
+   adapters branch on status rather than comparing message text.
+8. **Pagination:** add `limit` and `offset` query parameters to the API and
+   client, validating negative and non-integer values.
+
+For each extension, define normal behavior, at least one boundary case and one
+failure case. Keep file and REST backends behaviorally consistent through the
+shared contract tests.

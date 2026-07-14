@@ -1,6 +1,6 @@
 # Lessons
 
-This is the main course content: ten modules of small, self-contained,
+This is the main course content: eleven modules of small, self-contained,
 runnable scripts that teach Python from the ground up. Each module builds on
 the ones before it, so work through them in order.
 
@@ -20,15 +20,17 @@ python lessons/01_basics/01_hello_world.py
 4. [`04_data_structures/`](04_data_structures/README.md) - lists, tuples,
    dictionaries, sets, comprehensions and `collections`
 5. [`05_modules_and_files/`](05_modules_and_files/README.md) - modules,
-   file I/O, exceptions, custom exceptions and context managers
+   file I/O, JSON, exceptions, custom exceptions and context managers
 6. [`06_object_oriented_programming/`](06_object_oriented_programming/README.md) -
    classes, inheritance, encapsulation, abstract classes and dataclasses
 7. [`07_advanced_python/`](07_advanced_python/README.md) - decorators,
-   generators/iterators and type hints
+   generators/iterators, type hints, protocols and dependency injection
 8. [`08_testing/`](08_testing/README.md) - testing with `unittest`
 9. [`09_tooling_and_debugging/`](09_tooling_and_debugging/README.md) -
-   virtual environments, debugging, CLI arguments and `pytest`
-10. [`10_concurrency/`](10_concurrency/README.md) - threading,
+   virtual environments, debugging, CLI arguments, logging and quality tools
+10. [`10_application_integration/`](10_application_integration/README.md) -
+   JSON APIs, SQLite and standard-library HTTP
+11. [`11_concurrency/`](11_concurrency/README.md) - threading,
     multiprocessing and asyncio
 
 ## How to use a module
@@ -75,7 +77,8 @@ This distinction becomes important when modules are imported in module 5.
 - After modules 3–4, build a text analyzer using functions and collections.
 - After modules 5–6, model and persist a small collection of objects.
 - After modules 7–9, add annotations, tests, logging, and a CLI.
-- After module 10, explain which concurrency model—if any—fits the program.
+- After module 10, replace file persistence with SQLite or a JSON API.
+- After module 11, explain which concurrency model—if any—fits the program.
 
 These checkpoints are deliberately open-ended. Define expected inputs and
 outputs first, split the work into functions, and test important edge cases.

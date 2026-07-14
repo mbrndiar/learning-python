@@ -5,17 +5,16 @@ This lesson dives deeper into comprehensions (list, dict and set) and
 introduces some of the most useful classes from the `collections` module.
 """
 
-from collections import Counter, defaultdict, namedtuple, OrderedDict
-
+from collections import Counter, OrderedDict, defaultdict, namedtuple
 
 # --- Comprehensions -------------------------------------------------------
 numbers = range(1, 11)
 
 # List comprehension with a condition
-even_squares = [n ** 2 for n in numbers if n % 2 == 0]
+even_squares = [n**2 for n in numbers if n % 2 == 0]
 
 # Dict comprehension
-square_lookup = {n: n ** 2 for n in numbers}
+square_lookup = {n: n**2 for n in numbers}
 
 # Set comprehension (duplicates are removed automatically)
 remainders = {n % 3 for n in numbers}
@@ -26,7 +25,7 @@ flattened = [value for row in matrix for value in row]
 
 # Generator expression: like a list comprehension, but lazy (computed
 # on demand instead of all at once), saving memory for large sequences.
-sum_of_squares = sum(n ** 2 for n in numbers)
+sum_of_squares = sum(n**2 for n in numbers)
 
 
 # --- collections.Counter --------------------------------------------------
@@ -57,7 +56,9 @@ if __name__ == "__main__":
     print("\nword_counts:", word_counts)
     print("most common 2:", word_counts.most_common(2))
 
-    grouped = group_by_first_letter(["apple", "avocado", "banana", "cherry", "blueberry"])
+    grouped = group_by_first_letter(
+        ["apple", "avocado", "banana", "cherry", "blueberry"]
+    )
     print("\ngrouped by first letter:")
     for letter, words in grouped.items():
         print(f"  {letter}: {words}")
@@ -66,8 +67,12 @@ if __name__ == "__main__":
     print("\nnamedtuple point:", p1)
     print("p1.x =", p1.x, "| p1.y =", p1.y)
 
+    # Normal dictionaries preserve insertion order in modern Python.
+    # OrderedDict remains useful for operations such as move_to_end() and
+    # order-sensitive equality between two OrderedDict instances.
     ordered = OrderedDict()
     ordered["first"] = 1
     ordered["second"] = 2
     ordered["third"] = 3
+    ordered.move_to_end("first")
     print("\nOrderedDict:", ordered)

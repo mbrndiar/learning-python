@@ -11,6 +11,8 @@ lists, tuples, dictionaries, sets, comprehensions and `collections`.
 - `word_frequencies(words)` - count occurrences of each word, e.g. with a
   dict comprehension or `collections.Counter`.
 - `flatten(nested_list)` - flatten a list of lists into a single list.
+- `most_common_words(words, count)` - use `Counter.most_common()`.
+- `group_by_length(words)` - collect values with `defaultdict(list)`.
 
 ## How to work through it
 

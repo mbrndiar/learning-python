@@ -7,6 +7,7 @@ You can also organize your own code into modules and import it.
 
 import math
 import random
+
 # This form imports one name directly instead of the whole module namespace.
 from datetime import date
 
