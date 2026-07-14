@@ -1,17 +1,24 @@
 """
 Lesson 9.4: Introduction to pytest
 
-`pytest` is the most widely used third-party testing framework in the
+`pytest` is a widely used third-party testing framework in the
 Python ecosystem. Unlike `unittest` (lesson 8.1), tests are plain
 functions and assertions are plain `assert` statements - pytest rewrites
 them to give readable failure messages.
 
 This lesson requires an optional dependency. Install it with:
-    pip install -r requirements-dev.txt
+    python -m pip install -r requirements-dev.txt
 
 Then run the tests with:
-    pytest lessons/09_tooling_and_debugging/04_pytest_basics.py
+    python -m pytest lessons/09_tooling_and_debugging/04_pytest_basics.py
 """
+
+from pathlib import Path
+
+try:
+    import pytest
+except ImportError:  # The direct-run fallback below still demonstrates assert.
+    pytest = None
 
 
 def add(a, b):
@@ -22,6 +29,11 @@ def divide(a, b):
     if b == 0:
         raise ValueError("Cannot divide by zero")
     return a / b
+
+
+def write_report(path: Path, values: list[int]) -> None:
+    """Write one value per line so a test can use an isolated directory."""
+    path.write_text("\n".join(str(value) for value in values) + "\n", encoding="utf-8")
 
 
 # --- pytest test functions -------------------------------------------------
@@ -43,18 +55,31 @@ def test_divide_normal_case():
 
 
 def test_divide_by_zero_raises():
-    try:
-        import pytest
-    except ImportError:
-        # Fall back to a plain assertion if pytest isn't installed, so
-        # this file can still be executed with plain `python`.
+    if pytest is None:
         try:
             divide(10, 0)
             raise AssertionError("expected ValueError")
         except ValueError:
             return
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="zero"):
         divide(10, 0)
+
+
+if pytest is not None:
+
+    @pytest.mark.parametrize(
+        ("a", "b", "expected"),
+        [(2, 3, 5), (-1, -1, -2), (0, 5, 5)],
+    )
+    def test_add_examples(a, b, expected):
+        assert add(a, b) == expected
+
+    def test_write_report_uses_isolated_directory(tmp_path):
+        report = tmp_path / "report.txt"
+
+        write_report(report, [3, 5])
+
+        assert report.read_text(encoding="utf-8") == "3\n5\n"
 
 
 if __name__ == "__main__":
@@ -74,5 +99,7 @@ if __name__ == "__main__":
 
     print(
         "\nWith pytest installed, run instead:\n"
-        "  pytest lessons/09_tooling_and_debugging/04_pytest_basics.py -v"
+        "  python -m pytest "
+        "lessons/09_tooling_and_debugging/04_pytest_basics.py -v\n"
+        "pytest will also run the parameterized and tmp_path examples."
     )

@@ -50,7 +50,11 @@ def factorial(n):
 
 
 def fibonacci(n):
-    """Return the n-th Fibonacci number (0-indexed) using recursion."""
+    """Return the n-th Fibonacci number with deliberately naive recursion.
+
+    This mirrors the mathematical definition but recalculates the same values.
+    It is a teaching example, not an efficient implementation for large n.
+    """
     if n < 2:
         return n
     return fibonacci(n - 1) + fibonacci(n - 2)
@@ -75,3 +79,4 @@ if __name__ == "__main__":
 
     print("\nfactorial(5) =", factorial(5))
     print("fibonacci(0..7):", [fibonacci(i) for i in range(8)])
+    print("Naive Fibonacci is readable, but repeated calls make it grow slowly.")

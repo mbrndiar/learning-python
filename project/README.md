@@ -61,3 +61,26 @@ python -m unittest \
 ```
 
 The tests use temporary JSON and SQLite files and ephemeral local ports.
+
+## ✅ Before you commit
+
+Run the same local feedback loop documented in module 9:
+
+```bash
+ruff format .
+ruff check .
+mypy
+python -m unittest \
+  project.task_rest_api.test_api \
+  project.task_rest_client.test_client \
+  project.task_manager.test_task_manager -v
+coverage run -m unittest \
+  project.task_rest_api.test_api \
+  project.task_rest_client.test_client \
+  project.task_manager.test_task_manager
+coverage report
+```
+
+Formatting changes files; the repository's
+[GitHub Actions](https://docs.github.com/en/actions) workflow uses
+`ruff format --check .` to verify the committed result in a clean environment.

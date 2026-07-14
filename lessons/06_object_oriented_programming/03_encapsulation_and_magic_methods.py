@@ -69,9 +69,9 @@ class Money:
             return NotImplemented
         return Money(self.amount + other.amount)
 
-    def __len__(self):
-        """Let len() report something meaningful, e.g. whole dollars."""
-        return int(self.amount)
+    def __float__(self):
+        """Allow an explicit conversion to a built-in floating-point value."""
+        return float(self.amount)
 
 
 if __name__ == "__main__":
@@ -97,5 +97,5 @@ if __name__ == "__main__":
     print("str:", total)
     print("Equal?", price1 == Money(19.99))
     print("Less than?", price2 < price1)
-    print("len(total):", len(total))
+    print("float(total):", float(total))
     print("Sorted:", sorted([price1, price2, total]))

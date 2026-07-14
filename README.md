@@ -16,7 +16,8 @@ By the end of the course, you will be able to:
 - exchange structured data with JSON and persist records in SQLite;
 - use Python's iterator, generator, decorator, and type-hinting features;
 - create isolated environments and install third-party packages;
-- test programs with `unittest` and `pytest`;
+- test programs with `unittest` and
+  [pytest](https://docs.pytest.org/en/stable/);
 - build command-line programs and small HTTP/JSON integrations;
 - select an appropriate concurrency model for I/O- or CPU-bound work; and
 - design, implement, test, and extend a command-line application.
@@ -25,7 +26,10 @@ By the end of the course, you will be able to:
 
 - Python 3.11+ (the lessons themselves need no external dependencies)
 - The lessons use only the standard library at runtime. Install the development
-  tools (`pytest`, Ruff, mypy and coverage) with
+  tools ([pytest](https://docs.pytest.org/en/stable/),
+  [Ruff](https://docs.astral.sh/ruff/),
+  [mypy](https://mypy.readthedocs.io/en/stable/), and
+  [Coverage.py](https://coverage.readthedocs.io/en/stable/)) with
   `python -m pip install -r requirements-dev.txt`.
 
 New to Python or setting up for the first time? See
@@ -50,6 +54,27 @@ Do not only run the files. For each module:
 6. Revisit anything you could not explain in your own words.
 
 The modules build on one another. Beginners should follow them in order.
+
+## 🔁 Developer feedback loop
+
+When you change code, first run the smallest relevant example or test. After it
+passes, widen the feedback:
+
+```bash
+ruff format .
+ruff check .
+mypy
+python -m unittest \
+  project.task_rest_api.test_api \
+  project.task_rest_client.test_client \
+  project.task_manager.test_task_manager -v
+```
+
+Module 9 explains what each tool checks, how to measure coverage, and how these
+local commands map to
+[GitHub Actions](https://docs.github.com/en/actions). The
+[setup guide](docs/SETUP.md#optional-modern-setup-with-uv) also provides the
+equivalent optional [uv](https://docs.astral.sh/uv/) workflow.
 
 ## 📐 Conventions used in this course
 
@@ -143,10 +168,13 @@ reference to jog your memory after finishing the course.
      errors, and the interactive debugger
    - [`03_command_line_arguments.py`](lessons/09_tooling_and_debugging/03_command_line_arguments.py) – `input()` and parsing CLI
      arguments with `argparse`
-   - [`04_pytest_basics.py`](lessons/09_tooling_and_debugging/04_pytest_basics.py) – an introduction to `pytest` as an
+   - [`04_pytest_basics.py`](lessons/09_tooling_and_debugging/04_pytest_basics.py) – an introduction to
+     [pytest](https://docs.pytest.org/en/stable/) as an
      alternative to `unittest`
-   - [`05_logging_and_quality_tools.py`](lessons/09_tooling_and_debugging/05_logging_and_quality_tools.py) – structured diagnostics, Ruff, mypy
-    and coverage
+   - [`05_logging_and_quality_tools.py`](lessons/09_tooling_and_debugging/05_logging_and_quality_tools.py) – structured diagnostics,
+     [Ruff](https://docs.astral.sh/ruff/),
+     [mypy](https://mypy.readthedocs.io/en/stable/), and
+     [Coverage.py](https://coverage.readthedocs.io/en/stable/)
 10. **[Application Integration](lessons/10_application_integration/)**
     - [`01_sqlite_basics.py`](lessons/10_application_integration/01_sqlite_basics.py) – storing and querying records with SQLite
     - [`02_http_and_json.py`](lessons/10_application_integration/02_http_and_json.py) – HTTP routes, JSON boundaries and clients

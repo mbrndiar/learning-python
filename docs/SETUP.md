@@ -51,14 +51,11 @@ leave the virtual environment, run `deactivate`.
 ## 4. Install optional tools
 
 Everything in `lessons/` runs with the standard library alone. The development
-requirements add `pytest`, Ruff, mypy and coverage so you can practice testing,
-formatting, linting, static type checking and coverage measurement:
-
-```bash
-pip install -r requirements-dev.txt
-```
-
-The more reliable interpreter-specific form is:
+requirements add [pytest](https://docs.pytest.org/en/stable/),
+[Ruff](https://docs.astral.sh/ruff/),
+[mypy](https://mypy.readthedocs.io/en/stable/), and
+[Coverage.py](https://coverage.readthedocs.io/en/stable/) so you can practice
+testing, formatting, linting, static type checking, and coverage measurement:
 
 ```bash
 python -m pip install -r requirements-dev.txt
@@ -83,41 +80,80 @@ If you see `Hello, World!` printed, you're ready to start. Continue to the
 ## Optional modern setup with uv
 
 The `venv` and `pip` workflow above is built into Python, widely available, and
-worth understanding. [uv](https://docs.astral.sh/uv/) is a popular
-third-party alternative that can install Python versions, create environments,
-and install packages through one fast command-line tool.
+worth understanding. [uv](https://docs.astral.sh/uv/) is a Python-focused
+third-party tool that can install Python versions, create environments, install
+packages, and run commands in the selected environment.
 
-After installing uv by following its official instructions, run from the
-repository root:
+After following the official
+[uv installation instructions](https://docs.astral.sh/uv/getting-started/installation/),
+run from the repository root:
 
 ```bash
 uv python install 3.14
 uv venv --python 3.14
 uv pip install -r requirements-dev.txt
-uv run python lessons/01_basics/01_hello_world.py
-uv run python -m pytest lessons/09_tooling_and_debugging/04_pytest_basics.py
-uv run ruff check .
-uv run mypy
+source .venv/bin/activate
+python lessons/01_basics/01_hello_world.py
+python -m pytest lessons/09_tooling_and_debugging/04_pytest_basics.py
+ruff format .
+ruff check .
+mypy
 ```
 
-The explicit `uv venv` and `uv pip` commands mirror the course's existing
-workflow; they do not require converting this repository into a packaged
-project. uv also supports project metadata and lock files, which become useful
-when an application has runtime dependencies and needs reproducible installs.
+On Windows, use the activation command from section 3. The explicit `uv venv`
+and `uv pip install` commands mirror the course's existing dependency-file
+workflow; they do not convert this repository into a packaged project or
+introduce a lockfile.
 
-## Optional Python version managers
+`uv pip sync` is intentionally not used here. Syncing is appropriate when the
+input already describes the complete resolved environment. This repository's
+`requirements-dev.txt` lists direct development requirements and relies on the
+installer to resolve their transitive dependencies.
 
-[mise](https://mise.jdx.dev/) and [asdf](https://asdf-vm.com/) can select
-versions of Python and other development tools per project. They complement
-`venv`/`pip` or uv rather than replacing dependency isolation:
+## Daily development flow
 
-- use mise or asdf when one tool should manage versions for several languages;
-- use uv when you want a Python-focused installer and environment workflow;
-- use the built-in approach when minimizing prerequisites matters most.
+Start narrow: reproduce the behavior you changed before running every check.
+For example:
 
-Beginners only need one approach. Start with the standard-library instructions
-above; adopt an alternative after you understand which responsibility each
-tool handles.
+```bash
+python -m pytest lessons/09_tooling_and_debugging/04_pytest_basics.py -v
+```
+
+Then apply formatting and run the configured static checks:
+
+```bash
+ruff format .
+ruff check .
+mypy
+```
+
+Ruff's formatter command changes files. Continuous integration uses
+`ruff format --check .` to verify that formatting has already been applied.
+`ruff check --fix .` can apply supported lint fixes, but review those changes
+instead of treating automatic repair as proof that behavior is correct.
+
+Run the connected project tests and their configured coverage:
+
+```bash
+python -m unittest \
+  project.task_rest_api.test_api \
+  project.task_rest_client.test_client \
+  project.task_manager.test_task_manager -v
+coverage run -m unittest \
+  project.task_rest_api.test_api \
+  project.task_rest_client.test_client \
+  project.task_manager.test_task_manager
+coverage report
+```
+
+After uv creates and populates `.venv`, the activated daily commands are
+deliberately identical. The tool has changed how Python and packages reached the
+environment, not what Ruff, mypy, pytest, or Coverage.py are responsible for.
+
+The repository's
+[GitHub Actions workflow](https://docs.github.com/en/actions) runs these checks
+in a clean environment. Running them locally first shortens the feedback loop;
+CI confirms that the result does not depend on unrecorded local state.
 
 ## Troubleshooting
 
@@ -144,8 +180,18 @@ first on `PATH`.
 Run `python -m pip --version` and check the displayed path. It should point
 inside `.venv` while the environment is active.
 
+For uv, run `uv python find` to inspect the selected interpreter and
+`uv pip list` to inspect the environment.
+
 ### Leaving or recreating an environment
 
 Run `deactivate` to leave it. A virtual environment contains generated files,
 so it is safe to delete `.venv` and recreate it from
 `requirements-dev.txt`; do not commit `.venv` to version control.
+
+With uv, recreate the environment with:
+
+```bash
+uv venv --python 3.14 --clear
+uv pip install -r requirements-dev.txt
+```

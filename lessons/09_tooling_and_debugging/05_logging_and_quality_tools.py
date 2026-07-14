@@ -1,21 +1,36 @@
 """
 Lesson 9.5: Logging and Automated Quality Tools
 
-Logging records diagnostics with severity and context. External tools then
-provide fast, repeatable feedback:
+Logging records runtime diagnostics with severity and context. External tools
+then provide different kinds of repeatable feedback:
 
+    ruff format .
     ruff check .
     ruff format --check .
     mypy
+    python -m pytest ...
     coverage run -m unittest ...
     coverage report
 
-This repository configures those commands in pyproject.toml.
+This repository configures Ruff across the repository, mypy for the typed
+application files in project/, and coverage for project/.
 """
 
 import logging
 
 logger = logging.getLogger(__name__)
+
+QUALITY_STEPS = (
+    ("format", "ruff format ."),
+    ("lint", "ruff check ."),
+    ("type-check configured application files", "mypy"),
+    (
+        "run a targeted pytest lesson",
+        "python -m pytest lessons/09_tooling_and_debugging/04_pytest_basics.py -v",
+    ),
+    ("measure configured project coverage", "coverage run -m unittest ..."),
+    ("report measured coverage", "coverage report"),
+)
 
 
 def calculate_total(prices: list[float]) -> float:
@@ -26,10 +41,18 @@ def calculate_total(prices: list[float]) -> float:
     return total
 
 
+def describe_quality_steps() -> None:
+    """Print the narrow-to-wide feedback loop documented by this module."""
+    print("\nA practical local feedback loop:")
+    for purpose, command in QUALITY_STEPS:
+        print(f"  {purpose}: {command}")
+
+
 if __name__ == "__main__":
     logging.basicConfig(
         level=logging.DEBUG,
         format="%(levelname)s %(name)s: %(message)s",
     )
     print("Total:", calculate_total([10.0, 2.5, 7.5]))
-    print("\nQuality-tool configuration lives in pyproject.toml.")
+    describe_quality_steps()
+    print("\nTool configuration and scope live in pyproject.toml.")

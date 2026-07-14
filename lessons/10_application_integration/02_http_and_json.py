@@ -8,8 +8,9 @@ standard library exposes the underlying request/response concepts directly.
 
 import json
 import threading
+from http.client import HTTPException
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
 
 
@@ -36,6 +37,13 @@ def fetch_json(url: str) -> dict[str, object]:
             data = json.loads(response.read())
     except HTTPError as error:
         raise RuntimeError(f"HTTP request failed with status {error.code}") from error
+    except (URLError, TimeoutError, HTTPException, ConnectionError) as error:
+        reason = getattr(error, "reason", str(error))
+        raise RuntimeError(
+            f"HTTP request could not reach or finish reading the server: {reason}"
+        ) from error
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise ValueError("HTTP response did not contain valid JSON") from error
 
     if not isinstance(data, dict):
         raise ValueError("Expected a JSON object")

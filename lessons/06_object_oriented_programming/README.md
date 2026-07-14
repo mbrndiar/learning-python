@@ -54,10 +54,20 @@ give a developer-oriented representation; `__str__` gives user-facing text.
 comparison and built-in operations. Return `NotImplemented` from binary
 protocol methods when the other operand is unsupported.
 
+A special method should preserve the ordinary meaning of its protocol.
+`__len__` should describe a non-negative item count, not an unrelated numeric
+property merely because `len(obj)` looks convenient. Prefer a named method or a
+more suitable conversion protocol when the meaning would surprise a caller.
+
 Abstract base classes can require methods from concrete subclasses.
 `@dataclass` can generate initialization, representation, and equality for
 data-oriented classes. Use `field(default_factory=list)` rather than `[]` for
 mutable defaults. An `Enum` represents a closed set of named values.
+
+Use these tools for different jobs: an ABC defines a nominal family with
+required operations, a dataclass removes record-like boilerplate, and an Enum
+prevents arbitrary values where the valid choices are closed. They can be
+combined, but none is a general replacement for thoughtful class design.
 
 ## 📚 Concepts covered
 

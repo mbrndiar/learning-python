@@ -39,6 +39,14 @@ async def main():
     print(f"  Results: {results}")
     print(f"  Concurrent total: {time.perf_counter() - start:.2f}s")
 
+    # create_task() schedules work independently. Keep the Task object and
+    # await it so its result, failure, and cleanup remain owned by this scope.
+    print("\nExplicitly owned task:")
+    task = asyncio.create_task(fetch_data("E", 0.1))
+    print("  Scheduled; finished yet?", task.done())
+    result = await task
+    print("  Observed result:", result)
+
 
 if __name__ == "__main__":
     # asyncio.run() creates an event loop, runs the coroutine to

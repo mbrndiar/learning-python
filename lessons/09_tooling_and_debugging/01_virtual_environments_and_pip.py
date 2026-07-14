@@ -29,17 +29,22 @@ if __name__ == "__main__":
 
     print(
         "\nCommon commands you would run in a terminal (not executed here):\n"
-        "  python -m venv .venv          # create a virtual environment\n"
-        "  source .venv/bin/activate     # activate it (Linux/macOS)\n"
-        "  .venv\\Scripts\\activate         # activate it (Windows)\n"
-        "  pip install <package>         # install a package into the venv\n"
-        "  pip freeze > requirements.txt # record installed packages\n"
-        "  pip install -r requirements.txt  # install from that file\n"
-        "  deactivate                    # leave the virtual environment"
+        "  python3 -m venv .venv             # create an environment\n"
+        "  source .venv/bin/activate         # activate it (Linux/macOS)\n"
+        "  .venv\\Scripts\\Activate.ps1        # activate it (PowerShell)\n"
+        "  python -m pip install -r requirements-dev.txt\n"
+        "  python -m pip list               # inspect installed packages\n"
+        "  python -m pip freeze             # snapshot this environment\n"
+        "  deactivate                       # leave the environment"
     )
 
     print(
         "\nWhy bother? Without a virtual environment, installing package "
         "versions for one project can silently break another project that "
         "needs a different version of the same package."
+    )
+    print(
+        "\nA maintained dependency file records what the project intends to "
+        "install. `pip freeze` instead reports everything currently resolved "
+        "in one environment, including transitive dependencies."
     )

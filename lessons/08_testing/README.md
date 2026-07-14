@@ -30,6 +30,12 @@ Cover representative normal cases, boundaries, empty input, and meaningful
 failure paths. Coverage can reveal unexecuted code but cannot prove that
 assertions are correct or requirements are complete.
 
+A useful narrative for each defect is: first write the smallest example that
+demonstrates the unwanted behavior, watch it fail for the expected reason, make
+the production change, and keep the example as a regression test. A test that
+never failed may still be valid, but seeing the failure guards against testing
+the wrong path.
+
 ## 🔄 `unittest` lifecycle and assertions
 
 Test methods start with `test_`. `setUp()` runs before each test and
@@ -50,6 +56,10 @@ collaborators at boundaries such as clocks or network clients; patch the name
 where the code under test looks it up, and avoid mocking the behavior actually
 being tested.
 
+For example, a notification function should be tested with a mock sender rather
+than a real network service. Assert the message sent through that boundary while
+leaving the function's own branching and formatting real.
+
 ## 📚 Concepts covered
 
 - **`01_unittest_basics.py`** - `unittest`, part of the standard library,
@@ -67,7 +77,8 @@ Once you've read through the file, practice what you learned in
 [`exercises/08_testing/`](../../exercises/08_testing/README.md).
 
 See also module 9's [`04_pytest_basics.py`](../09_tooling_and_debugging/04_pytest_basics.py)
-for an alternative, more lightweight testing framework.
+for examples using the
+[pytest](https://docs.pytest.org/en/stable/) testing framework.
 
 ## ⚠️ Common mistakes
 

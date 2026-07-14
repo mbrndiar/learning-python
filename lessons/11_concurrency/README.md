@@ -17,15 +17,21 @@ whether a program waits mostly for external I/O or spends time computing.
 Concurrency adds scheduling, coordination, cancellation, and debugging costs,
 so sequential code is the best default when it is fast enough.
 
+For example, a program that waits for ten independent HTTP responses may benefit
+from overlap. A program that adds ten small numbers will probably become slower
+after adding workers. Start from the wait or bottleneck you can name, not from a
+desire to make the code "concurrent."
+
 ## 🧵 Threads and processes
 
 Threads share a process's memory, making communication convenient and data
 races possible. A lock protects an invariant involving shared mutable state;
 thread-safe queues are often clearer than sharing collections directly. In
-standard CPython builds, the Global Interpreter Lock generally prevents
-multiple threads from executing Python bytecode in parallel, but threads still
-overlap blocking I/O. Implementation details can evolve, so do not treat the
-GIL as a substitute for synchronization.
+traditional GIL-enabled CPython builds, the Global Interpreter Lock generally
+prevents multiple threads from executing Python bytecode in parallel, but
+threads still overlap blocking I/O. Free-threaded CPython builds change that
+execution constraint, not the need to protect shared mutable state. Never treat
+the GIL as a synchronization strategy.
 
 Processes have separate memory and interpreters, allowing CPU-bound Python work
 to run in parallel across cores. Data sent between processes must be
@@ -49,6 +55,11 @@ of the current task; `asyncio.create_task()` schedules it independently.
 Tasks should have clear ownership, error handling, cancellation, and cleanup.
 Limit fan-out with queues or semaphores rather than creating unbounded work.
 
+An owned task is one whose result or failure somebody will observe. If the
+caller no longer needs it, cancel it and still await it so cleanup can finish.
+Do not create background tasks and forget them: their exceptions can otherwise
+surface far from the code that started the operation.
+
 ## 🧭 Choosing a model
 
 | Situation | Good starting point |
@@ -64,10 +75,10 @@ deployment constraints can change the answer.
 ## 📚 Concepts covered
 
 - **`01_threading_and_multiprocessing.py`** - `threading` for running
-  multiple threads in one process, best for I/O-bound work (network
-  requests, file access) because of the Global Interpreter Lock (GIL);
-  and `multiprocessing` for running separate processes, best for
-  CPU-bound work since each process has its own interpreter and GIL.
+  multiple threads in one process, often useful for blocking I/O; and
+  `multiprocessing` for isolated worker processes that can run CPU-bound Python
+  across cores. Traditional GIL-enabled and free-threaded CPython builds have
+  different thread execution characteristics.
 - **`02_asyncio_basics.py`** - `asyncio`, single-threaded cooperative
   concurrency using `async`/`await` and `asyncio.gather`, ideal for many
   I/O-bound tasks running at once without the overhead of threads or

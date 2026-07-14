@@ -56,6 +56,22 @@ Use a normal loop when the expression has side effects, multiple steps, or
 becomes difficult to read. A generator expression uses parentheses and
 produces values lazily instead of storing all of them.
 
+## 🧰 Choosing a specialized collection
+
+Start with built-in containers and move to `collections` when the behavior names
+the problem more clearly:
+
+| Need | Good starting point |
+| --- | --- |
+| Count repeated values | `Counter` |
+| Build missing groups automatically | `defaultdict(list)` |
+| Store a small immutable record with named fields | `namedtuple` |
+| Store a record that also needs defaults, methods, or richer typing | dataclass (module 6) |
+| Reorder keys with `move_to_end()` | `OrderedDict` |
+
+Modern `dict` already preserves insertion order. Do not choose `OrderedDict`
+only for that property.
+
 ## 📚 Concepts covered
 
 - **`01_lists_and_tuples.py`** - lists (mutable, ordered) and tuples

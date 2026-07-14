@@ -26,6 +26,9 @@ A wrapper generally accepts `*args, **kwargs` and uses `functools.wraps` to
 preserve metadata such as the original name and docstring. A decorator factory
 adds another function layer to accept configuration. Decoration normally
 happens when the containing module is imported, not on each function call.
+The wrapper runs on each later call. Keeping those two moments separate helps
+explain why expensive or stateful work in the decorator itself can happen
+surprisingly early.
 
 ## ♻️ Iteration and lazy evaluation
 
@@ -57,6 +60,25 @@ when reading legacy code, but prefer `list[T]` and `T | None` in new Python
 boundaries and non-obvious structures. Static type checkers need their own
 configuration and are separate from tests.
 
+For example, Python can execute `add("2", "3")` and return `"23"` even when
+`add` is annotated with `int`. A configured
+[mypy](https://mypy.readthedocs.io/en/stable/) run reports the inconsistent call
+without executing it. A test answers whether a chosen example behaves as
+expected; a type checker examines compatible uses across annotated paths.
+
+## 🔌 Protocols and dependency injection
+
+Suppose a reminder service constructs an email client internally. A test must
+then prevent a real email while also reaching the service logic. If the sender
+is passed in, the same service can use a console sender, an adapter around a
+legacy API, or a recording fake in a test. A `Protocol` describes the required
+`send()` behavior without forcing those classes to inherit from one base class.
+
+Dependency injection is therefore not mainly about frameworks. It is the small
+design decision to receive a collaborator rather than hiding its construction
+inside business logic. An adapter translates an incompatible existing API at
+the boundary instead of spreading special cases through the core.
+
 ## 📚 Concepts covered
 
 - **`01_decorators.py`** - functions that wrap another function (or
@@ -68,7 +90,8 @@ configuration and are separate from tests.
   iterator using `yield` instead of `return`.
 - **`03_type_hints.py`** - optional type annotations for variables,
   function arguments and return values using modern built-in generics and
-  union syntax; not enforced at runtime, but used by tools like `mypy`.
+  union syntax; not enforced at runtime, but used by tools like
+  [mypy](https://mypy.readthedocs.io/en/stable/).
 - **`04_protocols_and_dependency_injection.py`** - structural interfaces with
   `Protocol`, injecting collaborators instead of constructing them inside
   business logic, and adapting one interface to another.
@@ -82,7 +105,7 @@ python lessons/07_advanced_python/03_type_hints.py
 python lessons/07_advanced_python/04_protocols_and_dependency_injection.py
 ```
 
-Once you've read through all three files, practice what you learned in
+Once you've read through all four files, practice what you learned in
 [`exercises/07_advanced_python/`](../../exercises/07_advanced_python/README.md).
 
 ## ⚠️ Common mistakes

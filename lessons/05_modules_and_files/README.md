@@ -28,6 +28,12 @@ behind `if __name__ == "__main__":` so importing the module does not run them.
 Python searches locations in `sys.path`; run commands from the documented
 project directory rather than modifying the path inside source code.
 
+When a package import works from one directory but fails from another, first
+check how the program was launched. From the repository root,
+`python -m project.task_manager.cli` asks Python to resolve a package module;
+running a deeply nested file path directly can give it a different import
+context.
+
 ## 📁 Paths, files, and encodings
 
 `pathlib.Path` provides cross-platform path operations:
@@ -66,16 +72,24 @@ succeeds, fails, or returns. Do not use bare `except:` to hide programmer
 errors or interrupts. Custom exceptions should describe domain failures and
 usually inherit from `Exception` or a suitable existing subclass.
 
+`raise NewError(...) from error` preserves the original failure as the cause.
+Use it when translating a low-level exception into language meaningful to the
+caller without losing the evidence needed for debugging.
+
 A context manager's `__enter__` and `__exit__` methods define setup and
 cleanup. `with` is preferable to manual `try/finally` for files, locks,
-database transactions, and other managed resources.
+database transactions, and other managed resources. Returning a truthy value
+from `__exit__` suppresses the active exception; returning falsey lets it
+propagate. Suppression should therefore be deliberate and rare.
 
 ## 🧾 JSON
 
 JSON represents dictionaries, lists, strings, numbers, booleans and `null` as
 portable text. `json.dumps()`/`json.loads()` work with strings, while
 `json.dump()`/`json.load()` work with file objects. Decoding only proves that
-the JSON syntax is valid; applications must still validate the resulting shape.
+the JSON syntax is valid. Checking that the top level is a list is only the first
+step: applications must also validate required fields and their types before
+treating transport data as domain data.
 
 ## 📚 Concepts covered
 
@@ -100,7 +114,7 @@ python lessons/05_modules_and_files/03_custom_exceptions_and_context_managers.py
 python lessons/05_modules_and_files/04_json_and_structured_data.py
 ```
 
-Once you've read through all three files, practice what you learned in
+Once you've read through all four files, practice what you learned in
 [`exercises/05_modules_and_files/`](../../exercises/05_modules_and_files/README.md).
 
 ## ⚠️ Common mistakes

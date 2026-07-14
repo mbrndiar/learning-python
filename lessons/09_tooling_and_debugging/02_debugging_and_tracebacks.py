@@ -5,6 +5,7 @@ Bugs are inevitable. Learning to read a traceback and use basic debugging
 tools quickly turns confusing errors into solvable puzzles.
 """
 
+import sys
 import traceback
 
 
@@ -21,10 +22,10 @@ def demo_traceback():
     """Show what a traceback looks like and how to read it, without
     crashing the whole script."""
     try:
-        divide(1, 0)
+        average([])
     except ZeroDivisionError:
         print("--- Example traceback (caught, not fatal) ---")
-        traceback.print_exc()
+        traceback.print_exc(file=sys.stdout)
         print("--- end traceback ---")
         print(
             "\nHow to read it: the last line names the exception type and "
@@ -65,14 +66,19 @@ def demo_common_errors():
 
 
 def demo_debugger_hint():
-    """Explain how to pause execution and inspect state interactively."""
+    """Explain how to inspect the failing average call interactively."""
     print(
-        "\nWhen print statements aren't enough, drop into an interactive "
-        "debugger. Add this line where you want to pause:\n"
-        "    breakpoint()\n"
-        "Then use debugger commands: 'n' (next line), 's' (step into a "
-        "call), 'p variable_name' (print a value), 'c' (continue), "
-        "'q' (quit)."
+        "\nInvestigate this file with:\n"
+        "  python -m pdb "
+        "lessons/09_tooling_and_debugging/02_debugging_and_tracebacks.py\n"
+        "At the prompt, try:\n"
+        "  break average\n"
+        "  continue\n"
+        "  p numbers\n"
+        "  p len(numbers)\n"
+        "  where\n"
+        "  quit\n"
+        "`breakpoint()` creates the same kind of pause inside code."
     )
 
 

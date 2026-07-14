@@ -7,35 +7,41 @@ library. Parameter placeholders keep values separate from SQL syntax.
 
 import sqlite3
 import tempfile
+from contextlib import closing
 from pathlib import Path
 
 
 def initialize_database(path: str | Path) -> None:
-    with sqlite3.connect(path) as connection:
-        connection.execute(
-            """
-            CREATE TABLE IF NOT EXISTS tasks (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                title TEXT NOT NULL,
-                done INTEGER NOT NULL DEFAULT 0
+    with closing(sqlite3.connect(path)) as connection:
+        with connection:
+            # Legacy sqlite3 transaction mode does not begin a transaction for
+            # DDL automatically, so make this schema change explicit.
+            connection.execute("BEGIN")
+            connection.execute(
+                """
+                CREATE TABLE IF NOT EXISTS tasks (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    title TEXT NOT NULL,
+                    done INTEGER NOT NULL DEFAULT 0
+                )
+                """
             )
-            """
-        )
 
 
 def add_task(path: str | Path, title: str) -> int:
-    with sqlite3.connect(path) as connection:
-        cursor = connection.execute(
-            "INSERT INTO tasks (title, done) VALUES (?, 0)",
-            (title,),
-        )
-        if cursor.lastrowid is None:
-            raise RuntimeError("SQLite did not return a task ID")
-        return cursor.lastrowid
+    with closing(sqlite3.connect(path)) as connection:
+        with connection:
+            cursor = connection.execute(
+                "INSERT INTO tasks (title, done) VALUES (?, 0)",
+                (title,),
+            )
+            if cursor.lastrowid is None:
+                raise RuntimeError("SQLite did not return a task ID")
+            return cursor.lastrowid
 
 
 def list_tasks(path: str | Path) -> list[dict[str, object]]:
-    with sqlite3.connect(path) as connection:
+    with closing(sqlite3.connect(path)) as connection:
         connection.row_factory = sqlite3.Row
         rows = connection.execute(
             "SELECT id, title, done FROM tasks ORDER BY id"

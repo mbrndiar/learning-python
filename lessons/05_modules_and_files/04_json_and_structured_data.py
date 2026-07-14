@@ -11,17 +11,35 @@ import tempfile
 from pathlib import Path
 
 
+def validate_task(item: object) -> dict[str, object]:
+    """Return one task after validating its required fields and value types."""
+    if not isinstance(item, dict):
+        raise ValueError("Each task must be a JSON object")
+
+    task_id = item.get("id")
+    title = item.get("title")
+    done = item.get("done")
+    if (
+        not isinstance(task_id, int)
+        or isinstance(task_id, bool)
+        or not isinstance(title, str)
+        or not isinstance(done, bool)
+    ):
+        raise ValueError("Each task needs integer id, string title, and boolean done")
+    return item
+
+
 def save_tasks(path: Path, tasks: list[dict[str, object]]) -> None:
     """Write tasks as readable UTF-8 JSON."""
     path.write_text(json.dumps(tasks, indent=2) + "\n", encoding="utf-8")
 
 
 def load_tasks(path: Path) -> list[dict[str, object]]:
-    """Load a list of task dictionaries and reject an unexpected top level."""
+    """Load tasks and validate both the top level and required item fields."""
     data = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(data, list) or not all(isinstance(item, dict) for item in data):
-        raise ValueError("Task data must be a JSON array of objects")
-    return data
+    if not isinstance(data, list):
+        raise ValueError("Task data must be a JSON array")
+    return [validate_task(item) for item in data]
 
 
 if __name__ == "__main__":

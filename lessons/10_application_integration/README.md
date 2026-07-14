@@ -23,8 +23,14 @@ connection.execute(
 ```
 
 A connection used as a context manager commits a successful transaction or
-rolls it back when an exception escapes. Closing the connection releases file
-and transaction resources.
+rolls it back when an exception escapes; that context manager does not close the
+connection. Closing is a separate resource-management responsibility, shown in
+the lesson with `contextlib.closing`.
+
+Think of a write as one unit: open a connection, begin a transaction, execute
+parameterized statements, commit only when the whole unit succeeds, and close
+the connection. If an exception escapes, roll back rather than leaving a
+half-applied update.
 
 ## 🌐 HTTP and JSON
 
@@ -32,6 +38,21 @@ An HTTP API maps methods and routes to operations, validates request data, and
 returns a status code plus a response body. JSON is only the transport shape;
 convert it to domain objects at an application boundary instead of spreading
 unvalidated dictionaries throughout the program.
+
+Follow one request across the boundary:
+
+```text
+client builds request
+→ server matches method and route
+→ handler validates bytes/JSON
+→ application performs the operation
+→ handler chooses status, headers, and response body
+→ client checks status and validates decoded data
+```
+
+A successful JSON parse proves only that the bytes contained valid JSON. It
+does not prove that required keys exist, values have useful types, or the
+response belongs to the endpoint the caller expected.
 
 The standard-library server in this module is educational rather than a
 production deployment. It exposes the same fundamentals hidden behind web

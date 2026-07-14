@@ -47,7 +47,8 @@ class ManagedFile:
     def __exit__(self, exc_type, exc_value, traceback):
         if self.file:
             self.file.close()
-        # Returning False (or None) lets any exception propagate normally.
+        # A truthy return would suppress the active exception. False (or None)
+        # preserves it after cleanup, which is the safer default.
         return False
 
 

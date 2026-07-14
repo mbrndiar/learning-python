@@ -42,7 +42,9 @@ Name lookup proceeds through Local, Enclosing, Global, and Built-in scopes.
 Assignment inside a function creates a local name unless `global` or
 `nonlocal` says otherwise. Prefer returning values over modifying globals.
 A closure is an inner function that retains access to names from an enclosing
-function even after that function returns.
+function even after that function returns. Each call can create a separate
+captured environment: `make_multiplier(2)` and `make_multiplier(3)` return
+functions with the same code but different remembered `factor` values.
 
 ## 🧰 Flexible calls and higher-order functions
 
@@ -56,6 +58,21 @@ documentation is nontrivial.
 Recursion solves a problem through smaller instances of itself. It requires a
 base case and progress toward that case. Python does not optimize tail calls,
 so iteration is usually safer for deeply repeated work.
+
+Follow a small call before trusting the abstraction:
+
+```text
+factorial(4)
+→ 4 * factorial(3)
+→ 4 * 3 * factorial(2)
+→ 4 * 3 * 2 * factorial(1)
+→ 24
+```
+
+The return values resolve in the opposite direction from the calls. The lesson's
+recursive Fibonacci function is intentionally simple, but it repeats the same
+subproblems many times. Use it to understand the call tree, not as an efficient
+implementation for large inputs.
 
 ## 📚 Concepts covered
 

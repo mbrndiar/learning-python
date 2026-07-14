@@ -24,8 +24,11 @@ else:
 
 Use `==` to compare values. Use `is` for identity, most commonly
 `value is None`; do not use `is` to compare ordinary strings or numbers.
-Comparisons and logical operators short-circuit, so the right side may not run:
-`items and items[0]` safely avoids indexing an empty list.
+Logical operators short-circuit, so the right side may not run. They also return
+one of their operands rather than always returning a new boolean:
+`items and items[0]` returns the empty collection when `items` is empty, and the
+first item otherwise. This can be useful, but an explicit `if` is clearer when
+the returned value is not immediately obvious.
 
 ## 🔁 Iteration
 

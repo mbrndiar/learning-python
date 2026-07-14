@@ -48,8 +48,22 @@ class LegacyNotifierAdapter:
         self.notifier.notify(f"[{recipient}] {message}")
 
 
+class RecordingSender:
+    """A test-friendly sender that records calls instead of doing real I/O."""
+
+    def __init__(self) -> None:
+        self.messages: list[tuple[str, str]] = []
+
+    def send(self, recipient: str, message: str) -> None:
+        self.messages.append((recipient, message))
+
+
 if __name__ == "__main__":
     ReminderService(ConsoleSender()).remind("Ada", "finish the type-hint lesson")
 
     adapted_sender = LegacyNotifierAdapter(LegacyNotifier())
     ReminderService(adapted_sender).remind("Grace", "review the capstone")
+
+    recording_sender = RecordingSender()
+    ReminderService(recording_sender).remind("Lin", "test without real I/O")
+    print("Recorded for a test:", recording_sender.messages)

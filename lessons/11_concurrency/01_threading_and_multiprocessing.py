@@ -3,10 +3,11 @@ Lesson 11.1: Threading and Multiprocessing
 
 Python offers two standard-library ways to run work concurrently:
 - `threading` - multiple threads in one process, best for I/O-bound work
-  (network requests, file access) because of the Global Interpreter Lock
-  (GIL), which prevents true CPU-bound parallelism between threads.
+  (network requests, file access). Traditional GIL-enabled CPython builds
+  generally do not execute CPU-bound Python bytecode in parallel across
+  threads; free-threaded builds have different execution characteristics.
 - `multiprocessing` - multiple separate processes, best for CPU-bound
-  work, since each process has its own Python interpreter and GIL.
+  work, since workers use separate Python interpreters and memory.
 """
 
 import multiprocessing

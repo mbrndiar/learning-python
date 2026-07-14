@@ -231,21 +231,42 @@ tests independent and deterministic.
 python3 --version                 # check Python version
 python3 -m venv .venv             # create a virtual environment
 source .venv/bin/activate         # activate it (Linux/macOS)
-pip install <package>             # install a package
-python -m pip install <package>   # use pip belonging to this Python
-pip freeze > requirements.txt     # save installed packages
+python -m pip install -r requirements-dev.txt
+python -m pip list                # inspect installed packages
+python -m pip freeze              # snapshot this environment
 python script.py arg1 --flag      # run a script with arguments
 python -m unittest discover       # run all unittest tests
-python -m pytest                  # run all pytest tests
+python -m pytest lessons/09_tooling_and_debugging/04_pytest_basics.py
+ruff format .                     # format files
 ruff check .                      # lint
 ruff format --check .             # verify formatting
 mypy                              # statically check project annotations
+coverage run -m unittest ...      # execute tests while measuring
 coverage report                   # show measured test coverage
+```
+
+Optional equivalent setup with [uv](https://docs.astral.sh/uv/):
+
+```bash
+uv python install 3.14
+uv venv --python 3.14
+uv pip install -r requirements-dev.txt
+source .venv/bin/activate
+python script.py
+python -m pytest lessons/09_tooling_and_debugging/04_pytest_basics.py
+ruff format .
+ruff check .
+mypy
 ```
 
 ## Where to go next
 
 - [Python official documentation](https://docs.python.org/3/)
+- [pytest documentation](https://docs.pytest.org/en/stable/)
+- [Ruff documentation](https://docs.astral.sh/ruff/)
+- [mypy documentation](https://mypy.readthedocs.io/en/stable/)
+- [Coverage.py documentation](https://coverage.readthedocs.io/en/stable/)
+- [GitHub Actions documentation](https://docs.github.com/en/actions)
 - [Real Python](https://realpython.com/) - in-depth tutorials
 - [PEP 8](https://peps.python.org/pep-0008/) - the official style guide
 

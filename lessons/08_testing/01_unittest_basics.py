@@ -6,6 +6,7 @@ framework for writing and running automated tests.
 """
 
 import unittest
+from unittest.mock import Mock, call
 
 
 def add(a, b):
@@ -18,6 +19,12 @@ def divide(a, b):
     if b == 0:
         raise ValueError("Cannot divide by zero")
     return a / b
+
+
+def notify_all(sender, recipients, message):
+    """Send one message through an injected collaborator."""
+    for recipient in recipients:
+        sender.send(recipient, message)
 
 
 class TestMathFunctions(unittest.TestCase):
@@ -48,6 +55,25 @@ class TestMathFunctions(unittest.TestCase):
     def test_true_and_false_assertions(self):
         self.assertTrue(add(1, 1) == 2)
         self.assertFalse(add(1, 1) == 3)
+
+    def test_add_examples_with_subtests(self):
+        examples = ((2, 3, 5), (-1, -1, -2), (0, 4, 4))
+        for a, b, expected in examples:
+            with self.subTest(a=a, b=b):
+                self.assertEqual(add(a, b), expected)
+
+    def test_notify_all_uses_sender_boundary(self):
+        sender = Mock()
+
+        notify_all(sender, ["Ada", "Grace"], "Review the tests")
+
+        self.assertEqual(
+            sender.send.call_args_list,
+            [
+                call("Ada", "Review the tests"),
+                call("Grace", "Review the tests"),
+            ],
+        )
 
 
 if __name__ == "__main__":
