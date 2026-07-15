@@ -8,6 +8,7 @@ functions.
 
 import sys
 import unittest
+from unittest.mock import Mock, call
 
 
 class Calculator:
@@ -23,6 +24,12 @@ class Calculator:
         return a / b
 
 
+def notify_all(sender, recipients, message):
+    """Send a message through an injected collaborator."""
+    for recipient in recipients:
+        sender.send(recipient, message)
+
+
 class TestCalculator(unittest.TestCase):
     def setUp(self):
         self.calculator = Calculator()
@@ -34,14 +41,28 @@ class TestCalculator(unittest.TestCase):
     # TODO: write test_divide_by_zero_raises, asserting that
     # calling divide(1, 0) raises ValueError (use self.assertRaises)
 
+    # TODO: write test_add_examples_with_subtests. Loop over several
+    # (a, b, expected) examples and use self.subTest(a=a, b=b) so one failing
+    # example does not hide the others.
+
+    # TODO: write test_notify_all_uses_sender_boundary. Use Mock as the sender,
+    # call notify_all for two recipients, and compare sender.send.call_args_list
+    # with the expected call(...) values.
+
 
 def run_tests():
-    required = {"test_add", "test_subtract", "test_divide_by_zero_raises"}
+    required = {
+        "test_add",
+        "test_subtract",
+        "test_divide_by_zero_raises",
+        "test_add_examples_with_subtests",
+        "test_notify_all_uses_sender_boundary",
+    }
     available = set(unittest.defaultTestLoader.getTestCaseNames(TestCalculator))
     missing = sorted(required - available)
     if missing:
         print(
-            "Add the three requested test methods: " + ", ".join(missing),
+            "Add the requested test methods: " + ", ".join(missing),
             file=sys.stderr,
         )
         return 1

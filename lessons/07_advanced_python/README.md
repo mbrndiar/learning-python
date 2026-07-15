@@ -7,7 +7,9 @@ and OOP.
 
 After this module, you should be able to wrap behavior with decorators,
 distinguish iterables, iterators, and generators, evaluate lazy processing, and
-write useful modern type annotations.
+write useful modern type annotations. You should also be able to describe a
+collaborator with a `Protocol` and inject it into business logic instead of
+constructing it internally.
 
 ## 🎁 Decorators
 

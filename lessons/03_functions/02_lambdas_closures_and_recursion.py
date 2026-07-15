@@ -79,4 +79,4 @@ if __name__ == "__main__":
 
     print("\nfactorial(5) =", factorial(5))
     print("fibonacci(0..7):", [fibonacci(i) for i in range(8)])
-    print("Naive Fibonacci is readable, but repeated calls make it grow slowly.")
+    print("Naive Fibonacci is readable, but repeated work makes it slow for large n.")

@@ -13,6 +13,10 @@ given; add test methods to `TestCalculator`:
 - `test_subtract` - assert `Calculator().subtract(5, 3) == 2`.
 - `test_divide_by_zero_raises` - assert that `divide(1, 0)` raises
   `ValueError` (use `self.assertRaises`).
+- `test_add_examples_with_subtests` - check several additions with
+  `self.subTest(...)` so each example is reported independently.
+- `test_notify_all_uses_sender_boundary` - inject a `Mock` sender and verify the
+  exact calls made through that collaborator boundary.
 
 ## ▶️ How to work through it
 

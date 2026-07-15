@@ -114,6 +114,8 @@ For smaller application examples, see the
 [`CHEATSHEET.md`](CHEATSHEET.md) is a one-page glossary and syntax quick
 reference to jog your memory after finishing the course.
 
+<a id="course-outline"></a>
+
 ## 🗺️ Course outline
 
 1. **[Basics](lessons/01_basics/)**

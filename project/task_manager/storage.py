@@ -12,6 +12,8 @@ from project.task_rest_client.client import APIError, TaskPayload, TaskRestClien
 from .task_manager import Task, TaskNotFoundError
 
 T = TypeVar("T")
+# This type variable preserves each callback's concrete return type through the
+# shared error-translation helper near the end of the file.
 
 
 class FileTaskStorage:
@@ -78,6 +80,8 @@ class FileTaskStorage:
             )
             + "\n"
         )
+        # Publish only after the complete payload reaches disk. Replacing a file
+        # atomically prevents readers from observing a half-written JSON document.
         descriptor, temporary_name = tempfile.mkstemp(
             dir=self.storage_path.parent,
             prefix=f".{self.storage_path.name}.",

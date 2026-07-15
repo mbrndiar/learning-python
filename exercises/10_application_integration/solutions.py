@@ -5,6 +5,7 @@ Solutions: 10 Application Integration
 import json
 import sqlite3
 import tempfile
+from contextlib import closing
 from pathlib import Path
 
 
@@ -20,10 +21,12 @@ def decode_task(payload):
 
 
 def initialize_database(path):
-    with sqlite3.connect(path) as connection:
+    # sqlite3's transaction context commits or rolls back; closing owns the
+    # separate responsibility of releasing the connection afterward.
+    with closing(sqlite3.connect(path)) as connection, connection:
         connection.execute(
             """
-            CREATE TABLE tasks (
+            CREATE TABLE IF NOT EXISTS tasks (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 title TEXT NOT NULL,
                 done INTEGER NOT NULL DEFAULT 0
@@ -33,7 +36,7 @@ def initialize_database(path):
 
 
 def add_task(path, title):
-    with sqlite3.connect(path) as connection:
+    with closing(sqlite3.connect(path)) as connection, connection:
         cursor = connection.execute(
             "INSERT INTO tasks (title, done) VALUES (?, 0)",
             (title,),
@@ -44,7 +47,7 @@ def add_task(path, title):
 
 
 def list_tasks(path):
-    with sqlite3.connect(path) as connection:
+    with closing(sqlite3.connect(path)) as connection:
         rows = connection.execute(
             "SELECT id, title, done FROM tasks ORDER BY id"
         ).fetchall()

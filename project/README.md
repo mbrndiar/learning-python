@@ -31,6 +31,25 @@ Task Manager CLI -> TaskManager -> RestTaskStorage
 The standalone REST client CLI is another front end over the same
 `TaskRestClient`. Both front ends therefore share the same remote data.
 
+## 🧩 Reading the implementation
+
+The capstone deliberately uses a few standard-library techniques beyond the
+smallest lesson examples:
+
+- [`TypedDict`, `Self`, and `cast`](https://docs.python.org/3/library/typing.html)
+  give mypy more precise information; they do not change runtime behavior.
+- `TypeVar` lets the REST storage error helper preserve the concrete return type
+  of whichever operation it runs.
+- [`tempfile.mkstemp`](https://docs.python.org/3/library/tempfile.html#tempfile.mkstemp),
+  [`os.fsync`](https://docs.python.org/3/library/os.html#os.fsync), and
+  [`os.replace`](https://docs.python.org/3/library/os.html#os.replace) implement
+  an atomic save: write and flush a complete temporary file, then publish it in
+  one replacement step so readers never see partial JSON.
+
+These are production-oriented extensions of the resource ownership, typing, and
+file-handling rules taught earlier. Read the surrounding comments first; the
+linked standard-library references provide the full contracts.
+
 ## 🚀 Quick start
 
 Run Task Manager locally:

@@ -1,7 +1,8 @@
 # ✨ Exercises: Module 7 - Advanced Python
 
 Practice problems for [`lessons/07_advanced_python/`](../../lessons/07_advanced_python/README.md):
-decorators, generators/iterators and type hints.
+decorators, generators/iterators, type hints, protocols, and dependency
+injection.
 
 ## 🧩 Tasks in `exercises.py`
 
