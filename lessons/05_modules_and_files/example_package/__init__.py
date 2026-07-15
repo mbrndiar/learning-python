@@ -1,5 +1,5 @@
 """
-example_package – a tiny package used in lesson 5.5.
+example_package – a tiny package used in lesson 5.2.
 
 ``__init__.py`` marks this directory as a regular Python package and can
 re-export names so callers use ``from example_package import hello`` instead

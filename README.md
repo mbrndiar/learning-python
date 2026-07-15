@@ -139,10 +139,12 @@ reference to jog your memory after finishing the course.
      `namedtuple`, `OrderedDict`)
 5. **[Modules and Files](lessons/05_modules_and_files/)**
    - [`01_modules.py`](lessons/05_modules_and_files/01_modules.py) – using the standard library (`math`, `random`, `datetime`)
-   - [`02_files_and_exceptions.py`](lessons/05_modules_and_files/02_files_and_exceptions.py) – reading/writing files and handling errors
-   - [`03_custom_exceptions_and_context_managers.py`](lessons/05_modules_and_files/03_custom_exceptions_and_context_managers.py) – defining custom
+   - [`02_packages.py`](lessons/05_modules_and_files/02_packages.py) – modules vs. packages, absolute/relative imports,
+     `__init__.py` re-exports and `__all__`
+   - [`03_files_and_exceptions.py`](lessons/05_modules_and_files/03_files_and_exceptions.py) – reading/writing files and handling errors
+   - [`04_custom_exceptions_and_context_managers.py`](lessons/05_modules_and_files/04_custom_exceptions_and_context_managers.py) – defining custom
      exception classes and writing your own context managers
-   - [`04_json_and_structured_data.py`](lessons/05_modules_and_files/04_json_and_structured_data.py) – serializing structured data with JSON
+   - [`05_json_and_structured_data.py`](lessons/05_modules_and_files/05_json_and_structured_data.py) – serializing structured data with JSON
 6. **[Object-Oriented Programming](lessons/06_object_oriented_programming/)**
    - [`01_classes_and_objects.py`](lessons/06_object_oriented_programming/01_classes_and_objects.py) – classes, attributes, methods and properties
    - [`02_inheritance_and_polymorphism.py`](lessons/06_object_oriented_programming/02_inheritance_and_polymorphism.py) – inheritance, `super()` and
