@@ -41,7 +41,7 @@ jobs:
             echo "::group::python $file"
             python "$file"
             echo "::endgroup::"
-          done < <(find lessons -name "*.py" ! -name "__init__.py" -print0 | sort -z)
+          done < <(find lessons \( -type d -exec test -e '{}/__init__.py' \; -prune \) -o \( -name "*.py" ! -name "__init__.py" -print0 \) | sort -z)
 
       - name: Run every exercise solution
         run: |
