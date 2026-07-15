@@ -34,3 +34,14 @@ for number in range(1, 10):
     if number % 2 == 0:
         continue
     print(number)
+
+# A loop's else block means "no break occurred," not "the iterable was empty."
+# Change target to "banana" to see break skip the else block.
+print("\nSearch for a fruit:")
+target = "pear"
+for fruit in fruits:
+    if fruit == target:
+        print("Found:", target)
+        break
+else:
+    print("Not found:", target)

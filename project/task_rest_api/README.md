@@ -18,8 +18,8 @@ For example, creating a task flows through:
 4. The handler returns the complete task as JSON with status `201`.
 
 SQLite stores `done` as `0` or `1`; `TaskStore` converts it to a JSON boolean at
-the data-layer boundary. Connections are short-lived and scoped with context
-managers.
+the data-layer boundary. Connections are explicitly closed after short-lived
+read or transaction scopes.
 
 ## ▶️ Run
 

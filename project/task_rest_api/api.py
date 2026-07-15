@@ -4,6 +4,7 @@ import argparse
 import json
 import sqlite3
 from collections.abc import Sequence
+from contextlib import closing
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import TypedDict, cast
@@ -24,16 +25,18 @@ class TaskStore:
 
     def __init__(self, database_path: str | Path):
         self.database_path = database_path
-        with self._connect() as connection:
-            connection.execute(
-                """
-                CREATE TABLE IF NOT EXISTS tasks (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    title TEXT NOT NULL,
-                    done INTEGER NOT NULL DEFAULT 0
+        with closing(self._connect()) as connection:
+            with connection:
+                connection.execute("BEGIN")
+                connection.execute(
+                    """
+                    CREATE TABLE IF NOT EXISTS tasks (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        title TEXT NOT NULL,
+                        done INTEGER NOT NULL DEFAULT 0
+                    )
+                    """
                 )
-                """
-            )
 
     def _connect(self) -> sqlite3.Connection:
         connection = sqlite3.connect(self.database_path)
@@ -53,25 +56,26 @@ class TaskStore:
         }
 
     def list(self) -> list[TaskRecord]:
-        with self._connect() as connection:
+        with closing(self._connect()) as connection:
             rows = connection.execute(
                 "SELECT id, title, done FROM tasks ORDER BY id"
             ).fetchall()
         return [task for row in rows if (task := self._as_dict(row)) is not None]
 
     def get(self, task_id: int) -> TaskRecord | None:
-        with self._connect() as connection:
+        with closing(self._connect()) as connection:
             row = connection.execute(
                 "SELECT id, title, done FROM tasks WHERE id = ?", (task_id,)
             ).fetchone()
         return self._as_dict(row)
 
     def create(self, title: str) -> TaskRecord:
-        with self._connect() as connection:
-            cursor = connection.execute(
-                "INSERT INTO tasks (title, done) VALUES (?, 0)", (title,)
-            )
-            task_id = cursor.lastrowid
+        with closing(self._connect()) as connection:
+            with connection:
+                cursor = connection.execute(
+                    "INSERT INTO tasks (title, done) VALUES (?, 0)", (title,)
+                )
+                task_id = cursor.lastrowid
         if task_id is None:
             raise RuntimeError("SQLite did not return a task ID")
         task = self.get(task_id)
@@ -80,16 +84,22 @@ class TaskStore:
         return task
 
     def complete(self, task_id: int) -> TaskRecord | None:
-        with self._connect() as connection:
-            cursor = connection.execute(
-                "UPDATE tasks SET done = 1 WHERE id = ?", (task_id,)
-            )
-        return self.get(task_id) if cursor.rowcount else None
+        with closing(self._connect()) as connection:
+            with connection:
+                cursor = connection.execute(
+                    "UPDATE tasks SET done = 1 WHERE id = ?", (task_id,)
+                )
+                updated = cursor.rowcount > 0
+        return self.get(task_id) if updated else None
 
     def delete(self, task_id: int) -> bool:
-        with self._connect() as connection:
-            cursor = connection.execute("DELETE FROM tasks WHERE id = ?", (task_id,))
-        return cursor.rowcount > 0
+        with closing(self._connect()) as connection:
+            with connection:
+                cursor = connection.execute(
+                    "DELETE FROM tasks WHERE id = ?", (task_id,)
+                )
+                deleted = cursor.rowcount > 0
+        return deleted
 
 
 class TasksServer(ThreadingHTTPServer):

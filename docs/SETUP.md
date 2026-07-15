@@ -75,7 +75,7 @@ python lessons/01_basics/01_hello_world.py
 ```
 
 If you see `Hello, World!` printed, you're ready to start. Continue to the
-[course outline in the README](../README.md#course-outline).
+[course guide in the README](../README.md).
 
 ## Optional modern setup with uv
 
