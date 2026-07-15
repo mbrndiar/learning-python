@@ -6,8 +6,12 @@ your work.
 """
 
 import json
+import sys
 from contextlib import contextmanager
 from pathlib import Path
+
+# Make example_package importable from this exercise file.
+sys.path.insert(0, str(Path(__file__).parents[2] / "lessons" / "05_modules_and_files"))
 
 
 def write_lines(path, lines):
@@ -62,6 +66,17 @@ def temporary_value(mapping, key, value):
     raise NotImplementedError
 
 
+def describe_greeting(name: str) -> str:
+    """Return a polite greeting for *name* by importing ``hello`` from
+    ``example_package.greetings`` and calling it.
+
+    Use an absolute import (``from example_package.greetings import hello``).
+    ``example_package`` is already on sys.path at the top of this file.
+    """
+    # TODO: import hello from example_package.greetings and return hello(name)
+    raise NotImplementedError
+
+
 if __name__ == "__main__":
     sample_path = Path(__file__).with_name("sample_exercise.txt")
 
@@ -97,5 +112,9 @@ if __name__ == "__main__":
         assert settings["new"] == 1
     assert "new" not in settings
     print("temporary_value: OK")
+
+    assert describe_greeting("Ada") == "Hello, Ada!"
+    assert describe_greeting("grace hopper") == "Hello, Grace Hopper!"
+    print("describe_greeting: OK")
 
     print("\nAll checks passed!")

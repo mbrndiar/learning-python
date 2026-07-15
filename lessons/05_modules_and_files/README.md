@@ -11,10 +11,21 @@ JSON data, handle expected errors, and implement deterministic cleanup.
 
 ## 🧩 Modules, packages, and imports
 
-A module is normally one `.py` file. A package groups importable modules in a
-directory; modern namespace packages do not always require `__init__.py`,
-although regular packages commonly include it. Importing executes a module's
-top-level code once per process and caches the resulting module object.
+A **module** is a single `.py` file.  A **package** is a directory that groups
+related modules; it is traditionally marked by an `__init__.py` file (regular
+package).  Modern Python also supports namespace packages without one, but for
+learning purposes treat every package as a folder that contains `__init__.py`.
+
+```
+example_package/          ← package (directory)
+    __init__.py           ← marks the directory as a package; can re-export names
+    greetings.py          ← public module
+    _formatting.py        ← internal module (leading underscore = not public API)
+```
+
+Importing executes a module's top-level code exactly once per process.
+Subsequent imports return the cached object from `sys.modules` without
+re-running the file.
 
 ```python
 import math
@@ -22,6 +33,69 @@ from pathlib import Path
 
 print(math.sqrt(25))
 ```
+
+### Absolute vs. relative imports
+
+An **absolute import** names the full path from a root on `sys.path`:
+
+```python
+from myapp.greetings import hello          # full dotted path
+from myapp import hello                    # via __init__.py re-export
+```
+
+A **relative import** uses a leading dot to mean "this package":
+
+```python
+# inside myapp/greetings.py
+from ._formatting import _shout            # sibling module in myapp/
+from .utils.text import truncate           # sub-package sibling
+```
+
+The dot is essential.  Without it:
+
+```python
+from _formatting import _shout             # searches sys.path, not the package
+```
+
+Python looks for a top-level module named `_formatting` instead of the sibling
+file, which will either import the wrong thing or raise `ImportError`.
+
+Relative imports work **only** when a file is loaded as part of a package—via
+`import` or `python -m`.  Running a package module directly with
+`python path/to/package/module.py` sets `__package__` to `None`, which breaks
+relative imports.  That is why package-internal modules are run from the
+repository root as:
+
+```bash
+python -m myapp.module
+```
+
+### Package-level re-exports
+
+`__init__.py` can import names from its own modules so callers get a shorter
+import path:
+
+```python
+# myapp/__init__.py
+from .greetings import hello, shout_hello
+
+__all__ = ["hello", "shout_hello"]
+```
+
+Callers can then write `from myapp import hello` instead of
+`from myapp.greetings import hello`.
+
+### Public/internal naming and `__all__`
+
+Names beginning with `_` (e.g. `_helper`, `_formatting`) signal "internal—not
+part of the public API" by convention.  Python does not enforce this; they can
+still be imported explicitly.  It is a signal to readers and tools.
+
+`__all__` lists the names that `from module import *` exposes.  It is
+**not** access control—names outside `__all__` are still importable explicitly.
+Its main purpose is to document the public surface and keep wildcard imports
+predictable.  Wildcard imports (`from module import *`) are still discouraged
+even when `__all__` is present because they obscure where names come from.
 
 Prefer explicit imports and avoid `from module import *`. Place demonstrations
 behind `if __name__ == "__main__":` so importing the module does not run them.
@@ -104,6 +178,11 @@ treating transport data as domain data.
   both classes and `contextlib.contextmanager`.
 - **`04_json_and_structured_data.py`** - serializing dictionaries and lists,
   writing readable JSON files, and validating decoded top-level structures.
+- **`05_packages.py`** – module vs. package, absolute and relative imports,
+  package-level re-exports via `__init__.py`, the `_name` convention,
+  `__all__`, import caching, and why package modules are run with
+  `python -m package.module`.
+  Uses `example_package/` (next to this file) as a concrete, runnable example.
 
 ## ▶️ Running
 
@@ -112,9 +191,10 @@ python lessons/05_modules_and_files/01_modules.py
 python lessons/05_modules_and_files/02_files_and_exceptions.py
 python lessons/05_modules_and_files/03_custom_exceptions_and_context_managers.py
 python lessons/05_modules_and_files/04_json_and_structured_data.py
+python lessons/05_modules_and_files/05_packages.py
 ```
 
-Once you've read through all four files, practice what you learned in
+Once you've read through all five files, practice what you learned in
 [`exercises/05_modules_and_files/`](../../exercises/05_modules_and_files/README.md).
 
 ## ⚠️ Common mistakes
@@ -133,3 +213,8 @@ Once you've read through all four files, practice what you learned in
 4. Why should exception handlers be narrow?
 5. What protocol makes an object usable in a `with` statement?
 6. Why must decoded JSON still be validated?
+7. What is the difference between a module and a package?
+8. Why does `from .api import X` behave differently from `from api import X`?
+9. Why are package modules run with `python -m package.module` rather than
+   directly as `python path/to/module.py`?
+10. What does `__all__` control, and is it a form of access control?

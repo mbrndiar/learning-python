@@ -3,8 +3,12 @@ Solutions: 05 Modules and Files
 """
 
 import json
+import sys
 from contextlib import contextmanager
 from pathlib import Path
+
+# Make example_package importable from this solution file.
+sys.path.insert(0, str(Path(__file__).parents[2] / "lessons" / "05_modules_and_files"))
 
 
 def write_lines(path, lines):
@@ -59,6 +63,12 @@ def temporary_value(mapping, key, value):
             mapping[key] = previous
 
 
+def describe_greeting(name: str) -> str:
+    from example_package.greetings import hello
+
+    return hello(name)
+
+
 if __name__ == "__main__":
     sample_path = Path(__file__).with_name("sample_exercise.txt")
 
@@ -94,5 +104,9 @@ if __name__ == "__main__":
         assert settings["new"] == 1
     assert "new" not in settings
     print("temporary_value: OK")
+
+    assert describe_greeting("Ada") == "Hello, Ada!"
+    assert describe_greeting("grace hopper") == "Hello, Grace Hopper!"
+    print("describe_greeting: OK")
 
     print("\nAll checks passed!")
