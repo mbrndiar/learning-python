@@ -1,5 +1,5 @@
 """
-Lesson 5.5: Packages and Import Styles
+Lesson 5.2: Packages and Import Styles
 
 A module is a single .py file.  A package is a directory that groups related
 modules and is traditionally marked by an __init__.py file.  This lesson uses
@@ -9,7 +9,7 @@ underscore naming convention.
 
 Run from the repository root:
 
-    python lessons/05_modules_and_files/05_packages.py
+    python lessons/05_modules_and_files/02_packages.py
 """
 
 import sys

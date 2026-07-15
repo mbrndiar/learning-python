@@ -169,29 +169,29 @@ treating transport data as domain data.
 
 - **`01_modules.py`** - importing standard-library modules (`math`,
   `random`, `datetime`) and organizing your own code into modules.
-- **`02_files_and_exceptions.py`** - reading from and writing to files
-  with `open()` and the `with` statement, and handling errors gracefully
-  with `try`/`except`.
-- **`03_custom_exceptions_and_context_managers.py`** - defining your own
-  exception classes (subclassing `Exception`) and writing your own
-  context managers (the objects that power the `with` statement), using
-  both classes and `contextlib.contextmanager`.
-- **`04_json_and_structured_data.py`** - serializing dictionaries and lists,
-  writing readable JSON files, and validating decoded top-level structures.
-- **`05_packages.py`** – module vs. package, absolute and relative imports,
+- **`02_packages.py`** – module vs. package, absolute and relative imports,
   package-level re-exports via `__init__.py`, the `_name` convention,
   `__all__`, import caching, and why package modules are run with
   `python -m package.module`.
   Uses `example_package/` (next to this file) as a concrete, runnable example.
+- **`03_files_and_exceptions.py`** - reading from and writing to files
+  with `open()` and the `with` statement, and handling errors gracefully
+  with `try`/`except`.
+- **`04_custom_exceptions_and_context_managers.py`** - defining your own
+  exception classes (subclassing `Exception`) and writing your own
+  context managers (the objects that power the `with` statement), using
+  both classes and `contextlib.contextmanager`.
+- **`05_json_and_structured_data.py`** - serializing dictionaries and lists,
+  writing readable JSON files, and validating decoded top-level structures.
 
 ## ▶️ Running
 
 ```bash
 python lessons/05_modules_and_files/01_modules.py
-python lessons/05_modules_and_files/02_files_and_exceptions.py
-python lessons/05_modules_and_files/03_custom_exceptions_and_context_managers.py
-python lessons/05_modules_and_files/04_json_and_structured_data.py
-python lessons/05_modules_and_files/05_packages.py
+python lessons/05_modules_and_files/02_packages.py
+python lessons/05_modules_and_files/03_files_and_exceptions.py
+python lessons/05_modules_and_files/04_custom_exceptions_and_context_managers.py
+python lessons/05_modules_and_files/05_json_and_structured_data.py
 ```
 
 Once you've read through all five files, practice what you learned in

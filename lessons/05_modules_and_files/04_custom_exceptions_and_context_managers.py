@@ -1,5 +1,5 @@
 """
-Lesson 5.3: Custom Exceptions and Context Managers
+Lesson 5.4: Custom Exceptions and Context Managers
 
 This lesson goes beyond basic try/except to cover defining your own
 exception types and writing your own context managers (the objects
