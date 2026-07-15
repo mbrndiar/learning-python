@@ -24,6 +24,8 @@ def demo_traceback():
     try:
         average([])
     except ZeroDivisionError:
+        # tracebacks normally go to stderr. Sending this demonstration to
+        # stdout keeps its heading and frames in deterministic display order.
         print("--- Example traceback (caught, not fatal) ---")
         traceback.print_exc(file=sys.stdout)
         print("--- end traceback ---")
@@ -38,6 +40,8 @@ def demo_traceback():
 
 def demo_common_errors():
     """A few of the most common beginner errors, caught and explained."""
+    # Each try block contains only the operation expected to fail. Narrow blocks
+    # make it clear which expression raised and avoid catching unrelated bugs.
     examples = []
 
     try:

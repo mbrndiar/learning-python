@@ -37,7 +37,12 @@ class Cow(Animal):
 
 
 class Puppy(Cat):
-    """Demonstrate multi-level inheritance and `super()`."""
+    """Demonstrate multi-level inheritance and `super()`.
+
+    This intentionally silly hierarchy demonstrates lookup mechanics, not good
+    domain modeling: a puppy is not genuinely a kind of cat. Real inheritance
+    should preserve an "is a" relationship; otherwise prefer composition.
+    """
 
     def __init__(self, name, breed):
         super().__init__(name)  # reuse the parent's initialization logic

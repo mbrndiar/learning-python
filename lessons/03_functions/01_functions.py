@@ -8,12 +8,17 @@ back and immediately ends the call.
 
 
 def greet(name):
-    """Return a greeting message for the given name."""
+    """Return a greeting so the caller decides whether and where to print it."""
     return f"Hello, {name}!"
 
 
 def add(a, b=0):
-    """Add two numbers together. Defaults are evaluated when `def` runs."""
+    """Add two numbers together.
+
+    Defaults are evaluated once when `def` runs. The immutable integer used
+    here is safe; a mutable list or dictionary could retain changes across
+    calls, which is why those defaults are normally represented by None.
+    """
     return a + b
 
 
@@ -23,7 +28,11 @@ def describe_person(name, age, city="Unknown"):
 
 
 def sum_all(*numbers):
-    """Accept positional arguments collected into the tuple `numbers`."""
+    """Accept positional arguments collected into the tuple `numbers`.
+
+    The tuple exists even when the caller supplies no extra arguments, so the
+    function can process all calls through one code path.
+    """
     return sum(numbers)
 
 
@@ -34,6 +43,8 @@ def print_info(**details):
 
 
 if __name__ == "__main__":
+    # This block demonstrates the functions only when the file is executed.
+    # Importing it from another module defines the functions without printing.
     print(greet("Ada"))
     print("add(2, 3) =", add(2, 3))
     print("add(5) =", add(5))

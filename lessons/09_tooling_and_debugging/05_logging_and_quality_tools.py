@@ -18,6 +18,8 @@ application files in project/, and coverage for project/.
 
 import logging
 
+# Library modules create named loggers but do not choose handlers or global
+# levels. The application configures those policy decisions at its boundary.
 logger = logging.getLogger(__name__)
 
 QUALITY_STEPS = (
@@ -35,6 +37,8 @@ QUALITY_STEPS = (
 
 def calculate_total(prices: list[float]) -> float:
     """Return a total while recording useful diagnostic context."""
+    # Logging's placeholder style defers string formatting until the message is
+    # enabled, unlike building an f-string before calling logger.debug().
     logger.debug("Calculating total for %d prices", len(prices))
     total = sum(prices)
     logger.info("Calculated total %.2f", total)

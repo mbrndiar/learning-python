@@ -13,7 +13,10 @@ import time
 def uppercase_result(func):
     """A simple decorator: transform the return value of `func`."""
 
-    @functools.wraps(func)  # preserves func's name/docstring for introspection
+    # The wrapper adds one call layer. wraps copies important metadata and sets
+    # __wrapped__, which helps introspection, documentation, and other tools
+    # still reach the original function.
+    @functools.wraps(func)
     def wrapper(*args, **kwargs):
         result = func(*args, **kwargs)
         return result.upper()
@@ -27,6 +30,8 @@ def repeat(times):
     This pattern lets a decorator accept its own arguments (here, `times`).
     """
 
+    # repeat(3) runs now and returns `decorator`; `decorator` then receives the
+    # function being defined. Only `wrapper` runs on each later function call.
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
@@ -75,7 +80,8 @@ def sum_up_to(n):
 
 
 if __name__ == "__main__":
-    # `@uppercase_result` above `greet` is equivalent to:
+    # Decoration happened when Python executed the def statement, before this
+    # main block. `@uppercase_result` is equivalent to:
     #   greet = uppercase_result(greet)
     print(greet("Ada"))
     print("greet.__name__ (preserved by functools.wraps):", greet.__name__)

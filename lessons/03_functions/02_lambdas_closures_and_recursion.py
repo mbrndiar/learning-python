@@ -6,11 +6,14 @@ advanced (but common) function-related concepts in Python.
 """
 
 # --- Lambda expressions -----------------------------------------------
-# A lambda is a small, anonymous, single-expression function.
+# A lambda is a small, anonymous, single-expression function. Assigning a
+# nontrivial lambda to a name usually loses readability; use `def` when the
+# operation deserves documentation, statements, or reuse in several places.
 square = lambda x: x**2
 add = lambda a, b: a + b
 
-# Lambdas are often used with functions like sorted(), map() and filter().
+# The key function is called for each item to compute a comparison value.
+# sorted() returns a new list and leaves `words` unchanged.
 words = ["banana", "kiwi", "apple", "fig"]
 by_length = sorted(words, key=lambda word: len(word))
 
@@ -23,6 +26,9 @@ def make_multiplier(factor):
     its enclosing scope.
     """
 
+    # Each call to make_multiplier creates a distinct enclosing `factor`.
+    # `double` and `triple` below therefore share code but retain different
+    # captured environments.
     def multiplier(number):
         return number * factor
 
@@ -34,6 +40,8 @@ def make_counter():
     count = 0
 
     def increment():
+        # Assignment would normally create a new local `count`. `nonlocal`
+        # redirects that assignment to the nearest enclosing function scope.
         nonlocal count
         count += 1
         return count
@@ -44,6 +52,9 @@ def make_counter():
 # --- Recursion -----------------------------------------------------------
 def factorial(n):
     """Compute n! recursively. The base case stops the recursion."""
+    # A recursive function needs both a stopping case and progress toward it.
+    # Each unfinished call remains on the call stack until the base value
+    # returns and the pending multiplications can resolve.
     if n <= 1:
         return 1
     return n * factorial(n - 1)

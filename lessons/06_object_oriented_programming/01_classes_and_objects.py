@@ -17,6 +17,8 @@ class Dog:
 
     def __init__(self, name, age):
         """Initialize a new Dog instance with a name and age."""
+        # Assigning through self stores state on this particular instance;
+        # dog1 and dog2 therefore receive independent names and ages.
         self.name = name  # instance attribute
         self.age = age  # instance attribute
 
@@ -42,11 +44,15 @@ class Circle:
     @property
     def area(self):
         """Compute an attribute-like value without storing duplicate state."""
+        # Deriving area from radius avoids stale duplicated state when radius
+        # changes after construction.
         return math.pi * self.radius**2
 
     @staticmethod
     def unit_circle():
         """Construct a circle without needing an existing instance."""
+        # A static method receives neither self nor cls. It belongs on the class
+        # only because it is a closely related construction helper.
         return Circle(1)
 
 

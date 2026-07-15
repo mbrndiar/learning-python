@@ -15,6 +15,8 @@ class InsufficientFundsError(Exception):
     """Raised when a withdrawal exceeds the available balance."""
 
     def __init__(self, balance, amount):
+        # Structured attributes let a handler inspect the failure without
+        # parsing the human-readable message.
         self.balance = balance
         self.amount = amount
         super().__init__(f"Cannot withdraw {amount}: balance is only {balance}")
@@ -42,9 +44,12 @@ class ManagedFile:
 
     def __enter__(self):
         self.file = open(self.path, self.mode, encoding="utf-8")
+        # The value returned here is what `as file` receives in the with block.
         return self.file
 
     def __exit__(self, exc_type, exc_value, traceback):
+        # Python calls __exit__ on normal completion and when the body raises,
+        # so cleanup belongs here rather than after the with statement.
         if self.file:
             self.file.close()
         # A truthy return would suppress the active exception. False (or None)
@@ -58,8 +63,11 @@ def timer_message(label):
     """Print a start/end message around a block of code."""
     print(f"Starting: {label}")
     try:
+        # Code before yield acts like __enter__; the single yielded value would
+        # be bound by `as`. Code after yield acts like __exit__.
         yield
     finally:
+        # finally preserves cleanup even when the managed block raises.
         print(f"Finished: {label}")
 
 

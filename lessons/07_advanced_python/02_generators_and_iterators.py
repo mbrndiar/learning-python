@@ -13,6 +13,9 @@ def countdown(start):
     Execution pauses at each `yield` and resumes right after it the next
     time a value is requested.
     """
+    # Calling countdown() does not execute this body yet. The first next() or
+    # for-loop iteration starts it, and the suspended frame retains `start`
+    # between yields.
     while start > 0:
         yield start
         start -= 1
@@ -39,10 +42,14 @@ class Countdown:
         self.current = start
 
     def __iter__(self):
+        # Returning self makes this object its own stateful iterator. Once
+        # exhausted, the same Countdown instance cannot restart automatically.
         return self
 
     def __next__(self):
         if self.current <= 0:
+            # StopIteration is the iterator protocol's normal completion signal;
+            # a for loop catches it internally.
             raise StopIteration
         value = self.current
         self.current -= 1

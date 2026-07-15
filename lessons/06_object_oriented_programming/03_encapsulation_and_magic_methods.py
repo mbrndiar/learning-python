@@ -13,6 +13,8 @@ class BankAccount:
     def __init__(self, owner, balance=0):
         self.owner = owner
         self._balance = balance  # leading underscore: "protected", by convention
+        # Name mangling reduces accidental subclass collisions; it is not a
+        # security boundary and determined callers can still access the value.
         self.__pin = "0000"  # double underscore: name-mangled, harder to access
 
     @property
@@ -54,6 +56,9 @@ class Money:
     def __eq__(self, other):
         """Define what it means for two Money objects to be equal."""
         if not isinstance(other, Money):
+            # NotImplemented asks Python to try the reflected comparison or
+            # choose its normal fallback. It is not the exception class
+            # NotImplementedError.
             return NotImplemented
         return self.amount == other.amount
 
@@ -66,6 +71,9 @@ class Money:
     def __add__(self, other):
         """Overload the + operator to add two Money objects together."""
         if not isinstance(other, Money):
+            # Returning NotImplemented lets the other operand participate in
+            # dispatch and ultimately produces a useful TypeError if neither
+            # side supports the operation.
             return NotImplemented
         return Money(self.amount + other.amount)
 

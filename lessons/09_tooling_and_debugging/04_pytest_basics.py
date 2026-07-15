@@ -18,6 +18,8 @@ from pathlib import Path
 try:
     import pytest
 except ImportError:  # The direct-run fallback below still demonstrates assert.
+    # Keep the standard-library-only lesson path runnable. pytest-specific
+    # examples are defined only when the optional development tool is present.
     pytest = None
 
 
@@ -56,6 +58,8 @@ def test_divide_normal_case():
 
 def test_divide_by_zero_raises():
     if pytest is None:
+        # Plain Python has no raises helper, so the fallback must fail manually
+        # if divide() unexpectedly returns.
         try:
             divide(10, 0)
             raise AssertionError("expected ValueError")
@@ -66,7 +70,8 @@ def test_divide_by_zero_raises():
 
 
 if pytest is not None:
-
+    # Parameterization creates a separately reported test case for each row,
+    # avoiding a loop that would stop at the first failing example.
     @pytest.mark.parametrize(
         ("a", "b", "expected"),
         [(2, 3, 5), (-1, -1, -2), (0, 5, 5)],
@@ -75,6 +80,9 @@ if pytest is not None:
         assert add(a, b) == expected
 
     def test_write_report_uses_isolated_directory(tmp_path):
+        # pytest provides a unique managed directory for this test, preventing
+        # tests from sharing real user files. Recent temporary directories may
+        # be retained to help diagnose failures.
         report = tmp_path / "report.txt"
 
         write_report(report, [3, 5])

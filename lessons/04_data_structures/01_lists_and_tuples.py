@@ -6,7 +6,8 @@ object. Tuples are immutable ordered collections, although a tuple may still
 contain a mutable object such as a list.
 """
 
-# Lists
+# Lists are mutable: append(), remove(), and sort() below all change this same
+# object in place. Any other name bound to the list would observe those changes.
 numbers = [3, 1, 4, 1, 5, 9, 2, 6]
 print("original list:", numbers)
 
@@ -23,6 +24,8 @@ print("sorted:", numbers)
 
 print("first element:", numbers[0])
 print("last element:", numbers[-1])
+# Slicing returns a new list; changing that top-level list would not resize
+# `numbers`, although nested mutable objects would still be shared.
 print("slice [1:4]:", numbers[1:4])
 
 # A comprehension builds a new list by evaluating its expression once for
@@ -30,10 +33,13 @@ print("slice [1:4]:", numbers[1:4])
 squares = [n**2 for n in numbers]
 print("squares:", squares)
 
-# Tuples
+# A tuple fixes its sequence of references. The referenced objects themselves
+# can still be mutable, so tuple immutability is not recursive.
 point = (3, 4)
 print("\npoint:", point)
-x, y = point  # tuple unpacking
+# Unpacking requires the number of targets to match the number of values unless
+# a starred target captures the remainder.
+x, y = point
 print(f"x={x}, y={y}")
 
 try:

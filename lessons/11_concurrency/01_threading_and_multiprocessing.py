@@ -17,6 +17,8 @@ import time
 
 def io_bound_task(name, delay):
     """Simulate I/O-bound work (e.g. waiting on a network response)."""
+    # sleep blocks this thread but releases execution so other threads can make
+    # progress, which models waiting for external I/O.
     time.sleep(delay)
     print(f"  Task {name} finished after {delay}s")
 
@@ -32,6 +34,8 @@ def run_with_threads():
     threads = [
         threading.Thread(target=io_bound_task, args=(f"T{i}", 0.2)) for i in range(3)
     ]
+    # start() schedules every thread before join() waits for completion. Joining
+    # immediately after each start would accidentally serialize the work.
     for thread in threads:
         thread.start()
     for thread in threads:
@@ -42,6 +46,8 @@ def run_with_threads():
 def run_with_processes():
     print("\nRunning CPU-bound tasks with a process pool:")
     start = time.perf_counter()
+    # Pool sends arguments to separate worker processes. That enables parallel
+    # CPU work but requires serializable data and adds process startup/IPC cost.
     with multiprocessing.Pool(processes=2) as pool:
         results = pool.map(cpu_bound_task, [200_000, 200_000])
     print(f"  Results: {results}")

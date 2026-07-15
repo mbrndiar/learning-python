@@ -18,6 +18,9 @@ class Shape(ABC):
     @abstractmethod
     def area(self):
         """Subclasses must implement this method."""
+        # Raising remains a defensive fallback if a subclass calls super();
+        # @abstractmethod is what prevents incomplete subclasses from being
+        # instantiated.
         raise NotImplementedError
 
     @abstractmethod
@@ -72,12 +75,18 @@ class Polygon:
     """Demonstrate a mutable default using `field(default_factory=...)`."""
 
     name: str
+    # When `points` is omitted, default_factory creates a fresh list for that
+    # Polygon. Dataclasses reject a direct [] default because an ordinary
+    # class-level mutable default would be shared.
     points: list = field(default_factory=list)
 
 
 class Color(Enum):
     """An enum defines a fixed, named set of related constants."""
 
+    # auto() generates distinct values. Treat names as the public meaning;
+    # generated numeric values are an implementation detail unless explicitly
+    # stabilized for persistence or an external protocol.
     RED = auto()
     GREEN = auto()
     BLUE = auto()

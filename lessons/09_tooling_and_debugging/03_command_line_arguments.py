@@ -14,6 +14,8 @@ def positive_int(text):
     try:
         value = int(text)
     except ValueError as error:
+        # ArgumentTypeError lets argparse produce consistent usage output and a
+        # nonzero exit status instead of exposing a conversion traceback.
         raise argparse.ArgumentTypeError("must be an integer") from error
     if value <= 0:
         raise argparse.ArgumentTypeError("must be positive")
@@ -59,11 +61,15 @@ def build_command_parser():
 
 def run(argv=None):
     """Parse the CLI boundary, call core logic, and return an exit status."""
+    # Passing argv explicitly makes the boundary deterministic in tests.
+    # None tells argparse to use the real process command line.
     args = build_parser().parse_args(argv)
 
     for _ in range(args.count):
         print(build_greeting(args.name, shout=args.shout))
 
+    # Parse a fixed example so the lesson can demonstrate subcommands while
+    # remaining noninteractive and safe to run in CI.
     command_args = build_command_parser().parse_args(["add", "Read argparse help"])
     print("\nParsed subcommand:", command_args.command, command_args.text)
 

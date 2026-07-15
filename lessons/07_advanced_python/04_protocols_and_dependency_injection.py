@@ -13,6 +13,9 @@ from typing import Protocol
 class MessageSender(Protocol):
     """Anything with this method can be used by ReminderService."""
 
+    # Structural typing cares about this callable shape, not inheritance from
+    # MessageSender. Static checkers verify compatibility without changing the
+    # runtime classes.
     def send(self, recipient: str, message: str) -> None: ...
 
 
@@ -21,6 +24,8 @@ class ReminderService:
     sender: MessageSender
 
     def remind(self, recipient: str, task: str) -> None:
+        # Receiving the collaborator keeps transport details out of business
+        # logic and lets callers choose console, legacy, or test behavior.
         self.sender.send(recipient, f"Reminder: {task}")
 
 
@@ -45,6 +50,8 @@ class LegacyNotifierAdapter:
         self.notifier = notifier
 
     def send(self, recipient: str, message: str) -> None:
+        # Translation stays at one boundary instead of leaking legacy method
+        # names and formatting rules into ReminderService.
         self.notifier.notify(f"[{recipient}] {message}")
 
 

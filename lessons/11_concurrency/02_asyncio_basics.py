@@ -14,7 +14,9 @@ import time
 async def fetch_data(name, delay):
     """Simulate an I/O-bound operation, e.g. an HTTP request."""
     print(f"  Starting {name}...")
-    await asyncio.sleep(delay)  # non-blocking "wait" - other tasks can run
+    # asyncio.sleep cooperatively yields to the event loop. time.sleep here
+    # would block the loop thread and prevent every other coroutine from moving.
+    await asyncio.sleep(delay)
     print(f"  Finished {name} after {delay}s")
     return f"{name} result"
 
@@ -29,7 +31,9 @@ async def main():
     await fetch_data("B", 0.2)
     print(f"  Sequential total: {time.perf_counter() - start:.2f}s\n")
 
-    # gather schedules both coroutine objects and waits for all their results.
+    # On success, gather waits for both coroutine objects and preserves result
+    # order. By default, the first exception is propagated immediately while
+    # other scheduled awaitables may continue running.
     start = time.perf_counter()
     print("Concurrent (asyncio.gather):")
     results = await asyncio.gather(

@@ -12,6 +12,8 @@ from pathlib import Path
 
 
 def initialize_database(path: str | Path) -> None:
+    # The connection context manages commit/rollback, while closing() handles
+    # the separate responsibility of releasing the connection itself.
     with closing(sqlite3.connect(path)) as connection:
         with connection:
             # Legacy sqlite3 transaction mode does not begin a transaction for
@@ -31,6 +33,9 @@ def initialize_database(path: str | Path) -> None:
 def add_task(path: str | Path, title: str) -> int:
     with closing(sqlite3.connect(path)) as connection:
         with connection:
+            # The placeholder keeps data separate from SQL syntax. String
+            # formatting here would permit quotes or malicious text to alter
+            # the statement.
             cursor = connection.execute(
                 "INSERT INTO tasks (title, done) VALUES (?, 0)",
                 (title,),
@@ -42,6 +47,8 @@ def add_task(path: str | Path, title: str) -> int:
 
 def list_tasks(path: str | Path) -> list[dict[str, object]]:
     with closing(sqlite3.connect(path)) as connection:
+        # row_factory must be set before executing the query; it controls how
+        # fetched rows are represented.
         connection.row_factory = sqlite3.Row
         rows = connection.execute(
             "SELECT id, title, done FROM tasks ORDER BY id"

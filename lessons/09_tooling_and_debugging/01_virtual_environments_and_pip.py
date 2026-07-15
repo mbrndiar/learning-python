@@ -22,9 +22,13 @@ def in_virtual_env():
 
 
 if __name__ == "__main__":
+    # sys.executable is the interpreter actually running this process. It is
+    # more reliable evidence than the command name typed in the shell.
     print("Python executable:", sys.executable)
     print("Python version:", sys.version.split()[0])
     print("Running inside a virtual environment?", in_virtual_env())
+    # A venv isolates installed third-party packages but normally reuses the
+    # base interpreter's standard library.
     print("Standard library location:", sysconfig.get_path("stdlib"))
 
     print(

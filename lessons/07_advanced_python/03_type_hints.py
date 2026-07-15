@@ -20,6 +20,8 @@ def greet(name: str, greeting: str = "Hello") -> str:
 
 def find_user(user_id: int, users: dict[int, str]) -> str | None:
     """Return a name or None using modern union syntax."""
+    # The union tells callers about the missing-user path and makes static type
+    # checkers reject code that assumes a string is always returned.
     return users.get(user_id)
 
 
@@ -30,6 +32,9 @@ def normalize(value: int | float | str) -> float:
 
 def average(numbers: list[float]) -> float:
     """`list[float]` documents the expected element type."""
+    # The annotation says nothing about the list being non-empty. Types capture
+    # only part of a function's contract; runtime validation or documentation
+    # must express value constraints.
     return sum(numbers) / len(numbers)
 
 

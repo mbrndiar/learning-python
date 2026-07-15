@@ -35,6 +35,8 @@ class TestMathFunctions(unittest.TestCase):
 
     def setUp(self):
         """Runs before every test method. Useful for shared setup."""
+        # unittest creates a fresh TestCase instance per method, then calls
+        # setUp(). Mutable fixture state therefore does not leak between tests.
         self.sample_numbers = (2, 3)
 
     def test_add_positive_numbers(self):
@@ -59,10 +61,15 @@ class TestMathFunctions(unittest.TestCase):
     def test_add_examples_with_subtests(self):
         examples = ((2, 3, 5), (-1, -1, -2), (0, 4, 4))
         for a, b, expected in examples:
+            # subTest keeps one failed example from hiding the remaining cases
+            # and labels the failure with the supplied parameters.
             with self.subTest(a=a, b=b):
                 self.assertEqual(add(a, b), expected)
 
     def test_notify_all_uses_sender_boundary(self):
+        # Replace only the external collaborator. notify_all's real loop and
+        # message forwarding still execute, so the test checks useful behavior
+        # without performing network or console I/O.
         sender = Mock()
 
         notify_all(sender, ["Ada", "Grace"], "Review the tests")
