@@ -1,5 +1,5 @@
 """
-Lesson 5.2: Working with Files and Exceptions
+Lesson 5.3: Working with Files and Exceptions
 
 This lesson writes and reads text using an explicit encoding, then handles an
 expected error. A with statement closes the file even if its body raises an

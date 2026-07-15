@@ -1,5 +1,5 @@
 """
-Lesson 5.4: JSON and Structured Data
+Lesson 5.5: JSON and Structured Data
 
 JSON stores dictionaries, lists, strings, numbers, booleans and null in a
 language-independent text format. Converting at the boundary keeps the rest of

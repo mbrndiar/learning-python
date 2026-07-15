@@ -15,6 +15,8 @@ modules, file I/O, exceptions, custom exceptions and context managers.
 - `save_json(path, data)` / `load_json(path)` - persist structured data.
 - `temporary_value(mapping, key, value)` - implement deterministic cleanup
   with `@contextmanager`.
+- `describe_greeting(name)` - practice absolute imports by importing `hello`
+  from `example_package.greetings` and returning the result.
 
 ## ▶️ How to work through it
 
