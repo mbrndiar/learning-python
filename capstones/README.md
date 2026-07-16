@@ -7,6 +7,11 @@ This course ends with two completed, equally required projects:
 - [`idiomatic/`](idiomatic/README.md) builds a Python-focused data-ingestion and
   reporting pipeline.
 
+Start them after Modules 1–12 and the required
+[Task REST API and clients project](../projects/tasks/README.md). In particular,
+Module 10 supplies SQL/SQLite, Module 11 supplies HTTP boundaries, the applied
+project combines those skills, and Module 12 supplies concurrency.
+
 Each track has a `starter/` and a `solution/` source root with the same public
 package boundary. The shared tests choose one root with
 `CAPSTONE_IMPLEMENTATION=starter|solution`; they never copy code between the
@@ -76,7 +81,7 @@ coverage combine
 coverage report
 ```
 
-The old Task examples under [`../project/`](../project/README.md) are temporary
-legacy material and are not a third capstone. They remain until the next cleanup
-todo; use the [migration guide](../docs/CAPSTONE_MIGRATION.md) to map their
-concepts and commands to these two required capstones.
+The removed predecessor Task examples are historical material, not a third
+capstone and not the current applied project. Use the
+[migration guide](../docs/CAPSTONE_MIGRATION.md) to map their concepts and
+commands to these two required capstones or inspect their Git revision.

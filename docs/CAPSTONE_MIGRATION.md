@@ -6,6 +6,12 @@ removed after the capstones were completed; they are not a third capstone.
 Current course work, default typing, coverage, and CI gates target both
 capstones.
 
+The current required
+[`projects/tasks/`](../projects/tasks/README.md) applied project is newly
+specified teaching material placed between Modules 11 and 12. It does not
+restore the historical `project/` tree or turn that removed source into an
+active prerequisite.
+
 No automatic data migration is provided. Legacy `tasks.json` and `tasks.db`
 files describe mutable tasks; neither data model can be converted safely into
 configuration entries or immutable operational events without an

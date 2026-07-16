@@ -38,5 +38,7 @@ python exercises/11_rest_apis_and_clients/solutions.py
 ```
 
 The reference solution is deterministic, offline, and standard-library only.
-Concurrency remains in its existing `11_concurrency/` directory until the
-separate course-renumbering change.
+Next, complete the required
+[Task REST API and clients project](../../projects/tasks/README.md), then
+continue to the
+[Module 12 concurrency exercises](../12_concurrency/README.md).

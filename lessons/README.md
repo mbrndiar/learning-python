@@ -32,11 +32,11 @@ python lessons/01_basics/01_hello_world.py
    portable SQL fundamentals, SQLite behavior, and repository boundaries
 11. [`11_rest_apis_and_clients/`](11_rest_apis_and_clients/README.md) - HTTP,
     REST boundaries, Flask, FastAPI, `urllib`, `requests`, and `httpx`
-
-> **Temporary course-order compatibility:** Continue next to
-> [`11_concurrency/`](11_concurrency/README.md). Its directory and internal
-> heading remain Module 11 until the separately planned renumbering, so this
-> learner-facing index does not assign concurrency a duplicate module number.
+   - Complete the required
+     [Task REST API and clients project](../projects/tasks/README.md) before the
+     next module.
+12. [`12_concurrency/`](12_concurrency/README.md) - threads, processes,
+   `asyncio`, bounded work, cancellation, and cleanup
 
 ## ▶️ How to use a module
 
@@ -86,8 +86,9 @@ This distinction becomes important when modules are imported in module 5.
   and parameterized repository operations.
 - After module 11, build and test one small HTTP/JSON boundary with injected
   dependencies and finite client timeouts.
-- After the following concurrency material, explain which concurrency model—if
-  any—fits the program.
+- Complete the required Task project, preserving one domain and contract across
+  its persistence, server, and client adapters.
+- After module 12, explain which concurrency model—if any—fits the program.
 
 These checkpoints are deliberately open-ended. Define expected inputs and
 outputs first, split the work into functions, and test important edge cases.

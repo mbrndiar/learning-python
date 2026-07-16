@@ -152,10 +152,7 @@ All examples use in-memory databases, deterministic seed data, the standard
 library, and explicit connection cleanup. Then complete the
 [Module 10 exercises](../../exercises/10_sql_and_sqlite/README.md).
 
-> **Course-order compatibility:** Continue to the
-> [REST/HTTP Module 11](../11_rest_apis_and_clients/README.md). Concurrency
-> remains in its existing `11_concurrency/` folder until the separately planned
-> renumbering.
+Continue to [REST/HTTP Module 11](../11_rest_apis_and_clients/README.md).
 
 ## ⚠️ Common mistakes
 

@@ -1,4 +1,4 @@
-# ⚡ Module 11: Concurrency
+# ⚡ Module 12: Concurrency
 
 Two complementary approaches to doing more than one thing at a time in
 Python.
@@ -87,14 +87,16 @@ deployment constraints can change the answer.
 ## ▶️ Running
 
 ```bash
-python lessons/11_concurrency/01_threading_and_multiprocessing.py
-python lessons/11_concurrency/02_asyncio_basics.py
+python lessons/12_concurrency/01_threading_and_multiprocessing.py
+python lessons/12_concurrency/02_asyncio_basics.py
 ```
 
 Once you've read through both files, practice what you learned in
-[`exercises/11_concurrency/`](../../exercises/11_concurrency/README.md).
+[`exercises/12_concurrency/`](../../exercises/12_concurrency/README.md).
 
-This is the final module. Once you're done, build
+This is the final module, following the required
+[Task REST API and clients project](../../projects/tasks/README.md). Once you're
+done, build
 [both equally required capstones](../../capstones/README.md).
 
 ## ⚠️ Common mistakes

@@ -19,6 +19,8 @@ By the end of the course, you will be able to:
 - test programs with `unittest` and
   [pytest](https://docs.pytest.org/en/stable/);
 - build command-line programs and small HTTP/JSON integrations;
+- complete a required Task project with SQLite and Markdown repositories, three
+  server adapters, and three client transports;
 - select an appropriate concurrency model for I/O- or CPU-bound work;
 - implement and test a versioned SQLite CLI against a frozen behavioral
   contract; and
@@ -28,9 +30,9 @@ By the end of the course, you will be able to:
 ## ✅ Requirements
 
 - Python 3.11+
-- Modules 1–10 and the HTTP fundamentals lesson use only the standard library.
-  Module 11's Flask, FastAPI, `requests`, and `httpx` comparisons use the
-  project-local dependencies in
+- Modules 1–10, Module 11's HTTP fundamentals lesson, Module 12, and both
+  capstones use only the standard library. Module 11's Flask, FastAPI,
+  `requests`, and `httpx` comparisons use the project-local dependencies in
   [`projects/tasks/requirements.txt`](projects/tasks/requirements.txt).
   Course-wide installation and CI integration are handled separately.
 - Install the development tools ([pytest](https://docs.pytest.org/en/stable/),
@@ -114,11 +116,14 @@ equivalent optional [uv](https://docs.astral.sh/uv/) workflow.
 
 Each module has a matching folder under [`exercises/`](exercises/README.md)
 with hands-on problems to implement yourself, plus reference solutions to
-check your work. After finishing a lesson, do its exercises before moving on.
+check your work. After Module 11, complete the required
+[Task REST API and clients project](projects/tasks/README.md) before moving to
+Module 12.
 
 ## 🏆 Capstone projects
 
-Once you've completed the course, build both equally required
+Once you've completed all 12 modules and the required applied project, build both
+equally required
 [capstone projects](capstones/README.md):
 
 - the [comparative SQLite key/value store](capstones/comparative/README.md);
@@ -128,8 +133,9 @@ Use each guided starter one milestone at a time, writing a test before or
 alongside each change. Compare with the reference solution only after the
 selected milestone tests pass.
 
-The predecessor Task Manager, REST API, and client examples have been removed;
-they are not a third capstone. See the
+The predecessor Task Manager, REST API, and client examples have been removed.
+They are distinct from the current required [`projects/tasks/`](projects/tasks/)
+learning project and are not a third capstone. See the
 [capstone migration guide](docs/CAPSTONE_MIGRATION.md) for concept mappings and
 the exact Git revision that still contains their source.
 
@@ -213,10 +219,10 @@ reference to jog your memory after finishing the course.
     - [`02_flask_api.py`](lessons/11_rest_apis_and_clients/02_flask_api.py) – an application factory, thin routes, injected dependencies, centralized errors, and Flask's test client
     - [`03_fastapi_api.py`](lessons/11_rest_apis_and_clients/03_fastapi_api.py) – Pydantic boundary models, dependency providers, response models, exception mapping, OpenAPI, and `TestClient`
     - [`04_http_clients.py`](lessons/11_rest_apis_and_clients/04_http_clients.py) – `urllib`, `requests`, and `httpx` transports with finite timeouts and status-first validation
-
-Next, continue to **[Concurrency](lessons/11_concurrency/)**. That directory and
-its internal heading temporarily retain number 11 until the separately planned
-renumbering; this course outline avoids assigning it a duplicate number.
+    - **Required applied project:** [Task REST API and clients](projects/tasks/README.md) – implement the shared Task domain, SQLite and Markdown repositories, three server adapters, three client transports, and their contract tests
+12. **[Concurrency](lessons/12_concurrency/)**
+    - [`01_threading_and_multiprocessing.py`](lessons/12_concurrency/01_threading_and_multiprocessing.py) – threads for blocking I/O, processes for CPU-bound work, shared-state hazards, and cleanup
+    - [`02_asyncio_basics.py`](lessons/12_concurrency/02_asyncio_basics.py) – cooperative concurrency, owned tasks, `async`/`await`, and `asyncio.gather`
 
 Work through the lessons in order, read the comments, then try modifying the
 code to experiment with the concepts. After each module, complete the

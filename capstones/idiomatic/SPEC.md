@@ -8,10 +8,11 @@ commands, data rules, errors, milestones, and acceptance criteria below are
 normative. Package layering and internal class/function decomposition are not;
 learners may choose any clear design that preserves the public boundaries.
 
-The old connected Task projects under [`project/`](../../project/README.md) are
-temporary legacy material. Both capstones now pass the repository gates; see
-the [migration guide](../../docs/CAPSTONE_MIGRATION.md) for the mapping retained
-until the next cleanup todo.
+The removed connected Task projects are historical material. They are distinct
+from the current required
+[Task REST API and clients project](../../projects/tasks/README.md). See the
+[migration guide](../../docs/CAPSTONE_MIGRATION.md) for the historical concept
+mapping.
 
 ## Bounded problem
 
@@ -40,7 +41,9 @@ generic storage API.
 | [Module 8: testing](../../lessons/08_testing/README.md) | Test normal, boundary, and failure behavior with `unittest`, fakes, and temporary resources. |
 | [Module 9: tooling and debugging](../../lessons/09_tooling_and_debugging/README.md) | Provide an `argparse` CLI, useful logging, strict mypy coverage, Ruff compliance, and measured tests. |
 | [Module 10: SQL and SQLite](../../lessons/10_sql_and_sqlite/README.md) | Use schema constraints, parameterized SQL, transactions, row mapping, and a narrow repository boundary. |
-| [Module 11: concurrency](../../lessons/11_concurrency/README.md) | Fetch independent HTTP pages with bounded threads, deterministic collection, cancellation, and explicit cleanup. |
+| [Module 11: REST APIs and HTTP clients](../../lessons/11_rest_apis_and_clients/README.md) | Keep HTTP parsing and response validation behind injected boundaries, require finite timeouts, and test without public network access. |
+| [Required Task REST API and clients project](../../projects/tasks/README.md) | Combine domain, repository, server, and client adapters while preserving dependency direction and one HTTP contract. |
+| [Module 12: concurrency](../../lessons/12_concurrency/README.md) | Fetch independent HTTP pages with bounded threads, deterministic collection, cancellation, and explicit cleanup. |
 
 ## Normative event model
 
@@ -432,13 +435,12 @@ The durable [migration guide](../../docs/CAPSTONE_MIGRATION.md) maps legacy
 concepts and commands to both capstones. Reuse patterns, not the task domain:
 
 - `Protocol` and dependency-injection style, strict untrusted-dictionary
-  narrowing, and `argparse`/exit separation from
-  [`project/task_manager/`](../../project/task_manager/README.md);
-- SQLite connection/transaction and temporary database testing patterns from
-  [`project/task_rest_api/`](../../project/task_rest_api/README.md);
-- injected HTTP and response validation patterns from
-  [`project/task_rest_client/`](../../project/task_rest_client/README.md);
+  narrowing, and `argparse`/exit separation;
+- SQLite connection/transaction and temporary database testing patterns;
+- injected HTTP and response validation patterns, also practiced in the current
+  [Task REST API and clients project](../../projects/tasks/README.md);
 - atomic export, temporary paths, and loopback server test support where useful.
 
 Do not rename Task fields into events or preserve Task CRUD/storage interfaces.
-The temporary legacy paths remain only until the next cleanup todo.
+Historical source paths remain documented only in the migration guide and Git
+history.

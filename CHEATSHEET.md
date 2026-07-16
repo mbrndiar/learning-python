@@ -40,6 +40,11 @@ after finishing the course, or while working through the exercises.
 | Transaction | A unit of database work committed or rolled back together |
 | Index | A database structure trading write cost and space for selected faster reads |
 | Repository | A boundary exposing domain-oriented persistence operations |
+| HTTP request / response | A method, target, headers, and optional bytes sent to a server; then a status, headers, and optional bytes returned |
+| REST API | An HTTP interface organized around resources and documented methods, routes, statuses, and representations |
+| Finite timeout | A positive upper bound on how long an outbound operation may wait |
+| Thread | A concurrent execution path sharing process memory |
+| Process | An isolated interpreter and memory space that can run CPU work in parallel |
 
 ## Quick syntax reference
 
@@ -125,6 +130,18 @@ with closing(sqlite3.connect(":memory:")) as connection:
     rows = connection.execute(
         "SELECT id, title FROM tasks ORDER BY id"
     ).fetchall()
+
+# HTTP client boundary
+from urllib.request import Request, urlopen
+
+request = Request(
+    "http://127.0.0.1:8000/tasks/1",
+    headers={"Accept": "application/json"},
+)
+with urlopen(request, timeout=5.0) as response:
+    if response.status != 200:
+        raise RuntimeError(f"unexpected HTTP status: {response.status}")
+    task = json.loads(response.read().decode("utf-8"))
 
 # Decorators
 def logged(func):
@@ -280,6 +297,14 @@ ruff format .
 ruff check .
 mypy
 ```
+
+## Advanced course sequence
+
+1. [Module 10: SQL and SQLite](lessons/10_sql_and_sqlite/README.md)
+2. [Module 11: REST APIs and HTTP Clients](lessons/11_rest_apis_and_clients/README.md)
+3. Required [Task REST API and clients project](projects/tasks/README.md)
+4. [Module 12: Concurrency](lessons/12_concurrency/README.md)
+5. Both required [capstones](capstones/README.md)
 
 ## Where to go next
 

@@ -20,16 +20,18 @@ Every module folder contains:
 - `solutions.py` - a reference implementation, in case you get stuck or
   want to compare approaches. Try to solve each exercise yourself first!
 
-## 🌐 Current Module 11
+## 🧭 Modules 10–12 and the applied project
 
-After the SQL exercises, continue with
-[`11_rest_apis_and_clients/`](11_rest_apis_and_clients/README.md) to practice
-request mapping, exact query parsing, error/status mapping, injected HTTP
-transports, and malformed-response validation.
+Complete the advanced sequence in this order:
 
-The existing [`11_concurrency/`](11_concurrency/README.md) directory follows
-that material but keeps its old number until the separate renumbering change.
-This index intentionally avoids presenting two different modules as number 11.
+1. [`10_sql_and_sqlite/`](10_sql_and_sqlite/README.md);
+2. [`11_rest_apis_and_clients/`](11_rest_apis_and_clients/README.md);
+3. the required
+   [Task REST API and clients project](../projects/tasks/README.md); and
+4. [`12_concurrency/`](12_concurrency/README.md).
+
+The REST exercises practice request mapping, exact query parsing, error/status
+mapping, injected HTTP transports, and malformed-response validation.
 
 ## ▶️ How to work through an exercise
 

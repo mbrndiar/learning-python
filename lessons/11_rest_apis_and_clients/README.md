@@ -110,6 +110,6 @@ running a lesson never starts a persistent server.
 7. Which failures belong to API, malformed-response, and connection categories?
 8. What capability should a narrow injected transport expose?
 
-Concurrency still occupies its existing `11_concurrency/` directory until the
-separate renumbering change moves it. In the learning sequence, complete this
-REST/HTTP module before concurrency.
+Next, complete the required
+[Task REST API and clients project](../../projects/tasks/README.md), then
+continue to [Module 12: Concurrency](../12_concurrency/README.md).

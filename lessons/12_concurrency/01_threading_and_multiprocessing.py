@@ -1,5 +1,5 @@
 """
-Lesson 11.1: Threading and Multiprocessing
+Lesson 12.1: Threading and Multiprocessing
 
 Python offers two standard-library ways to run work concurrently:
 - `threading` - multiple threads in one process, best for I/O-bound work

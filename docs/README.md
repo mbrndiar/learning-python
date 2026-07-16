@@ -11,6 +11,10 @@ themselves.
 - [`CAPSTONE_MIGRATION.md`](CAPSTONE_MIGRATION.md) - mapping the removed Task
   project concepts and commands to the two completed, equally required
   capstones, with instructions for inspecting the old source in Git history.
+- [`../projects/tasks/`](../projects/tasks/README.md) - the current required
+  applied project between Module 11 REST APIs/clients and Module 12 concurrency;
+  it is separate from the historical Task source described by the migration
+  guide.
 
 Core teaching material lives in each module's `README.md` and runnable lesson
 files. Start from the repository's [main course guide](../README.md), not this

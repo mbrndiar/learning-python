@@ -6,6 +6,8 @@ an injected paginated HTTP boundary, bounded threads, and deterministic reports.
 Runtime code uses only the Python standard library.
 This is one of the course's
 [two completed, equally required capstones](../README.md).
+Begin after Modules 1–12 and the required
+[Task REST API and clients project](../../projects/tasks/README.md).
 
 ## Choose a source root
 

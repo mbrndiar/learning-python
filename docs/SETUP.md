@@ -32,8 +32,11 @@ cd learning-python
 ## 3. Create a virtual environment
 
 A virtual environment keeps this project's Python packages isolated from
-the rest of your system. The lessons themselves have no runtime dependencies, but a virtual environment
-is still good practice and keeps the optional development tools isolated.
+the rest of your system. Modules 1–10, Module 11's HTTP fundamentals lesson,
+Module 12, and both capstones use only the standard library. Module 11's
+framework/client comparisons and the required Task project use project-local
+runtime dependencies. A virtual environment keeps those and the development
+tools isolated.
 
 ```bash
 # Create the environment (creates a .venv/ folder)
@@ -48,10 +51,9 @@ source .venv/bin/activate        # macOS / Linux
 Once activated, your shell prompt is usually prefixed with `(.venv)`. To
 leave the virtual environment, run `deactivate`.
 
-## 4. Install optional tools
+## 4. Install dependencies
 
-Everything in `lessons/` and both capstone reference implementations runs with
-the standard library alone. The development requirements add
+The development requirements add
 [pytest](https://docs.pytest.org/en/stable/),
 [Ruff](https://docs.astral.sh/ruff/),
 [mypy](https://mypy.readthedocs.io/en/stable/), and
@@ -60,6 +62,13 @@ testing, formatting, linting, static type checking, and coverage measurement:
 
 ```bash
 python -m pip install -r requirements-dev.txt
+```
+
+Before running all of Module 11 or the required applied project, install its
+runtime dependencies too:
+
+```bash
+python -m pip install -r projects/tasks/requirements.txt
 ```
 
 ## 5. Choose an editor
@@ -78,6 +87,11 @@ python lessons/01_basics/01_hello_world.py
 If you see `Hello, World!` printed, you're ready to start. Continue to the
 [course guide in the README](../README.md).
 
+Near the end of the course, follow the required order: Module 10 SQL/SQLite,
+Module 11 REST APIs and clients, the
+[Task REST API and clients project](../projects/tasks/README.md), Module 12
+concurrency, then both capstones.
+
 ## Optional modern setup with uv
 
 The `venv` and `pip` workflow above is built into Python, widely available, and
@@ -93,6 +107,7 @@ run from the repository root:
 uv python install 3.14
 uv venv --python 3.14
 uv pip install -r requirements-dev.txt
+uv pip install -r projects/tasks/requirements.txt
 source .venv/bin/activate
 python lessons/01_basics/01_hello_world.py
 python -m pytest lessons/09_tooling_and_debugging/04_pytest_basics.py
@@ -177,7 +192,9 @@ CI confirms that the result does not depend on unrecorded local state.
 The predecessor Task examples have been removed and do not define any
 development gates. The [migration guide](CAPSTONE_MIGRATION.md) maps their
 concepts to the two required capstones and records where to inspect the removed
-source in Git history.
+source in Git history. The current
+[`projects/tasks/`](../projects/tasks/README.md) applied project is a new,
+required course stage rather than a restored legacy path.
 
 ## Troubleshooting
 

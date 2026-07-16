@@ -10,6 +10,14 @@ scaffolds plus a shared test harness. Domain, persistence, server, and client
 operations remain intentionally incomplete until their milestone implementation
 phases.
 
+## Course placement
+
+This is the required applied project between
+[Module 11: REST APIs and HTTP Clients](../../lessons/11_rest_apis_and_clients/README.md)
+and [Module 12: Concurrency](../../lessons/12_concurrency/README.md). Module 10's
+SQL/SQLite material and Module 11's HTTP boundaries are prerequisites. Complete
+all five milestones before moving to concurrency and the final capstones.
+
 ## Start with the contract
 
 - [`docs/SPEC.md`](docs/SPEC.md) explains the behavior, workflows, persistence,

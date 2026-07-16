@@ -1,6 +1,6 @@
-# ⚡ Exercises: Module 11 - Concurrency
+# ⚡ Exercises: Module 12 - Concurrency
 
-Practice problems for [`lessons/11_concurrency/`](../../lessons/11_concurrency/README.md):
+Practice problems for [`lessons/12_concurrency/`](../../lessons/12_concurrency/README.md):
 threading, multiprocessing and asyncio.
 
 ## 🧩 Tasks in `exercises.py`
@@ -16,12 +16,12 @@ The thread exercise must also propagate worker exceptions to the caller.
 
 ## ▶️ How to work through it
 
-1. Read [`lessons/11_concurrency/`](../../lessons/11_concurrency/README.md) first.
+1. Read [`lessons/12_concurrency/`](../../lessons/12_concurrency/README.md) first.
 2. Open `exercises.py` and implement each function marked `# TODO`.
 3. Run it:
 
    ```bash
-   python exercises/11_concurrency/exercises.py
+   python exercises/12_concurrency/exercises.py
    ```
 
    It prints `OK` for each check once everything is implemented
