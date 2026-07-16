@@ -20,6 +20,17 @@ Every module folder contains:
 - `solutions.py` - a reference implementation, in case you get stuck or
   want to compare approaches. Try to solve each exercise yourself first!
 
+## 🌐 Current Module 11
+
+After the SQL exercises, continue with
+[`11_rest_apis_and_clients/`](11_rest_apis_and_clients/README.md) to practice
+request mapping, exact query parsing, error/status mapping, injected HTTP
+transports, and malformed-response validation.
+
+The existing [`11_concurrency/`](11_concurrency/README.md) directory follows
+that material but keeps its old number until the separate renumbering change.
+This index intentionally avoids presenting two different modules as number 11.
+
 ## ▶️ How to work through an exercise
 
 1. Read the corresponding lesson in `lessons/`.

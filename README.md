@@ -27,9 +27,13 @@ By the end of the course, you will be able to:
 
 ## ✅ Requirements
 
-- Python 3.11+ (the lessons themselves need no external dependencies)
-- The lessons use only the standard library at runtime. Install the development
-  tools ([pytest](https://docs.pytest.org/en/stable/),
+- Python 3.11+
+- Modules 1–10 and the HTTP fundamentals lesson use only the standard library.
+  Module 11's Flask, FastAPI, `requests`, and `httpx` comparisons use the
+  project-local dependencies in
+  [`projects/tasks/requirements.txt`](projects/tasks/requirements.txt).
+  Course-wide installation and CI integration are handled separately.
+- Install the development tools ([pytest](https://docs.pytest.org/en/stable/),
   [Ruff](https://docs.astral.sh/ruff/),
   [mypy](https://mypy.readthedocs.io/en/stable/), and
   [Coverage.py](https://coverage.readthedocs.io/en/stable/)) with
@@ -204,13 +208,15 @@ reference to jog your memory after finishing the course.
     - [`02_joins_aggregates_and_indexes.py`](lessons/10_sql_and_sqlite/02_joins_aggregates_and_indexes.py) – related tables, joins, grouped aggregates, indexes, and query plans
     - [`03_transactions_and_sqlite.py`](lessons/10_sql_and_sqlite/03_transactions_and_sqlite.py) – transactions, generated IDs, SQLite affinity, pragmas, and limitations
     - [`04_repository_pattern.py`](lessons/10_sql_and_sqlite/04_repository_pattern.py) – a small injected repository and reusable contract checks
-11. **[Concurrency](lessons/11_concurrency/)**
-    - [`01_threading_and_multiprocessing.py`](lessons/11_concurrency/01_threading_and_multiprocessing.py) – `threading` for I/O-bound
-      work and `multiprocessing` for CPU-bound work
-    - [`02_asyncio_basics.py`](lessons/11_concurrency/02_asyncio_basics.py) – `async`/`await` and `asyncio.gather`
+11. **[REST APIs and HTTP Clients](lessons/11_rest_apis_and_clients/)**
+    - [`01_http_fundamentals.py`](lessons/11_rest_apis_and_clients/01_http_fundamentals.py) – methods, routes, queries, headers, statuses, bytes, UTF-8, JSON, and finite timeouts
+    - [`02_flask_api.py`](lessons/11_rest_apis_and_clients/02_flask_api.py) – an application factory, thin routes, injected dependencies, centralized errors, and Flask's test client
+    - [`03_fastapi_api.py`](lessons/11_rest_apis_and_clients/03_fastapi_api.py) – Pydantic boundary models, dependency providers, response models, exception mapping, OpenAPI, and `TestClient`
+    - [`04_http_clients.py`](lessons/11_rest_apis_and_clients/04_http_clients.py) – `urllib`, `requests`, and `httpx` transports with finite timeouts and status-first validation
 
-Concurrency temporarily remains Module 11 until its separately planned
-renumbering. The pending REST/HTTP Module 11 is not part of this change.
+Next, continue to **[Concurrency](lessons/11_concurrency/)**. That directory and
+its internal heading temporarily retain number 11 until the separately planned
+renumbering; this course outline avoids assigning it a duplicate number.
 
 Work through the lessons in order, read the comments, then try modifying the
 code to experiment with the concepts. After each module, complete the

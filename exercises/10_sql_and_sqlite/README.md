@@ -41,6 +41,7 @@ python exercises/10_sql_and_sqlite/solutions.py
 Both scripts use only the standard library, open in-memory databases, use
 deterministic data and ordering, and close every connection.
 
-> **Course-order compatibility:** The existing concurrency exercises remain in
-> Module 11 until their separately planned renumbering. This exercise module
-> does not add the pending REST/HTTP exercises.
+> **Course-order compatibility:** Continue to the
+> [REST/HTTP Module 11 exercises](../11_rest_apis_and_clients/README.md). The
+> existing concurrency exercises keep their old directory number until the
+> separately planned renumbering.

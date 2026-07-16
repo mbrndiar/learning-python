@@ -1,8 +1,8 @@
 # 🎓 Lessons
 
-This is the main course content: eleven modules of small, self-contained,
-runnable scripts that teach Python from the ground up. Each module builds on
-the ones before it, so work through them in order.
+This is the main course content: small, self-contained, runnable scripts that
+teach Python from the ground up. Each module builds on the ones before it, so
+work through them in order.
 
 Run any lesson file from the repository root, for example:
 
@@ -30,12 +30,13 @@ python lessons/01_basics/01_hello_world.py
    virtual environments, debugging, CLI arguments, logging and quality tools
 10. [`10_sql_and_sqlite/`](10_sql_and_sqlite/README.md) - relational modeling,
    portable SQL fundamentals, SQLite behavior, and repository boundaries
-11. [`11_concurrency/`](11_concurrency/README.md) - threading,
-    multiprocessing and asyncio
+11. [`11_rest_apis_and_clients/`](11_rest_apis_and_clients/README.md) - HTTP,
+    REST boundaries, Flask, FastAPI, `urllib`, `requests`, and `httpx`
 
-> **Course-order compatibility:** Concurrency temporarily remains Module 11
-> until its separately planned renumbering. The pending REST/HTTP Module 11 is
-> not included here yet.
+> **Temporary course-order compatibility:** Continue next to
+> [`11_concurrency/`](11_concurrency/README.md). Its directory and internal
+> heading remain Module 11 until the separately planned renumbering, so this
+> learner-facing index does not assign concurrency a duplicate module number.
 
 ## ▶️ How to use a module
 
@@ -83,7 +84,10 @@ This distinction becomes important when modules are imported in module 5.
 - After modules 7–9, add annotations, tests, logging, and a CLI.
 - After module 10, replace file persistence with a constrained SQLite schema
   and parameterized repository operations.
-- After module 11, explain which concurrency model—if any—fits the program.
+- After module 11, build and test one small HTTP/JSON boundary with injected
+  dependencies and finite client timeouts.
+- After the following concurrency material, explain which concurrency model—if
+  any—fits the program.
 
 These checkpoints are deliberately open-ended. Define expected inputs and
 outputs first, split the work into functions, and test important edge cases.
