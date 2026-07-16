@@ -6,13 +6,15 @@ from tasks_cli.transport import TaskTransport, TransportRequest, TransportRespon
 
 
 class RequestsTransport:
-    """Task transport that will own a ``requests.Session``."""
+    """TODO: own one ``requests.Session`` for this CLI invocation."""
 
     def __init__(self, base_url: str, timeout: float) -> None:
         self.base_url = base_url
         self.timeout = timeout
 
     def send(self, request: TransportRequest) -> TransportResponse:
+        """TODO: use Requests' ``params=`` and ``json=`` arguments."""
+
         incomplete(
             "milestone 4 requests call "
             f"{request.method} {request.path}, "
@@ -20,11 +22,11 @@ class RequestsTransport:
         )
 
     def close(self) -> None:
-        """Release the future session owned by this transport."""
+        """TODO: close the session owned by this transport."""
 
 
 def create_transport(base_url: str, timeout: float) -> TaskTransport:
-    """Create one Requests transport without importing the optional library."""
+    """Create one Requests transport for the shared client application."""
 
     return RequestsTransport(base_url, timeout)
 

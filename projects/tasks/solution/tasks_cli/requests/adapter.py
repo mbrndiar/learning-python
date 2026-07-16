@@ -1,30 +1,82 @@
-"""Requests transport boundary for milestone four."""
+"""Idiomatic Requests transport for the shared Task client application."""
 
-from tasks_core.errors import incomplete
+import math
+from urllib.parse import quote
 
-from tasks_cli.transport import TaskTransport, TransportRequest, TransportResponse
+import requests
+
+from tasks_cli.transport import (
+    TaskTransport,
+    TransportConnectionError,
+    TransportError,
+    TransportRequest,
+    TransportResponse,
+    TransportTimeoutError,
+    normalize_base_url,
+)
 
 
 class RequestsTransport:
-    """Task transport that will own a ``requests.Session``."""
+    """Task transport that owns one ``requests.Session``."""
 
     def __init__(self, base_url: str, timeout: float) -> None:
-        self.base_url = base_url
+        if not math.isfinite(timeout) or timeout <= 0:
+            raise ValueError("timeout must be positive and finite")
+        self.base_url = normalize_base_url(base_url)
         self.timeout = timeout
+        self._session = requests.Session()
+        self._closed = False
 
     def send(self, request: TransportRequest) -> TransportResponse:
-        incomplete(
-            "milestone 4 requests call "
-            f"{request.method} {request.path}, "
-            f"query={request.query!r}, json={request.json_body!r}"
-        )
+        """Send one request using Requests' native query and JSON arguments."""
+
+        if self._closed:
+            raise TransportError("transport is closed")
+
+        url = f"{self.base_url}{quote(request.path, safe='/')}"
+        try:
+            response = self._session.request(
+                method=request.method,
+                url=url,
+                params=dict(request.query),
+                json=(
+                    dict(request.json_body) if request.json_body is not None else None
+                ),
+                timeout=self.timeout,
+            )
+            try:
+                return TransportResponse(
+                    status=response.status_code,
+                    headers=dict(response.headers),
+                    body=bytes(response.content),
+                )
+            finally:
+                response.close()
+        except requests.Timeout as error:
+            raise TransportTimeoutError("request timed out") from error
+        except requests.ConnectionError as error:
+            raise TransportConnectionError("request failed") from error
+        except requests.RequestException as error:
+            raise TransportError("request failed") from error
 
     def close(self) -> None:
-        """Release the future session owned by this transport."""
+        """Release the owned Requests session."""
+
+        if not self._closed:
+            try:
+                self._session.close()
+            except requests.Timeout as error:
+                raise TransportTimeoutError("request timed out") from error
+            except requests.ConnectionError as error:
+                raise TransportConnectionError("request failed") from error
+            except requests.RequestException as error:
+                raise TransportError("request failed") from error
+            finally:
+                self._closed = True
 
 
 def create_transport(base_url: str, timeout: float) -> TaskTransport:
-    """Create one Requests transport without importing the optional library."""
+    """Create one Requests transport for a CLI invocation."""
 
     return RequestsTransport(base_url, timeout)
 
