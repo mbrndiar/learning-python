@@ -5,9 +5,10 @@ use it through three HTTP client libraries. The point is not to create three
 unrelated applications. It is to keep one domain and one HTTP contract stable
 while observing what each library makes explicit, convenient, or implicit.
 
-This documentation-first phase freezes the project contract and learning path.
-The `starter/`, `solution/`, and shared `tests/` source trees will be added in a
-later implementation phase.
+The project currently includes matching typed `starter/` and `solution/`
+scaffolds plus a shared test harness. Domain, persistence, server, and client
+operations remain intentionally incomplete until their milestone implementation
+phases.
 
 ## Start with the contract
 
@@ -71,8 +72,9 @@ trade-offs—not whether two files contain identical code.
 
 ## Intended Python commands
 
-These commands define the learner interface that the later source phase will
-implement. Run them from the repository root after the source scaffold exists.
+These commands define the learner interface exposed by the source scaffold. Run
+them from the repository root; unfinished operations fail with an explicit
+milestone message.
 
 Install only the project runtime libraries:
 

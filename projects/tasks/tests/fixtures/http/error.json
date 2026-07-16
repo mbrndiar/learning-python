@@ -1,0 +1,6 @@
+{
+  "error": {
+    "code": "not_found",
+    "message": "task 1 was not found"
+  }
+}
