@@ -27,8 +27,10 @@ all five milestones before moving to concurrency and the final capstones.
 - [`docs/PLAN.md`](docs/PLAN.md) is a reusable, language-independent build plan
   for adapting the project to another learning repository.
 - [`docs/PROMPT.md`](docs/PROMPT.md) is a reusable agent instruction template.
-- [`requirements.txt`](requirements.txt) declares the future Python runtime
-  dependencies locally without changing the course-wide installation yet.
+- [`requirements.txt`](requirements.txt) declares the project's runtime and
+  executable-contract dependencies. The repository's
+  [`requirements-dev.txt`](../../requirements-dev.txt) includes it for a clean
+  course-wide development installation.
 
 Read the specification before tests or source. Tests will provide fast
 feedback, but they are not a hidden replacement for the written contract.
@@ -93,11 +95,15 @@ These commands define the learner interface exposed by the source scaffold. Run
 them from the repository root; unfinished operations fail with an explicit
 milestone message.
 
-Install the project runtime and executable-contract libraries:
+The normal course-wide development installation includes this project's runtime
+and executable-contract libraries:
 
 ```bash
-python -m pip install -r projects/tasks/requirements.txt
+python -m pip install -r requirements-dev.txt
 ```
+
+To install only the project dependencies instead, use
+`python -m pip install -r projects/tasks/requirements.txt`.
 
 Select `starter` or `solution` for tests:
 
@@ -118,6 +124,16 @@ python -m ruff format --check projects/tasks
 python -m ruff check projects/tasks
 python -m mypy --strict --no-incremental projects/tasks/starter
 python -m mypy --strict --no-incremental projects/tasks/solution
+```
+
+Measure the solution separately so coverage from the capstones cannot hide
+project gaps:
+
+```bash
+coverage erase
+PROJECT_IMPLEMENTATION=solution \
+  coverage run -m pytest projects/tasks/tests -q
+coverage report --include="projects/tasks/solution/**/*.py"
 ```
 
 Start any server with either persistence backend:

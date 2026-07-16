@@ -1,4 +1,5 @@
-# Project-local runtime and executable-contract dependencies.
+# Project runtime and executable-contract dependencies.
+# The course-wide development requirements include this file.
 Flask>=3.1,<4
 fastapi>=0.115,<1
 httpx>=0.27,<1

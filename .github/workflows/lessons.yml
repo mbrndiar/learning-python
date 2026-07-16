@@ -1,4 +1,4 @@
-name: Run lessons and capstones
+name: Run lessons, project, and capstones
 
 on:
   push:
@@ -39,7 +39,8 @@ jobs:
           mypy
           mypy --strict \
             capstones/comparative/starter/comparative_kv \
-            capstones/idiomatic/starter/ingest_report
+            capstones/idiomatic/starter/ingest_report \
+            projects/tasks/starter
 
       - name: Run every lesson script
         run: |
@@ -61,6 +62,17 @@ jobs:
 
       - name: Compile exercise starters
         run: python -m compileall -q exercises
+
+      - name: Validate Task REST API and clients project
+        run: |
+          python -m compileall -q \
+            projects/tasks/starter \
+            projects/tasks/solution \
+            projects/tasks/tests
+          PROJECT_IMPLEMENTATION=starter \
+            python -m pytest projects/tasks/tests -q
+          PROJECT_IMPLEMENTATION=solution \
+            python -m pytest projects/tasks/tests -q
 
       - name: Validate capstones
         run: |
@@ -94,6 +106,14 @@ jobs:
             discover -s capstones/idiomatic/tests -p 'test_*.py'
           coverage combine
           coverage report
+
+      - name: Measure Task project branch coverage
+        if: matrix.python-version == '3.14'
+        run: |
+          coverage erase
+          PROJECT_IMPLEMENTATION=solution \
+            coverage run -m pytest projects/tasks/tests -q
+          coverage report --include="projects/tasks/solution/**/*.py"
 
       - name: Run pytest lesson with pytest
         run: python -m pytest lessons/09_tooling_and_debugging/04_pytest_basics.py -v

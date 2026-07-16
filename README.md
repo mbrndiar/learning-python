@@ -32,10 +32,11 @@ By the end of the course, you will be able to:
 - Python 3.11+
 - Modules 1–10, Module 11's HTTP fundamentals lesson, Module 12, and both
   capstones use only the standard library. Module 11's Flask, FastAPI,
-  `requests`, and `httpx` comparisons use the project-local dependencies in
+  `requests`, and `httpx` comparisons and the Task project use the runtime
+  dependencies in
   [`projects/tasks/requirements.txt`](projects/tasks/requirements.txt).
-  Course-wide installation and CI integration are handled separately.
-- Install the development tools ([pytest](https://docs.pytest.org/en/stable/),
+- Install those dependencies and the development tools
+  ([pytest](https://docs.pytest.org/en/stable/),
   [Ruff](https://docs.astral.sh/ruff/),
   [mypy](https://mypy.readthedocs.io/en/stable/), and
   [Coverage.py](https://coverage.readthedocs.io/en/stable/)) with
@@ -93,7 +94,20 @@ The starter packages are also strict-type-checked as learner scaffolding:
 ```bash
 mypy --strict \
   capstones/comparative/starter/comparative_kv \
-  capstones/idiomatic/starter/ingest_report
+  capstones/idiomatic/starter/ingest_report \
+  projects/tasks/starter
+PROJECT_IMPLEMENTATION=starter python -m pytest projects/tasks/tests -q
+PROJECT_IMPLEMENTATION=solution python -m pytest projects/tasks/tests -q
+```
+
+The project and capstones have independent branch-coverage gates. Measure the
+project solution without allowing the mature capstones to hide gaps:
+
+```bash
+coverage erase
+PROJECT_IMPLEMENTATION=solution \
+  coverage run -m pytest projects/tasks/tests -q
+coverage report --include="projects/tasks/solution/**/*.py"
 ```
 
 Module 9 explains what each tool checks, how to measure coverage, and how these

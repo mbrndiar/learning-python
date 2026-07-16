@@ -270,7 +270,7 @@ tests independent and deterministic.
 python3 --version                 # check Python version
 python3 -m venv .venv             # create a virtual environment
 source .venv/bin/activate         # activate it (Linux/macOS)
-python -m pip install -r requirements-dev.txt
+python -m pip install -r requirements-dev.txt  # tools + Task project libraries
 python -m pip list                # inspect installed packages
 python -m pip freeze              # snapshot this environment
 python script.py arg1 --flag      # run a script with arguments
@@ -282,6 +282,19 @@ ruff format --check .             # verify formatting
 mypy                              # statically check project annotations
 coverage run -m unittest ...      # execute tests while measuring
 coverage report                   # show measured test coverage
+```
+
+Task project checks use an environment variable to select the matching source
+root:
+
+```bash
+PROJECT_IMPLEMENTATION=starter python -m pytest projects/tasks/tests -q
+PROJECT_IMPLEMENTATION=solution python -m pytest projects/tasks/tests -q
+
+coverage erase
+PROJECT_IMPLEMENTATION=solution \
+  coverage run -m pytest projects/tasks/tests -q
+coverage report --include="projects/tasks/solution/**/*.py"
 ```
 
 Optional equivalent setup with [uv](https://docs.astral.sh/uv/):

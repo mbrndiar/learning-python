@@ -20,3 +20,24 @@ and compare the framework implementations only after you understand the
 standard-library version.
 
 The existing capstones remain the course's final, equally required projects.
+
+## Setup and checks
+
+The repository-wide development installation includes the Task project's Flask,
+FastAPI, HTTP client, OpenAPI, and YAML dependencies:
+
+```bash
+python -m pip install -r requirements-dev.txt
+```
+
+Run both source roots from the repository root. The starter suite verifies the
+scaffold and skips unfinished milestone behavior; the solution suite exercises
+the complete contract:
+
+```bash
+PROJECT_IMPLEMENTATION=starter python -m pytest projects/tasks/tests -q
+PROJECT_IMPLEMENTATION=solution python -m pytest projects/tasks/tests -q
+```
+
+See the [project guide](tasks/README.md) for milestone, type-checking, server,
+client, and separate branch-coverage commands.

@@ -3,8 +3,10 @@
 The comparative and idiomatic capstones are complete and equally required.
 The older `project/` Task Manager, REST API, and client code and tests were
 removed after the capstones were completed; they are not a third capstone.
-Current course work, default typing, coverage, and CI gates target both
-capstones.
+Current course work, default typing, and CI target the Task project as well as
+both capstones. The Task solution has a separate branch-coverage gate so its
+results cannot be hidden by the mature capstone suites; the existing combined
+capstone gate remains unchanged.
 
 The current required
 [`projects/tasks/`](../projects/tasks/README.md) applied project is newly
@@ -61,7 +63,7 @@ All commands run from the repository root.
 | `... remove ID` | Comparative: `delete KEY --expect REVISION`. Idiomatic events are not deleted by the learner contract. |
 | Start `project.task_rest_api`, then use `project.task_rest_client` | Comparative has no network mode. Idiomatic HTTP ingestion uses `--format http --url LOOPBACK_URL`; tests inject transport and run only loopback fixtures. |
 | Run the three `project.*.test_*` modules | Run both solution suites shown below; each capstone is required. |
-| `mypy` with legacy project files in its default scope | `mypy` checks both solution packages; CI additionally runs strict mypy over both starter packages. |
+| `mypy` with legacy project files in its default scope | `mypy` checks the current Task solution and both capstone solutions; CI additionally runs strict mypy over all three starter roots. |
 
 ```bash
 CAPSTONE_IMPLEMENTATION=solution python -m unittest \
@@ -81,6 +83,17 @@ CAPSTONE_IMPLEMENTATION=solution coverage run --parallel-mode -m unittest \
   discover -s capstones/idiomatic/tests -p 'test_*.py'
 coverage combine
 coverage report
+```
+
+The current Task project is tested and measured independently:
+
+```bash
+PROJECT_IMPLEMENTATION=starter python -m pytest projects/tasks/tests -q
+PROJECT_IMPLEMENTATION=solution python -m pytest projects/tasks/tests -q
+coverage erase
+PROJECT_IMPLEMENTATION=solution \
+  coverage run -m pytest projects/tasks/tests -q
+coverage report --include="projects/tasks/solution/**/*.py"
 ```
 
 ## Historical source paths

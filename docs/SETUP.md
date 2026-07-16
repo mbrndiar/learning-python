@@ -53,7 +53,8 @@ leave the virtual environment, run `deactivate`.
 
 ## 4. Install dependencies
 
-The development requirements add
+The development requirements install the Task project's runtime and
+executable-contract libraries plus
 [pytest](https://docs.pytest.org/en/stable/),
 [Ruff](https://docs.astral.sh/ruff/),
 [mypy](https://mypy.readthedocs.io/en/stable/), and
@@ -64,12 +65,9 @@ testing, formatting, linting, static type checking, and coverage measurement:
 python -m pip install -r requirements-dev.txt
 ```
 
-Before running all of Module 11 or the required applied project, install its
-runtime dependencies too:
-
-```bash
-python -m pip install -r projects/tasks/requirements.txt
-```
+`requirements-dev.txt` includes `projects/tasks/requirements.txt`, so this one
+command creates the complete course development environment. If you only want
+to run the Task project, you may install its requirements file directly instead.
 
 ## 5. Choose an editor
 
@@ -107,7 +105,6 @@ run from the repository root:
 uv python install 3.14
 uv venv --python 3.14
 uv pip install -r requirements-dev.txt
-uv pip install -r projects/tasks/requirements.txt
 source .venv/bin/activate
 python lessons/01_basics/01_hello_world.py
 python -m pytest lessons/09_tooling_and_debugging/04_pytest_basics.py
@@ -123,8 +120,9 @@ introduce a lockfile.
 
 `uv pip sync` is intentionally not used here. Syncing is appropriate when the
 input already describes the complete resolved environment. This repository's
-`requirements-dev.txt` lists direct development requirements and relies on the
-installer to resolve their transitive dependencies.
+`requirements-dev.txt` includes the project's direct runtime requirements and
+lists the direct development requirements. The installer resolves their
+transitive dependencies.
 
 ## Daily development flow
 
@@ -143,7 +141,8 @@ ruff check .
 mypy
 mypy --strict \
   capstones/comparative/starter/comparative_kv \
-  capstones/idiomatic/starter/ingest_report
+  capstones/idiomatic/starter/ingest_report \
+  projects/tasks/starter
 python scripts/check_markdown_links.py
 ```
 
@@ -151,6 +150,15 @@ Ruff's formatter command changes files. Continuous integration uses
 `ruff format --check .` to verify that formatting has already been applied.
 `ruff check --fix .` can apply supported lint fixes, but review those changes
 instead of treating automatic repair as proof that behavior is correct.
+
+Compile and test both Task project source roots:
+
+```bash
+python -m compileall -q \
+  projects/tasks/starter projects/tasks/solution projects/tasks/tests
+PROJECT_IMPLEMENTATION=starter python -m pytest projects/tasks/tests -q
+PROJECT_IMPLEMENTATION=solution python -m pytest projects/tasks/tests -q
+```
 
 Compile both source roots, verify the frozen comparative fixtures, and smoke
 test both untouched starters:
@@ -166,8 +174,18 @@ CAPSTONE_IMPLEMENTATION=starter python -m unittest \
   discover -s capstones/idiomatic/tests -p 'test_harness.py' -v
 ```
 
-Course completion requires both reference suites. Measure their configured
-branch coverage together:
+Measure the Task solution separately so capstone coverage cannot hide project
+gaps:
+
+```bash
+coverage erase
+PROJECT_IMPLEMENTATION=solution \
+  coverage run -m pytest projects/tasks/tests -q
+coverage report --include="projects/tasks/solution/**/*.py"
+```
+
+Course completion also requires both capstone reference suites. Measure their
+configured branch coverage together:
 
 ```bash
 coverage erase
@@ -228,7 +246,8 @@ For uv, run `uv python find` to inspect the selected interpreter and
 
 Run `deactivate` to leave it. A virtual environment contains generated files,
 so it is safe to delete `.venv` and recreate it from
-`requirements-dev.txt`; do not commit `.venv` to version control.
+`requirements-dev.txt`; that file includes the Task project dependencies. Do not
+commit `.venv` to version control.
 
 With uv, recreate the environment with:
 

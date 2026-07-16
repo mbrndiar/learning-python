@@ -14,6 +14,7 @@ python_version = "3.11"
 files = [
     "capstones/comparative/solution/comparative_kv",
     "capstones/idiomatic/solution/ingest_report",
+    "projects/tasks/solution",
 ]
 strict = true
 warn_unused_configs = true
@@ -23,10 +24,12 @@ branch = true
 include = [
     "capstones/comparative/solution/comparative_kv/*.py",
     "capstones/idiomatic/solution/ingest_report/*.py",
+    "projects/tasks/solution/**/*.py",
 ]
 omit = [
     "capstones/comparative/solution/comparative_kv/__main__.py",
     "capstones/idiomatic/solution/ingest_report/__main__.py",
+    "projects/tasks/solution/**/__main__.py",
 ]
 
 [tool.coverage.report]

@@ -82,6 +82,7 @@ coverage report
 ```
 
 The removed predecessor Task examples are historical material, not a third
-capstone and not the current applied project. Use the
+capstone. They are separate from the current required Task REST API and clients
+project. Use the
 [migration guide](../docs/CAPSTONE_MIGRATION.md) to map their concepts and
 commands to these two required capstones or inspect their Git revision.
