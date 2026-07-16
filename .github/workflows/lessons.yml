@@ -58,7 +58,7 @@ jobs:
       - name: Compile exercise starters
         run: python -m compileall -q exercises
 
-      - name: Validate capstone scaffolding
+      - name: Validate capstones
         run: |
           python -m compileall -q \
             capstones/comparative/starter \
@@ -69,10 +69,10 @@ jobs:
             cd capstones/comparative/spec
             sha256sum -c MANIFEST.sha256
           )
-          for implementation in starter solution; do
-            CAPSTONE_IMPLEMENTATION="$implementation" python -m unittest \
-              discover -s capstones/comparative/tests -p 'test_*.py' -v
-          done
+          CAPSTONE_IMPLEMENTATION=starter python -m unittest \
+            discover -s capstones/comparative/tests -p 'test_harness.py' -v
+          CAPSTONE_IMPLEMENTATION=solution python -m unittest \
+            discover -s capstones/comparative/tests -p 'test_*.py' -v
           CAPSTONE_IMPLEMENTATION=starter python -m unittest \
             discover -s capstones/idiomatic/tests -p 'test_harness.py' -v
           CAPSTONE_IMPLEMENTATION=solution python -m unittest \
@@ -85,16 +85,21 @@ jobs:
             project.task_rest_client.test_client \
             project.task_manager.test_task_manager -v
 
-      - name: Measure project and idiomatic capstone coverage
+      - name: Measure project and capstone branch coverage
         if: matrix.python-version == '3.14'
         run: |
           coverage erase
-          coverage run -m unittest \
+          coverage run --parallel-mode -m unittest \
             project.task_rest_api.test_api \
             project.task_rest_client.test_client \
             project.task_manager.test_task_manager
-          CAPSTONE_IMPLEMENTATION=solution coverage run --append -m unittest \
+          CAPSTONE_IMPLEMENTATION=solution coverage run --parallel-mode -m unittest \
             discover -s capstones/idiomatic/tests -p 'test_*.py'
+          CAPSTONE_IMPLEMENTATION=solution \
+            CAPSTONE_SUBPROCESS_COVERAGE=1 \
+            coverage run --parallel-mode -m unittest \
+              discover -s capstones/comparative/tests -p 'test_*.py'
+          coverage combine
           coverage report
 
       - name: Run pytest lesson with pytest

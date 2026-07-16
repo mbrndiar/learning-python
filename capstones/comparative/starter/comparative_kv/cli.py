@@ -34,7 +34,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def run(arguments: argparse.Namespace) -> int:
-    """Execute parsed arguments once application behavior is implemented."""
+    """TODO(m2): validate, execute, and emit exactly one JSON envelope."""
 
     incomplete(f"comparative command execution for {arguments.command!r}")
 

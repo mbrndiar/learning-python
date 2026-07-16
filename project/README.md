@@ -93,10 +93,17 @@ python -m unittest \
   project.task_rest_api.test_api \
   project.task_rest_client.test_client \
   project.task_manager.test_task_manager -v
-coverage run -m unittest \
+coverage erase
+coverage run --parallel-mode -m unittest \
   project.task_rest_api.test_api \
   project.task_rest_client.test_client \
   project.task_manager.test_task_manager
+CAPSTONE_IMPLEMENTATION=solution CAPSTONE_SUBPROCESS_COVERAGE=1 \
+  coverage run --parallel-mode -m unittest \
+    discover -s capstones/comparative/tests -p 'test_*.py'
+CAPSTONE_IMPLEMENTATION=solution coverage run --parallel-mode -m unittest \
+  discover -s capstones/idiomatic/tests -p 'test_*.py'
+coverage combine
 coverage report
 ```
 

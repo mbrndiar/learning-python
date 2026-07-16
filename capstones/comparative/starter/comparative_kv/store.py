@@ -35,8 +35,10 @@ class Store(Protocol):
 
     def list_entries(self) -> ListResult: ...
 
+    def close(self) -> None: ...
+
 
 def open_store(path: str | Path) -> Store:
-    """Open the selected SQLite store once persistence is implemented."""
+    """TODO(m3-m5): initialize, migrate, transact, and handle contention."""
 
     incomplete(f"comparative SQLite storage for {Path(path)}")

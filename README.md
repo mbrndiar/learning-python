@@ -65,6 +65,10 @@ ruff format .
 ruff check .
 mypy
 python -m compileall -q capstones/idiomatic/starter
+python -m compileall -q \
+  capstones/comparative/starter capstones/comparative/solution
+CAPSTONE_IMPLEMENTATION=solution python -m unittest \
+  discover -s capstones/comparative/tests -p 'test_*.py' -v
 CAPSTONE_IMPLEMENTATION=solution python -m unittest \
   discover -s capstones/idiomatic/tests -p 'test_*.py' -v
 python -m unittest \

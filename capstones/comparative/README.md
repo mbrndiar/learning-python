@@ -1,15 +1,21 @@
 # Comparative capstone: versioned configuration store
 
-Implement the frozen
-[`comparative-kv` 1.0.0 specification](spec/SPEC.md) as the
-`comparative_kv` Python package. Observable commands, JSON envelopes, SQLite
-rules, fixtures, and process behavior come from the shared specification;
-Python module design stays language-specific.
+Implement the frozen [`comparative-kv` 1.0.0 specification](spec/SPEC.md) as
+the standard-library `comparative_kv` package. The shared contract fixes the CLI,
+JSON envelopes, SQLite schema, migration, revisions, compare-and-set behavior,
+and independent-process contention; the Python module design remains local.
 
-## Source roots and launcher
+## Choose a source root
 
-`starter/` and `solution/` expose identical public imports. Select one as the
-Python source root:
+Both roots expose the same public package:
+
+- [`starter/comparative_kv/`](starter/comparative_kv/) is a compileable,
+  strictly typed guide. Search for `TODO(m1)` through `TODO(m5)` and implement
+  one boundary at a time.
+- [`solution/comparative_kv/`](solution/comparative_kv/) is the complete Python
+  3.11+ reference implementation using `argparse`, `json`, and `sqlite3`.
+
+Run either launcher from the repository root:
 
 ```bash
 PYTHONPATH=capstones/comparative/starter \
@@ -19,46 +25,61 @@ PYTHONPATH=capstones/comparative/solution \
   python -m comparative_kv --db state.db list
 ```
 
-The scaffold parses the command and then raises
-`IncompleteImplementationError`. No database is opened. Replace that
-intentional boundary milestone by milestone; do not add provisional output that
-could be mistaken for conformance.
+The untouched starter parses the documented command and raises
+`IncompleteImplementationError` before opening storage. It never emits
+provisional output that could be confused with conformance.
 
-Stable Python boundaries:
+## Guided milestones
 
-- `comparative_kv.cli.build_parser() -> argparse.ArgumentParser`;
-- `comparative_kv.cli.main(argv: Sequence[str] | None = None) -> int`;
-- immutable result values in `comparative_kv.models`;
-- the structural `comparative_kv.store.Store` protocol; and
-- `comparative_kv.store.open_store(path)`.
+1. **Domain:** keys, expectations, safe revisions, restricted JSON,
+   exact-decimal integral checks, depth/byte limits, duplicates, and surrogates.
+2. **CLI:** exact grammar, validation precedence, compact envelopes, stderr
+   discipline, and exit-code mapping.
+3. **SQLite:** literal paths, WAL configuration, exact v1 initialization,
+   invariant checks, and atomic v0 migration.
+4. **Mutations:** global revisions, any/absent/exact CAS, immediate
+   transactions, ordering, exhaustion, and failure accounting.
+5. **Processes:** initialization and migration races, writer/CAS/delete
+   contention, busy waiting and timeout, integrity checks, and sidecar cleanup.
 
-Starter and solution may use different internals later, but these public module
-and signature boundaries must remain aligned.
-
-## Shared tests
-
-Tests import `tests/implementation.py` first. It validates
-`CAPSTONE_IMPLEMENTATION`, inserts exactly one source root, and gives every
-future milestone test a stable `comparative_kv` import:
+The shared tests select a source root with
+`CAPSTONE_IMPLEMENTATION=starter|solution`. Run the next starter milestone as a
+deliberately red target:
 
 ```bash
 CAPSTONE_IMPLEMENTATION=starter python -m unittest \
-  discover -s capstones/comparative/tests -v
-
-CAPSTONE_IMPLEMENTATION=solution python -m unittest \
-  discover -s capstones/comparative/tests -v
+  discover -s capstones/comparative/tests -p 'test_m1_*.py' -v
 ```
 
-The current smoke test checks imports, all four canonical parser shapes, and the
-intentional incomplete execution boundary only. Future milestone tests should
-be named `test_m1_*.py` through `test_m5_*.py` and must not inspect
-implementation-private state.
+Advance through `test_m5_*.py`. CI runs only the starter smoke test; it runs all
+five suites against the solution.
 
-## Specification integrity
+## Public boundaries
 
-Do not edit one language's shared spec copy independently. Verify the frozen
-tree with:
+- `comparative_kv.cli.build_parser() -> argparse.ArgumentParser`;
+- `comparative_kv.cli.main(argv) -> int`;
+- immutable results in `comparative_kv.models`;
+- domain helpers in `comparative_kv.domain`;
+- the structural `comparative_kv.store.Store` protocol; and
+- `comparative_kv.store.open_store(path)`.
+
+## Quality and conformance commands
 
 ```bash
 (cd capstones/comparative/spec && sha256sum -c MANIFEST.sha256)
+python -m compileall -q \
+  capstones/comparative/starter capstones/comparative/solution
+mypy --strict capstones/comparative/starter/comparative_kv
+mypy
+CAPSTONE_IMPLEMENTATION=starter python -m unittest \
+  discover -s capstones/comparative/tests -p 'test_harness.py' -v
+CAPSTONE_IMPLEMENTATION=solution python -m unittest \
+  discover -s capstones/comparative/tests -p 'test_*.py' -v
+ruff format --check .
+ruff check .
 ```
+
+Milestone 5 launches real child interpreters through argument lists, not shell
+strings. Its barrier actors, independent lock helper, required fixture repeats,
+timeouts, and explicit database/WAL cleanup follow
+[`spec/SCENARIOS.md`](spec/SCENARIOS.md).

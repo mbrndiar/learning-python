@@ -28,10 +28,12 @@ warn_unused_configs = true
 branch = true
 include = [
     "project/**/*.py",
+    "capstones/comparative/solution/comparative_kv/*.py",
     "capstones/idiomatic/solution/ingest_report/*.py",
 ]
 omit = [
     "project/**/test_*.py",
+    "capstones/comparative/solution/comparative_kv/__main__.py",
     "capstones/idiomatic/solution/ingest_report/__main__.py",
 ]
 

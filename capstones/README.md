@@ -14,10 +14,10 @@ two implementations.
 
 ## Current implementation status
 
-The idiomatic track now contains a complete standard-library reference solution,
-deterministic fixtures, and five shared milestone test groups. Its starter is a
-compileable, strictly typed guide with progressive `TODO(m1)` through
-`TODO(m5)` boundaries. The comparative track remains at its initial scaffold.
+Both tracks contain complete standard-library reference solutions,
+deterministic fixtures, and five milestone test groups. Their starters remain
+compileable, strictly typed guides with progressive `TODO(m1)` through
+`TODO(m5)` boundaries.
 
 ## Recommended workflow
 
@@ -34,10 +34,10 @@ python -m compileall -q \
   capstones/comparative/starter capstones/comparative/solution \
   capstones/idiomatic/starter capstones/idiomatic/solution
 
-for implementation in starter solution; do
-  CAPSTONE_IMPLEMENTATION="$implementation" python -m unittest \
-    discover -s capstones/comparative/tests -p 'test_*.py' -v
-done
+CAPSTONE_IMPLEMENTATION=starter python -m unittest \
+  discover -s capstones/comparative/tests -p 'test_harness.py' -v
+CAPSTONE_IMPLEMENTATION=solution python -m unittest \
+  discover -s capstones/comparative/tests -p 'test_*.py' -v
 
 CAPSTONE_IMPLEMENTATION=starter python -m unittest \
   discover -s capstones/idiomatic/tests -p 'test_harness.py' -v
