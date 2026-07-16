@@ -174,10 +174,10 @@ The repository's
 in a clean environment. Running them locally first shortens the feedback loop;
 CI confirms that the result does not depend on unrecorded local state.
 
-The old [`project/`](../project/README.md) Task examples are temporary legacy
-material and no longer define the default development gates. See the
-[migration guide](CAPSTONE_MIGRATION.md) before comparing them with the two
-required capstones.
+The predecessor Task examples have been removed and do not define any
+development gates. The [migration guide](CAPSTONE_MIGRATION.md) maps their
+concepts to the two required capstones and records where to inspect the removed
+source in Git history.
 
 ## Troubleshooting
 

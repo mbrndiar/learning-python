@@ -10,6 +10,11 @@ from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
+HISTORICAL_TREEISH = "5e616825a99d4f63fae54b6f768e9ec9b2cec526"
+HISTORICAL_LINK_SOURCES = {
+    Path("capstones/README.md"),
+    Path("capstones/idiomatic/SPEC.md"),
+}
 INLINE_LINK = re.compile(r"!?\[[^\]]*\]\(([^)\s]+)(?:\s+['\"][^)]*['\"])?\)")
 REFERENCE_LINK = re.compile(r"^\s*\[[^\]]+\]:\s*(\S+)", re.MULTILINE)
 EXPLICIT_ANCHOR = re.compile(
@@ -34,7 +39,11 @@ def markdown_files() -> list[Path]:
     except OSError:
         result = None
     if result is not None and result.returncode == 0:
-        return [ROOT / line for line in result.stdout.splitlines() if line]
+        return [
+            ROOT / line
+            for line in result.stdout.splitlines()
+            if line and (ROOT / line).is_file()
+        ]
     ignored = {".git", ".mypy_cache", ".pytest_cache", ".ruff_cache", ".venv"}
     return sorted(
         path
@@ -75,6 +84,27 @@ def destinations(text: str) -> list[str]:
     return INLINE_LINK.findall(text) + REFERENCE_LINK.findall(text)
 
 
+def historical_target_exists(source: Path, target: Path) -> bool:
+    """Return whether a protected capstone link names a pre-removal Git path."""
+
+    source_relative = source.relative_to(ROOT)
+    if source_relative not in HISTORICAL_LINK_SOURCES:
+        return False
+    target_relative = target.relative_to(ROOT)
+    result = subprocess.run(
+        [
+            "git",
+            "cat-file",
+            "-e",
+            f"{HISTORICAL_TREEISH}:{target_relative.as_posix()}",
+        ],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+    )
+    return result.returncode == 0
+
+
 def main() -> int:
     """Check local targets and Markdown fragments."""
 
@@ -106,6 +136,8 @@ def main() -> int:
                 )
                 continue
             if not target.exists():
+                if not split.fragment and historical_target_exists(source, target):
+                    continue
                 failures.append(
                     f"{source.relative_to(ROOT)}: missing target: {destination}"
                 )

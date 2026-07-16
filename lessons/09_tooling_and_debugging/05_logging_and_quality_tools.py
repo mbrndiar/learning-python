@@ -12,8 +12,8 @@ then provide different kinds of repeatable feedback:
     coverage run -m unittest ...
     coverage report
 
-This repository configures Ruff across the repository, mypy for the typed
-application files in project/, and coverage for project/.
+This repository configures Ruff across the repository, strict mypy for both
+typed capstone solutions, and branch coverage for both capstones.
 """
 
 import logging
@@ -30,7 +30,7 @@ QUALITY_STEPS = (
         "run a targeted pytest lesson",
         "python -m pytest lessons/09_tooling_and_debugging/04_pytest_basics.py -v",
     ),
-    ("measure configured project coverage", "coverage run -m unittest ..."),
+    ("measure configured capstone coverage", "coverage run -m unittest ..."),
     ("report measured coverage", "coverage report"),
 )
 

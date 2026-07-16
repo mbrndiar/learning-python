@@ -1,15 +1,31 @@
 # Migrating from the Task projects to the two capstones
 
 The comparative and idiomatic capstones are complete and equally required.
-The older [`project/`](../project/README.md) tree is temporary legacy material,
-not a third capstone. It remains runnable for comparison until the next cleanup
-todo, but new course work, default typing, coverage, and CI gates target both
-capstones instead.
+The older `project/` Task Manager, REST API, and client code and tests were
+removed after the capstones were completed; they are not a third capstone.
+Current course work, default typing, coverage, and CI gates target both
+capstones.
 
 No automatic data migration is provided. Legacy `tasks.json` and `tasks.db`
 files describe mutable tasks; neither data model can be converted safely into
 configuration entries or immutable operational events without an
 application-specific policy.
+
+## Inspecting the removed implementation
+
+Commit
+[`5e616825a99d4f63fae54b6f768e9ec9b2cec526`](https://github.com/mbrndiar/learning-python/tree/5e616825a99d4f63fae54b6f768e9ec9b2cec526/project)
+is the last pre-removal revision containing the complete legacy tree. Its Git
+history path is
+`5e616825a99d4f63fae54b6f768e9ec9b2cec526:project/`.
+
+Inspect files without restoring them into the current checkout:
+
+```bash
+git ls-tree -r --name-only 5e616825a99d4f63fae54b6f768e9ec9b2cec526 -- project/
+git show 5e616825a99d4f63fae54b6f768e9ec9b2cec526:project/README.md
+git log --all -- project/
+```
 
 ## Concept mapping
 
@@ -31,7 +47,7 @@ tests—but do not rename Task fields into either new domain.
 
 All commands run from the repository root.
 
-| Legacy command or workflow | Replacement |
+| Historical command or workflow | Replacement |
 | --- | --- |
 | `python -m project.task_manager.cli add "Title"` | Comparative creation: `PYTHONPATH=capstones/comparative/solution python -m comparative_kv --db state.db set task/1 --value-json '{"title":"Title"}' --expect absent`. Idiomatic batch creation: `PYTHONPATH=capstones/idiomatic/solution python -m ingest_report --db events.db ingest --import-id csv-001 --format csv --input capstones/idiomatic/tests/fixtures/events-valid.csv`. |
 | `python -m project.task_manager.cli list` | Comparative: `PYTHONPATH=capstones/comparative/solution python -m comparative_kv --db state.db list`. Idiomatic: `PYTHONPATH=capstones/idiomatic/solution python -m ingest_report --db events.db report --output text`. |
@@ -61,9 +77,11 @@ coverage combine
 coverage report
 ```
 
-## Temporary legacy paths
+## Historical source paths
 
-These paths remain available only until the next cleanup todo:
+These paths no longer exist in the current tree. Prefix one with
+`5e616825a99d4f63fae54b6f768e9ec9b2cec526:` when using `git show`, or browse
+the linked pre-removal revision:
 
 - `project/task_manager/`
 - `project/task_rest_api/`
@@ -72,5 +90,4 @@ These paths remain available only until the next cleanup todo:
   `project/task_rest_api/tasks.db`
 
 Do not build new lessons, exercises, or capstone requirements on those paths.
-Their focused legacy tests remain documented inside `project/` for anyone
-studying the old implementation before it is removed.
+Their focused legacy tests and READMEs remain available only in Git history.

@@ -124,10 +124,10 @@ Use each guided starter one milestone at a time, writing a test before or
 alongside each change. Compare with the reference solution only after the
 selected milestone tests pass.
 
-The old [`project/`](project/README.md) Task examples are temporary legacy
-material, not a third capstone. See the
-[capstone migration guide](docs/CAPSTONE_MIGRATION.md) for concept and command
-mappings; the legacy paths remain only until the next cleanup todo.
+The predecessor Task Manager, REST API, and client examples have been removed;
+they are not a third capstone. See the
+[capstone migration guide](docs/CAPSTONE_MIGRATION.md) for concept mappings and
+the exact Git revision that still contains their source.
 
 ## 🗒️ Cheat sheet
 

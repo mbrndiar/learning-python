@@ -216,9 +216,3 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
-
-# Temporary legacy Task Manager data
-project/task_manager/tasks.json
-
-# Temporary legacy REST API data
-project/task_rest_api/tasks.db

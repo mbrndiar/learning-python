@@ -73,9 +73,9 @@ Adapt extensions and commands to the subject, while preserving these roles:
 │   │   ├── <starter exercise files>
 │   │   └── <reference solutions>
 │   └── ...
-├── project/
+├── capstones/
 │   ├── README.md
-│   └── <capstone and any smaller integration projects>
+│   └── <one or more culminating projects>
 ├── <ecosystem configuration and dependency files>
 └── <continuous-integration workflow>
 ```
