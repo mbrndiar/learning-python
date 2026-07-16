@@ -27,6 +27,8 @@ from .transport import (
     TransportRequest,
     TransportResponse,
     TransportTimeoutError,
+    build_url,
+    normalize_base_url,
 )
 
 __all__ = [
@@ -50,8 +52,10 @@ __all__ = [
     "TransportResponse",
     "TransportTimeoutError",
     "UpdateCommand",
+    "build_url",
     "build_parser",
     "main",
+    "normalize_base_url",
     "parse_request",
     "run",
 ]

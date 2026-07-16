@@ -6,9 +6,9 @@ unrelated applications. It is to keep one domain and one HTTP contract stable
 while observing what each library makes explicit, convenient, or implicit.
 
 The project includes matching typed `starter/` and `solution/` public APIs plus
-a shared test harness. The solution completes milestones one and two; server
-and concrete client operations remain intentionally scaffolded for their later
-milestone implementation phases.
+a shared test harness. The solution completes milestones one and two plus the
+transport-independent client command application; servers and the three
+concrete client transports remain intentionally scaffolded for later phases.
 
 ## Course placement
 

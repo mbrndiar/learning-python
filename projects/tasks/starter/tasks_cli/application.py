@@ -5,11 +5,11 @@ import math
 import sys
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import TypeAlias
+from typing import TextIO, TypeAlias
 
 from tasks_core.errors import incomplete
 
-from .transport import TaskTransport, TransportFactory
+from .transport import TransportFactory, normalize_base_url
 
 
 @dataclass(frozen=True, slots=True)
@@ -122,6 +122,13 @@ def _positive_timeout(value: str) -> float:
     return timeout
 
 
+def _base_url(value: str) -> str:
+    try:
+        return normalize_base_url(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError(str(error)) from error
+
+
 def _completion_value(value: str | None) -> bool | None:
     if value is None:
         return None
@@ -137,7 +144,11 @@ def build_parser(prog: str = "tasks-cli") -> argparse.ArgumentParser:
         allow_abbrev=False,
     )
     parser.set_defaults(title=None, completed=None, id=None)
-    parser.add_argument("--base-url", default="http://127.0.0.1:8000")
+    parser.add_argument(
+        "--base-url",
+        type=_base_url,
+        default="http://127.0.0.1:8000",
+    )
     parser.add_argument("--timeout", type=_positive_timeout, default=5.0)
     commands = parser.add_subparsers(dest="command", required=True)
 
@@ -209,10 +220,18 @@ def parse_request(
     return ClientRequest(settings=settings, command=command)
 
 
-def run(request: ClientRequest, transport: TaskTransport) -> ClientResult:
-    """Execute one parsed command through the selected transport."""
+def run(
+    argv: Sequence[str] | None,
+    transport_factory: TransportFactory,
+    stdout: TextIO,
+    stderr: TextIO,
+    *,
+    prog: str = "tasks-cli",
+) -> int:
+    """Implement shared request construction, validation, and rendering."""
 
-    del transport
+    request = parse_request(argv, prog=prog)
+    del transport_factory, stdout, stderr
     incomplete(f"client command execution for {request.command!r}")
 
 
@@ -222,23 +241,15 @@ def main(
     transport_factory: TransportFactory,
     prog: str = "tasks-cli",
 ) -> int:
-    """Parse, execute, render, and close one client invocation."""
+    """Compose the guided starter with process arguments and streams."""
 
-    request = parse_request(argv, prog=prog)
-    transport = transport_factory(
-        request.settings.base_url,
-        request.settings.timeout,
+    return run(
+        argv,
+        transport_factory,
+        sys.stdout,
+        sys.stderr,
+        prog=prog,
     )
-    try:
-        result = run(request, transport)
-    finally:
-        transport.close()
-
-    if result.stdout is not None:
-        print(result.stdout)
-    if result.stderr is not None:
-        print(result.stderr, file=sys.stderr)
-    return result.exit_code
 
 
 __all__ = [
