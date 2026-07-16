@@ -1,6 +1,6 @@
 # 🏆 Capstones
 
-This course ends with two equally required projects:
+This course ends with two completed, equally required projects:
 
 - [`comparative/`](comparative/README.md) implements the same versioned SQLite
   key/value contract as the other language courses.
@@ -12,9 +12,14 @@ package boundary. The shared tests choose one root with
 `CAPSTONE_IMPLEMENTATION=starter|solution`; they never copy code between the
 two implementations.
 
-## Current implementation status
+| Track | Learner guide | Contract and fixtures |
+| --- | --- | --- |
+| Comparative | [`comparative/README.md`](comparative/README.md) | [`SPEC.md`](comparative/spec/SPEC.md), [`SCENARIOS.md`](comparative/spec/SCENARIOS.md), and [`fixtures/`](comparative/spec/fixtures/) |
+| Idiomatic | [`idiomatic/README.md`](idiomatic/README.md) | [`SPEC.md`](idiomatic/SPEC.md) and [`tests/fixtures/`](idiomatic/tests/fixtures/) |
 
-Both tracks contain complete standard-library reference solutions,
+## Included implementation
+
+Both capstones contain complete standard-library reference solutions,
 deterministic fixtures, and five milestone test groups. Their starters remain
 compileable, strictly typed guides with progressive `TODO(m1)` through
 `TODO(m5)` boundaries.
@@ -33,6 +38,7 @@ Run commands from the repository root. The current harness checks are:
 python -m compileall -q \
   capstones/comparative/starter capstones/comparative/solution \
   capstones/idiomatic/starter capstones/idiomatic/solution
+(cd capstones/comparative/spec && sha256sum -c MANIFEST.sha256)
 
 CAPSTONE_IMPLEMENTATION=starter python -m unittest \
   discover -s capstones/comparative/tests -p 'test_harness.py' -v
@@ -54,7 +60,23 @@ mypy
 mypy --strict \
   capstones/comparative/starter/comparative_kv \
   capstones/idiomatic/starter/ingest_report
+python scripts/check_markdown_links.py
 ```
 
-The existing projects under [`../project/`](../project/README.md) remain in
-place until both new capstones are fully implemented and pass all quality gates.
+Measure the two reference implementations together:
+
+```bash
+coverage erase
+CAPSTONE_IMPLEMENTATION=solution CAPSTONE_SUBPROCESS_COVERAGE=1 \
+  coverage run --parallel-mode -m unittest \
+    discover -s capstones/comparative/tests -p 'test_*.py'
+CAPSTONE_IMPLEMENTATION=solution coverage run --parallel-mode -m unittest \
+  discover -s capstones/idiomatic/tests -p 'test_*.py'
+coverage combine
+coverage report
+```
+
+The old Task examples under [`../project/`](../project/README.md) are temporary
+legacy material and are not a third capstone. They remain until the next cleanup
+todo; use the [migration guide](../docs/CAPSTONE_MIGRATION.md) to map their
+concepts and commands to these two required capstones.

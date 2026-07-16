@@ -1,4 +1,8 @@
-# ✅ Capstone Project: Task Manager
+# ⚠️ Temporary legacy: Task Manager
+
+> This path is preserved only until the next cleanup todo. It is not a required
+> capstone; see the [migration guide](../../docs/CAPSTONE_MIGRATION.md) and the
+> [two completed capstones](../../capstones/README.md).
 
 Task Manager combines the course concepts in one application while allowing its
 persistence mechanism to change. It can store tasks in a local JSON file or use
@@ -42,7 +46,7 @@ Tasks persist in `project/task_manager/tasks.json`. Select another file by
 placing `--storage PATH` before the command:
 
 ```bash
-python -m project.task_manager.cli --storage /tmp/tasks.json add "Local task"
+python -m project.task_manager.cli --storage legacy-tasks.json add "Local task"
 ```
 
 The file contains a JSON object with `next_id` and a `tasks` list. Persisting

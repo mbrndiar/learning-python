@@ -2,7 +2,7 @@
 
 This module connects core Python concepts into application boundaries: JSON,
 SQLite and HTTP. These are the main new standard-library tools used by the
-connected Task Manager projects.
+two required capstones.
 
 ## 🎯 Learning objectives
 
@@ -74,7 +74,7 @@ python lessons/10_application_integration/02_http_and_json.py
 
 Then complete
 [`exercises/10_application_integration/`](../../exercises/10_application_integration/README.md)
-before reading the connected projects in [`project/`](../../project/README.md).
+before beginning the [two capstones](../../capstones/README.md).
 
 ## ⚠️ Common mistakes
 

@@ -14,7 +14,7 @@ and explain what each automated quality tool contributes.
 
 ## 🧭 One change, several kinds of feedback
 
-Imagine you change a function that loads tasks. Running the program now raises
+Imagine you change a function that loads records. Running the program now raises
 an exception. You first reproduce the smallest failure and read its traceback.
 After inspecting the suspicious values in a debugger, you fix the function and
 add a test that would have caught the defect. Only then do you run formatting,
@@ -178,24 +178,23 @@ ruff format .
 ruff check .
 mypy
 
-# Run the project tests and measure their configured coverage.
-python -m unittest \
-  project.task_rest_api.test_api \
-  project.task_rest_client.test_client \
-  project.task_manager.test_task_manager -v
-coverage run -m unittest \
-  project.task_rest_api.test_api \
-  project.task_rest_client.test_client \
-  project.task_manager.test_task_manager
+# Run both required capstone suites under configured coverage.
+coverage erase
+CAPSTONE_IMPLEMENTATION=solution CAPSTONE_SUBPROCESS_COVERAGE=1 \
+  coverage run --parallel-mode -m unittest \
+    discover -s capstones/comparative/tests -p 'test_*.py'
+CAPSTONE_IMPLEMENTATION=solution coverage run --parallel-mode -m unittest \
+  discover -s capstones/idiomatic/tests -p 'test_*.py'
+coverage combine
 coverage report
 ```
 
 `ruff format .` changes files; CI uses `ruff format --check .` to verify that
 formatting was already applied. The current mypy configuration checks the typed
 application files listed in `pyproject.toml`, not every beginner lesson. The
-coverage configuration measures `project/` and omits test files. Read tool
-output in that configured scope instead of assuming it describes the entire
-repository.
+coverage configuration measures both capstone reference implementations and
+omits their launcher modules. Read tool output in that configured scope instead
+of assuming it describes the entire repository.
 
 ## 📚 Concepts covered
 

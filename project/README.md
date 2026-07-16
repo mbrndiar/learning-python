@@ -1,4 +1,9 @@
-# 🔗 Connected Task Projects
+# ⚠️ Temporary legacy: connected Task projects
+
+> This entire `project/` tree is temporary legacy material, not a required
+> capstone. Both completed capstones live under [`../capstones/`](../capstones/README.md).
+> Use the [migration guide](../docs/CAPSTONE_MIGRATION.md) to map concepts and
+> commands. These paths remain only until the next cleanup todo.
 
 These three standard-library projects form one progressive example:
 
@@ -33,8 +38,8 @@ The standalone REST client CLI is another front end over the same
 
 ## 🧩 Reading the implementation
 
-The capstone deliberately uses a few standard-library techniques beyond the
-smallest lesson examples:
+The legacy example uses a few standard-library techniques beyond the smallest
+lesson examples:
 
 - [`TypedDict`, `Self`, and `cast`](https://docs.python.org/3/library/typing.html)
   give mypy more precise information; they do not change runtime behavior.
@@ -59,10 +64,15 @@ python -m project.task_manager.cli add "Local task"
 python -m project.task_manager.cli list
 ```
 
-Or start the API and use either remote front end:
+Or start the API in one terminal:
 
 ```bash
 python -m project.task_rest_api.api
+```
+
+Then use either remote front end from another terminal:
+
+```bash
 python -m project.task_rest_client.cli add "Remote task"
 python -m project.task_manager.cli --backend rest list
 ```
@@ -70,7 +80,7 @@ python -m project.task_manager.cli --backend rest list
 Commands are run from the repository root so Python can resolve the `project`
 package consistently.
 
-## 🧪 Run all project tests
+## 🧪 Legacy validation
 
 ```bash
 python -m unittest \
@@ -79,34 +89,9 @@ python -m unittest \
   project.task_manager.test_task_manager -v
 ```
 
-The tests use temporary JSON and SQLite files and ephemeral local ports.
+The tests use temporary JSON and SQLite files and ephemeral local ports. These
+focused commands remain available while studying this temporary code.
 
-## ✅ Before you commit
-
-Run the same local feedback loop documented in module 9:
-
-```bash
-ruff format .
-ruff check .
-mypy
-python -m unittest \
-  project.task_rest_api.test_api \
-  project.task_rest_client.test_client \
-  project.task_manager.test_task_manager -v
-coverage erase
-coverage run --parallel-mode -m unittest \
-  project.task_rest_api.test_api \
-  project.task_rest_client.test_client \
-  project.task_manager.test_task_manager
-CAPSTONE_IMPLEMENTATION=solution CAPSTONE_SUBPROCESS_COVERAGE=1 \
-  coverage run --parallel-mode -m unittest \
-    discover -s capstones/comparative/tests -p 'test_*.py'
-CAPSTONE_IMPLEMENTATION=solution coverage run --parallel-mode -m unittest \
-  discover -s capstones/idiomatic/tests -p 'test_*.py'
-coverage combine
-coverage report
-```
-
-Formatting changes files; the repository's
-[GitHub Actions](https://docs.github.com/en/actions) workflow uses
-`ruff format --check .` to verify the committed result in a clean environment.
+The default mypy, coverage, and
+[GitHub Actions](https://docs.github.com/en/actions) gates now cover both
+completed capstones instead of this legacy tree.

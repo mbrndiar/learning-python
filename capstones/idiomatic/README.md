@@ -4,6 +4,8 @@ Build the offline-first pipeline defined by [`SPEC.md`](SPEC.md). The project
 combines immutable values, streaming iterators, structural protocols, SQLite,
 an injected paginated HTTP boundary, bounded threads, and deterministic reports.
 Runtime code uses only the Python standard library.
+This is one of the course's
+[two completed, equally required capstones](../README.md).
 
 ## Choose a source root
 
@@ -15,8 +17,8 @@ Both roots expose the same `ingest_report` package and commands:
 - [`solution/ingest_report/`](solution/ingest_report/) is the complete reference
   implementation. Read it only after attempting the matching starter milestone.
 
-Tests select a root through `CAPSTONE_IMPLEMENTATION=starter|solution`; no task
-code is copied into the harness.
+Tests select a root through `CAPSTONE_IMPLEMENTATION=starter|solution`; no
+implementation code is copied into the harness.
 
 ## Guided milestones
 
@@ -74,7 +76,8 @@ the semantic error envelope documented in the specification.
 ## Quality commands
 
 ```bash
-python -m compileall -q capstones/idiomatic/starter
+python -m compileall -q \
+  capstones/idiomatic/starter capstones/idiomatic/solution
 mypy --strict capstones/idiomatic/starter/ingest_report
 mypy
 CAPSTONE_IMPLEMENTATION=starter python -m unittest \
@@ -90,3 +93,5 @@ ruff check .
 
 Fixtures live under [`tests/fixtures/`](tests/fixtures/), including equivalent
 CSV/JSONL data, mixed rejects, golden reports, and three HTTP page payloads.
+The [capstone overview](../README.md) documents the combined coverage command
+that treats both required reference implementations as one repository gate.

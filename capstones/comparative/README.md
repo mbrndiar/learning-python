@@ -4,6 +4,8 @@ Implement the frozen [`comparative-kv` 1.0.0 specification](spec/SPEC.md) as
 the standard-library `comparative_kv` package. The shared contract fixes the CLI,
 JSON envelopes, SQLite schema, migration, revisions, compare-and-set behavior,
 and independent-process contention; the Python module design remains local.
+This is one of the course's
+[two completed, equally required capstones](../README.md).
 
 ## Choose a source root
 

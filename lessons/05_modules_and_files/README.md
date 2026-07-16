@@ -106,7 +106,9 @@ When a package import works from one directory but fails from another, first
 check how the program was launched. From the repository root,
 `python -m project.task_manager.cli` asks Python to resolve a package module;
 running a deeply nested file path directly can give it a different import
-context.
+context. That command now refers to
+[temporary legacy material](../../docs/CAPSTONE_MIGRATION.md); the import rule
+remains the same.
 
 ## 📁 Paths, files, and encodings
 

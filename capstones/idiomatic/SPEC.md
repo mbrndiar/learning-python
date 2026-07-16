@@ -8,8 +8,10 @@ commands, data rules, errors, milestones, and acceptance criteria below are
 normative. Package layering and internal class/function decomposition are not;
 learners may choose any clear design that preserves the public boundaries.
 
-The existing connected Task projects under [`project/`](../../project/README.md)
-remain available until both new capstones pass the repository quality gates.
+The old connected Task projects under [`project/`](../../project/README.md) are
+temporary legacy material. Both capstones now pass the repository gates; see
+the [migration guide](../../docs/CAPSTONE_MIGRATION.md) for the mapping retained
+until the next cleanup todo.
 
 ## Bounded problem
 
@@ -347,11 +349,12 @@ capstones/idiomatic/
 
 Starter and solution expose identical imports and command syntax. The starter
 contains complete types, protocols, docstrings, argument parsing, and explicit
-`NotImplementedError` bodies only where a milestone is unfinished. Tests select
-one source root through `CAPSTONE_IMPLEMENTATION=starter|solution`; they do not
-copy behavior between implementations. The eventual `pyproject.toml` update
-must include both trees in Ruff and the selected tree in strict mypy without
-weakening existing checks.
+`IncompleteImplementationError` failures only where a milestone is unfinished.
+Tests select one source root through
+`CAPSTONE_IMPLEMENTATION=starter|solution`; they do not copy behavior between
+implementations. `pyproject.toml` includes the completed solution in strict
+mypy and coverage scopes; CI also type-checks the starter strictly without
+weakening the other required capstone.
 
 ## Deterministic fixtures and injection seams
 
@@ -406,23 +409,27 @@ CAPSTONE_IMPLEMENTATION=solution python -m unittest \
   discover -s capstones/idiomatic/tests -v
 ```
 
-The final harness must make these repository commands cover the new capstone:
+The repository harness runs these commands for this completed capstone:
 
 ```bash
 ruff format --check .
 ruff check .
 mypy
-python -m compileall -q capstones/idiomatic/starter
+python -m compileall -q \
+  capstones/idiomatic/starter capstones/idiomatic/solution
 CAPSTONE_IMPLEMENTATION=solution coverage run -m unittest \
-  discover -s capstones/idiomatic/tests
+  discover -s capstones/idiomatic/tests -p 'test_*.py'
 coverage report
 ```
 
-Coverage remains branch-aware with an 85% minimum for project/capstone logic.
+Repository-wide coverage is branch-aware with an 85% minimum and combines this
+suite with the equally required comparative capstone. The canonical combined
+command is in the [capstone overview](../README.md).
 
 ## Migration and reuse guidance
 
-Reuse patterns, not the task domain:
+The durable [migration guide](../../docs/CAPSTONE_MIGRATION.md) maps legacy
+concepts and commands to both capstones. Reuse patterns, not the task domain:
 
 - `Protocol` and dependency-injection style, strict untrusted-dictionary
   narrowing, and `argparse`/exit separation from
@@ -434,5 +441,4 @@ Reuse patterns, not the task domain:
 - atomic export, temporary paths, and loopback server test support where useful.
 
 Do not rename Task fields into events or preserve Task CRUD/storage interfaces.
-The old capstone is not removed by this work; retirement is a later, separately
-validated migration.
+The temporary legacy paths remain only until the next cleanup todo.

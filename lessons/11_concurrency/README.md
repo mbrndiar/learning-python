@@ -94,8 +94,8 @@ python lessons/11_concurrency/02_asyncio_basics.py
 Once you've read through both files, practice what you learned in
 [`exercises/11_concurrency/`](../../exercises/11_concurrency/README.md).
 
-This is the final module - once you're done, try building the
-[Task Manager capstone project](../../project/README.md).
+This is the final module. Once you're done, build
+[both equally required capstones](../../capstones/README.md).
 
 ## ⚠️ Common mistakes
 

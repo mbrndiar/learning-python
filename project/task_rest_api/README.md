@@ -1,4 +1,8 @@
-# 🌐 Task REST API
+# ⚠️ Temporary legacy: Task REST API
+
+> This path is preserved only until the next cleanup todo. It is not a required
+> capstone; see the [migration guide](../../docs/CAPSTONE_MIGRATION.md) and the
+> [two completed capstones](../../capstones/README.md).
 
 A dependency-free JSON API that persists tasks in SQLite. It is the server used
 by both `task_rest_client` and Task Manager's optional REST storage strategy.
@@ -27,7 +31,7 @@ From the repository root:
 
 ```bash
 python -m project.task_rest_api.api
-python -m project.task_rest_api.api --port 9000 --database /tmp/tasks.db
+python -m project.task_rest_api.api --port 9000 --database legacy-tasks.db
 ```
 
 The default address is `127.0.0.1:8000`, and the default database is `tasks.db`

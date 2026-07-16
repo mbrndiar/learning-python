@@ -17,6 +17,5 @@ Run the checks with:
 python exercises/10_application_integration/exercises.py
 ```
 
-After completing them, continue to the
-[connected Task projects](../../project/README.md). Module 11 concurrency is an
-advanced continuation rather than a prerequisite for the capstone.
+After completing them, continue through module 11 and then build
+[both required capstones](../../capstones/README.md).

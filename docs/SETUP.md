@@ -50,8 +50,9 @@ leave the virtual environment, run `deactivate`.
 
 ## 4. Install optional tools
 
-Everything in `lessons/` runs with the standard library alone. The development
-requirements add [pytest](https://docs.pytest.org/en/stable/),
+Everything in `lessons/` and both capstone reference implementations runs with
+the standard library alone. The development requirements add
+[pytest](https://docs.pytest.org/en/stable/),
 [Ruff](https://docs.astral.sh/ruff/),
 [mypy](https://mypy.readthedocs.io/en/stable/), and
 [Coverage.py](https://coverage.readthedocs.io/en/stable/) so you can practice
@@ -125,6 +126,10 @@ Then apply formatting and run the configured static checks:
 ruff format .
 ruff check .
 mypy
+mypy --strict \
+  capstones/comparative/starter/comparative_kv \
+  capstones/idiomatic/starter/ingest_report
+python scripts/check_markdown_links.py
 ```
 
 Ruff's formatter command changes files. Continuous integration uses
@@ -132,17 +137,31 @@ Ruff's formatter command changes files. Continuous integration uses
 `ruff check --fix .` can apply supported lint fixes, but review those changes
 instead of treating automatic repair as proof that behavior is correct.
 
-Run the connected project tests and their configured coverage:
+Compile both source roots, verify the frozen comparative fixtures, and smoke
+test both untouched starters:
 
 ```bash
-python -m unittest \
-  project.task_rest_api.test_api \
-  project.task_rest_client.test_client \
-  project.task_manager.test_task_manager -v
-coverage run -m unittest \
-  project.task_rest_api.test_api \
-  project.task_rest_client.test_client \
-  project.task_manager.test_task_manager
+python -m compileall -q \
+  capstones/comparative/starter capstones/comparative/solution \
+  capstones/idiomatic/starter capstones/idiomatic/solution
+(cd capstones/comparative/spec && sha256sum -c MANIFEST.sha256)
+CAPSTONE_IMPLEMENTATION=starter python -m unittest \
+  discover -s capstones/comparative/tests -p 'test_harness.py' -v
+CAPSTONE_IMPLEMENTATION=starter python -m unittest \
+  discover -s capstones/idiomatic/tests -p 'test_harness.py' -v
+```
+
+Course completion requires both reference suites. Measure their configured
+branch coverage together:
+
+```bash
+coverage erase
+CAPSTONE_IMPLEMENTATION=solution CAPSTONE_SUBPROCESS_COVERAGE=1 \
+  coverage run --parallel-mode -m unittest \
+    discover -s capstones/comparative/tests -p 'test_*.py'
+CAPSTONE_IMPLEMENTATION=solution coverage run --parallel-mode -m unittest \
+  discover -s capstones/idiomatic/tests -p 'test_*.py'
+coverage combine
 coverage report
 ```
 
@@ -154,6 +173,11 @@ The repository's
 [GitHub Actions workflow](https://docs.github.com/en/actions) runs these checks
 in a clean environment. Running them locally first shortens the feedback loop;
 CI confirms that the result does not depend on unrecorded local state.
+
+The old [`project/`](../project/README.md) Task examples are temporary legacy
+material and no longer define the default development gates. See the
+[migration guide](CAPSTONE_MIGRATION.md) before comparing them with the two
+required capstones.
 
 ## Troubleshooting
 

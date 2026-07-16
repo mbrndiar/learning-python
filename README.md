@@ -2,7 +2,7 @@
 
 A complete, hands-on introduction to Python for independent learners. The
 course combines written explanations, small runnable programs, exercises with
-solutions, review questions, a capstone project, and a syntax reference. No
+solutions, review questions, two capstone projects, and a syntax reference. No
 previous programming experience is assumed.
 
 ## 🎯 What you will learn
@@ -19,8 +19,11 @@ By the end of the course, you will be able to:
 - test programs with `unittest` and
   [pytest](https://docs.pytest.org/en/stable/);
 - build command-line programs and small HTTP/JSON integrations;
-- select an appropriate concurrency model for I/O- or CPU-bound work; and
-- design, implement, test, and extend a command-line application.
+- select an appropriate concurrency model for I/O- or CPU-bound work;
+- implement and test a versioned SQLite CLI against a frozen behavioral
+  contract; and
+- design a strictly typed ingestion and reporting pipeline with streaming I/O,
+  SQLite, injected HTTP, and bounded concurrency.
 
 ## ✅ Requirements
 
@@ -61,20 +64,30 @@ When you change code, first run the smallest relevant example or test. After it
 passes, widen the feedback:
 
 ```bash
+python scripts/check_markdown_links.py
 ruff format .
 ruff check .
 mypy
-python -m compileall -q capstones/idiomatic/starter
 python -m compileall -q \
-  capstones/comparative/starter capstones/comparative/solution
+  capstones/comparative/starter capstones/comparative/solution \
+  capstones/idiomatic/starter capstones/idiomatic/solution
+(cd capstones/comparative/spec && sha256sum -c MANIFEST.sha256)
+CAPSTONE_IMPLEMENTATION=starter python -m unittest \
+  discover -s capstones/comparative/tests -p 'test_harness.py' -v
+CAPSTONE_IMPLEMENTATION=starter python -m unittest \
+  discover -s capstones/idiomatic/tests -p 'test_harness.py' -v
 CAPSTONE_IMPLEMENTATION=solution python -m unittest \
   discover -s capstones/comparative/tests -p 'test_*.py' -v
 CAPSTONE_IMPLEMENTATION=solution python -m unittest \
   discover -s capstones/idiomatic/tests -p 'test_*.py' -v
-python -m unittest \
-  project.task_rest_api.test_api \
-  project.task_rest_client.test_client \
-  project.task_manager.test_task_manager -v
+```
+
+The starter packages are also strict-type-checked as learner scaffolding:
+
+```bash
+mypy --strict \
+  capstones/comparative/starter/comparative_kv \
+  capstones/idiomatic/starter/ingest_report
 ```
 
 Module 9 explains what each tool checks, how to measure coverage, and how these
@@ -99,25 +112,22 @@ Each module has a matching folder under [`exercises/`](exercises/README.md)
 with hands-on problems to implement yourself, plus reference solutions to
 check your work. After finishing a lesson, do its exercises before moving on.
 
-## 🏆 Capstone project
+## 🏆 Capstone projects
 
-Once you've completed the course, build both required
+Once you've completed the course, build both equally required
 [capstone projects](capstones/README.md):
 
 - the [comparative SQLite key/value store](capstones/comparative/README.md);
 - the [idiomatic ingestion and reporting pipeline](capstones/idiomatic/README.md).
 
-The connected [Task Manager projects](project/README.md) remain useful smaller
-examples of classes, custom exceptions, persistence, HTTP, argparse, and tests.
-
 Use each guided starter one milestone at a time, writing a test before or
 alongside each change. Compare with the reference solution only after the
 selected milestone tests pass.
 
-For those smaller application examples, see the
-[Task REST client](project/task_rest_client/README.md),
-[Task REST API](project/task_rest_api/README.md), and storage-selectable
-[Task Manager](project/task_manager/README.md).
+The old [`project/`](project/README.md) Task examples are temporary legacy
+material, not a third capstone. See the
+[capstone migration guide](docs/CAPSTONE_MIGRATION.md) for concept and command
+mappings; the legacy paths remain only until the next cleanup todo.
 
 ## 🗒️ Cheat sheet
 

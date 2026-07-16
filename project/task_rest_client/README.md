@@ -1,4 +1,8 @@
-# 📡 Task REST Client
+# ⚠️ Temporary legacy: Task REST Client
+
+> This path is preserved only until the next cleanup todo. It is not a required
+> capstone; see the [migration guide](../../docs/CAPSTONE_MIGRATION.md) and the
+> [two completed capstones](../../capstones/README.md).
 
 This paired project consumes the neighboring
 [Task REST API](../task_rest_api/README.md) using only Python's standard library.

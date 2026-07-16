@@ -12,12 +12,6 @@ select = ["E4", "E7", "E9", "F", "I", "UP"]
 [tool.mypy]
 python_version = "3.11"
 files = [
-    "project/task_manager/task_manager.py",
-    "project/task_manager/storage.py",
-    "project/task_manager/cli.py",
-    "project/task_rest_api/api.py",
-    "project/task_rest_client/client.py",
-    "project/task_rest_client/cli.py",
     "capstones/comparative/solution/comparative_kv",
     "capstones/idiomatic/solution/ingest_report",
 ]
@@ -27,12 +21,10 @@ warn_unused_configs = true
 [tool.coverage.run]
 branch = true
 include = [
-    "project/**/*.py",
     "capstones/comparative/solution/comparative_kv/*.py",
     "capstones/idiomatic/solution/ingest_report/*.py",
 ]
 omit = [
-    "project/**/test_*.py",
     "capstones/comparative/solution/comparative_kv/__main__.py",
     "capstones/idiomatic/solution/ingest_report/__main__.py",
 ]

@@ -1,4 +1,4 @@
-name: Run lessons and tests
+name: Run lessons and capstones
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  run-lessons:
+  validate-course:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -26,6 +26,10 @@ jobs:
 
       - name: Install development dependencies
         run: python -m pip install -r requirements-dev.txt
+
+      - name: Check documentation links
+        if: matrix.python-version == '3.14'
+        run: python scripts/check_markdown_links.py
 
       - name: Check formatting, linting, and types
         if: matrix.python-version == '3.14'
@@ -78,27 +82,16 @@ jobs:
           CAPSTONE_IMPLEMENTATION=solution python -m unittest \
             discover -s capstones/idiomatic/tests -p 'test_*.py' -v
 
-      - name: Run project tests
-        run: |
-          python -m unittest \
-            project.task_rest_api.test_api \
-            project.task_rest_client.test_client \
-            project.task_manager.test_task_manager -v
-
-      - name: Measure project and capstone branch coverage
+      - name: Measure capstone branch coverage
         if: matrix.python-version == '3.14'
         run: |
           coverage erase
-          coverage run --parallel-mode -m unittest \
-            project.task_rest_api.test_api \
-            project.task_rest_client.test_client \
-            project.task_manager.test_task_manager
-          CAPSTONE_IMPLEMENTATION=solution coverage run --parallel-mode -m unittest \
-            discover -s capstones/idiomatic/tests -p 'test_*.py'
           CAPSTONE_IMPLEMENTATION=solution \
             CAPSTONE_SUBPROCESS_COVERAGE=1 \
             coverage run --parallel-mode -m unittest \
               discover -s capstones/comparative/tests -p 'test_*.py'
+          CAPSTONE_IMPLEMENTATION=solution coverage run --parallel-mode -m unittest \
+            discover -s capstones/idiomatic/tests -p 'test_*.py'
           coverage combine
           coverage report
 

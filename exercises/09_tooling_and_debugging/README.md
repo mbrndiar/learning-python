@@ -65,16 +65,19 @@ mypy
 
 [Ruff](https://docs.astral.sh/ruff/) formats and lints the selected files.
 [mypy](https://mypy.readthedocs.io/en/stable/) reads `pyproject.toml` and checks
-the configured typed files in `project/`; it does not currently check every
-lesson or exercise.
+the configured capstone solution packages; it does not check every lesson or
+exercise. CI separately checks both starter packages with `mypy --strict`.
 
-### 4. Measure the configured project coverage
+### 4. Measure the configured capstone coverage
 
 ```bash
-coverage run -m unittest \
-  project.task_rest_api.test_api \
-  project.task_rest_client.test_client \
-  project.task_manager.test_task_manager
+coverage erase
+CAPSTONE_IMPLEMENTATION=solution CAPSTONE_SUBPROCESS_COVERAGE=1 \
+  coverage run --parallel-mode -m unittest \
+    discover -s capstones/comparative/tests -p 'test_*.py'
+CAPSTONE_IMPLEMENTATION=solution coverage run --parallel-mode -m unittest \
+  discover -s capstones/idiomatic/tests -p 'test_*.py'
+coverage combine
 coverage report
 ```
 
