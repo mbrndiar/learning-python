@@ -81,9 +81,12 @@ def parse_server_settings(
 def build_repository(backend: Backend, data: str | Path) -> TaskRepository:
     """Construct the selected milestone-two persistence adapter."""
 
+    # TODO(milestone 2): keep backend selection here, outside every HTTP framework.
     if backend == "sqlite":
         return SQLiteTaskRepository(data)
-    return MarkdownTaskRepository(data)
+    if backend == "markdown":
+        return MarkdownTaskRepository(data)
+    raise ValueError(f"unsupported backend: {backend}")
 
 
 def build_service(settings: ServerSettings) -> TaskService:

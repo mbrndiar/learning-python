@@ -6,9 +6,9 @@ unrelated applications. It is to keep one domain and one HTTP contract stable
 while observing what each library makes explicit, convenient, or implicit.
 
 The project includes matching typed `starter/` and `solution/` public APIs plus
-a shared test harness. The solution completes milestone one; persistence,
-server, and concrete client operations remain intentionally scaffolded for
-their later milestone implementation phases.
+a shared test harness. The solution completes milestones one and two; server
+and concrete client operations remain intentionally scaffolded for their later
+milestone implementation phases.
 
 ## Course placement
 
@@ -82,6 +82,10 @@ not pairings.
 Attempt each starter milestone before reading the corresponding solution.
 Useful comparisons concern behavior, readability, resource ownership, and
 trade-offs—not whether two files contain identical code.
+
+The Markdown repository coordinates load-modify-save operations only between
+threads in one process. It deliberately does not teach or provide cross-process
+file locking.
 
 ## Intended Python commands
 

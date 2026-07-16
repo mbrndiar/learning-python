@@ -83,7 +83,9 @@ def build_repository(backend: Backend, data: str | Path) -> TaskRepository:
 
     if backend == "sqlite":
         return SQLiteTaskRepository(data)
-    return MarkdownTaskRepository(data)
+    if backend == "markdown":
+        return MarkdownTaskRepository(data)
+    raise ValueError(f"unsupported backend: {backend}")
 
 
 def build_service(settings: ServerSettings) -> TaskService:
