@@ -1,0 +1,67 @@
+"""Smoke tests for the idiomatic starter/solution harness."""
+
+import unittest
+from importlib import import_module
+
+from implementation import IMPLEMENTATION
+
+ingest_report = import_module("ingest_report")
+ingest_report_cli = import_module("ingest_report.cli")
+
+
+class IdiomaticHarnessSmokeTests(unittest.TestCase):
+    def test_selected_target_imports_and_parses_documented_commands(self):
+        parser = ingest_report_cli.build_parser()
+        command_lines = (
+            [
+                "--db",
+                "events.db",
+                "ingest",
+                "--import-id",
+                "csv-1",
+                "--format",
+                "csv",
+                "--input",
+                "events.csv",
+            ],
+            [
+                "--db",
+                "events.db",
+                "ingest",
+                "--import-id",
+                "jsonl-1",
+                "--format",
+                "jsonl",
+                "--input",
+                "events.jsonl",
+            ],
+            [
+                "--db",
+                "events.db",
+                "ingest",
+                "--import-id",
+                "http-1",
+                "--format",
+                "http",
+                "--url",
+                "http://127.0.0.1:8000/events",
+            ],
+            ["--db", "events.db", "report", "--output", "json"],
+        )
+
+        self.assertIn(IMPLEMENTATION, ("starter", "solution"))
+        self.assertEqual(
+            [parser.parse_args(arguments).command for arguments in command_lines],
+            ["ingest", "ingest", "ingest", "report"],
+        )
+
+    def test_selected_target_reaches_only_the_intentional_placeholder(self):
+        with self.assertRaisesRegex(
+            ingest_report.IncompleteImplementationError,
+            "idiomatic command execution.*intentionally incomplete",
+        ):
+            ingest_report_cli.main(["--db", "events.db", "report"])
+
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)

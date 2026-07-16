@@ -33,6 +33,9 @@ jobs:
           ruff format --check .
           ruff check .
           mypy
+          mypy --strict \
+            capstones/comparative/starter/comparative_kv \
+            capstones/idiomatic/starter/ingest_report
 
       - name: Run every lesson script
         run: |
@@ -54,6 +57,24 @@ jobs:
 
       - name: Compile exercise starters
         run: python -m compileall -q exercises
+
+      - name: Validate capstone scaffolding
+        run: |
+          python -m compileall -q \
+            capstones/comparative/starter \
+            capstones/comparative/solution \
+            capstones/idiomatic/starter \
+            capstones/idiomatic/solution
+          (
+            cd capstones/comparative/spec
+            sha256sum -c MANIFEST.sha256
+          )
+          for implementation in starter solution; do
+            CAPSTONE_IMPLEMENTATION="$implementation" python -m unittest \
+              discover -s capstones/comparative/tests -p 'test_*.py' -v
+            CAPSTONE_IMPLEMENTATION="$implementation" python -m unittest \
+              discover -s capstones/idiomatic/tests -p 'test_*.py' -v
+          done
 
       - name: Run project tests
         run: |

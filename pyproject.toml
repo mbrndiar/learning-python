@@ -18,6 +18,8 @@ files = [
     "project/task_rest_api/api.py",
     "project/task_rest_client/client.py",
     "project/task_rest_client/cli.py",
+    "capstones/comparative/solution/comparative_kv",
+    "capstones/idiomatic/solution/ingest_report",
 ]
 strict = true
 warn_unused_configs = true
