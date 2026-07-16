@@ -1,7 +1,6 @@
 """Low-level ``http.server`` boundary for milestone three."""
 
 from http.server import ThreadingHTTPServer
-from typing import NoReturn
 
 from tasks_core.errors import incomplete
 from tasks_core.service import TaskService
@@ -18,7 +17,7 @@ def create_server(
     incomplete("milestone 3 standard-library server factory")
 
 
-def serve(service: TaskService, host: str, port: int) -> NoReturn:
+def serve(service: TaskService, host: str, port: int) -> None:
     """Own the standard-library server lifecycle."""
 
     del service, host, port
