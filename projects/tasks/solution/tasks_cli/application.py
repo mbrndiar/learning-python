@@ -317,9 +317,7 @@ def _content_type(headers: Mapping[str, str]) -> str:
         if isinstance(name, str) and name.casefold() == "content-type"
     ]
     if len(values) != 1 or not isinstance(values[0], str):
-        raise _MalformedResponse(
-            "response Content-Type was not application/json"
-        )
+        raise _MalformedResponse("response Content-Type was not application/json")
     return values[0].split(";", 1)[0].strip().casefold()
 
 
@@ -338,9 +336,7 @@ def _reject_json_constant(value: str) -> NoReturn:
 
 def _decode_json(response: TransportResponse) -> object:
     if _content_type(response.headers) != "application/json":
-        raise _MalformedResponse(
-            "response Content-Type was not application/json"
-        )
+        raise _MalformedResponse("response Content-Type was not application/json")
     try:
         text = response.body.decode("utf-8")
         value: object = json.loads(
@@ -373,11 +369,15 @@ def _decode_error(response: TransportResponse) -> _ApiFailure:
     error_value: object = value["error"]
     if not isinstance(error_value, dict):
         raise _MalformedResponse("API error value was not an object")
-    if not {"code", "message"} <= set(error_value) <= {
-        "code",
-        "message",
-        "details",
-    }:
+    if (
+        not {"code", "message"}
+        <= set(error_value)
+        <= {
+            "code",
+            "message",
+            "details",
+        }
+    ):
         raise _MalformedResponse("API error fields were malformed")
 
     code: object = error_value["code"]
@@ -386,10 +386,7 @@ def _decode_error(response: TransportResponse) -> _ApiFailure:
         not isinstance(code, str)
         or not isinstance(message, str)
         or not message
-        or (
-            "details" in error_value
-            and not isinstance(error_value["details"], dict)
-        )
+        or ("details" in error_value and not isinstance(error_value["details"], dict))
     ):
         raise _MalformedResponse("API error values were malformed")
 
@@ -558,9 +555,7 @@ def _execute_with_factory(
         except _ApiFailure as error:
             result = ClientResult(
                 EXIT_API,
-                stderr=(
-                    f"api: {error.status} {error.code}: {error.message}"
-                ),
+                stderr=(f"api: {error.status} {error.code}: {error.message}"),
             )
         except _MalformedResponse as error:
             result = ClientResult(

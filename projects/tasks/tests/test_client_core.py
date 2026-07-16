@@ -164,8 +164,7 @@ def test_base_url_and_explicit_request_url_encoding() -> None:
         "https://example.com/api"
     )
     assert build_url("HTTPS://EXAMPLE.COM/api///", request) == (
-        "https://example.com/api/tasks/a%20b/%E9%9B%AA"
-        "?state=not%20true&tag=a%2Fb%26c"
+        "https://example.com/api/tasks/a%20b/%E9%9B%AA?state=not%20true&tag=a%2Fb%26c"
     )
 
 

@@ -8,9 +8,7 @@ from urllib.parse import quote, urlencode, urlsplit, urlunsplit
 
 HttpMethod: TypeAlias = Literal["GET", "POST", "PATCH", "DELETE"]
 JsonScalar: TypeAlias = str | int | float | bool | None
-JsonValue: TypeAlias = (
-    JsonScalar | list["JsonValue"] | dict[str, "JsonValue"]
-)
+JsonValue: TypeAlias = JsonScalar | list["JsonValue"] | dict[str, "JsonValue"]
 _HTTP_METHODS = frozenset({"GET", "POST", "PATCH", "DELETE"})
 
 
@@ -70,8 +68,7 @@ def _is_json_value(value: object) -> bool:
         return all(_is_json_value(item) for item in value)
     if isinstance(value, dict):
         return all(
-            isinstance(key, str) and _is_json_value(item)
-            for key, item in value.items()
+            isinstance(key, str) and _is_json_value(item) for key, item in value.items()
         )
     return False
 
