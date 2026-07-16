@@ -64,6 +64,9 @@ passes, widen the feedback:
 ruff format .
 ruff check .
 mypy
+python -m compileall -q capstones/idiomatic/starter
+CAPSTONE_IMPLEMENTATION=solution python -m unittest \
+  discover -s capstones/idiomatic/tests -p 'test_*.py' -v
 python -m unittest \
   project.task_rest_api.test_api \
   project.task_rest_client.test_client \
@@ -94,17 +97,20 @@ check your work. After finishing a lesson, do its exercises before moving on.
 
 ## 🏆 Capstone project
 
-Once you've completed the course, build on what you've learned with the
-[Task Manager capstone project](project/task_manager/README.md) - a small
-command-line to-do app that combines classes, custom exceptions, file
-persistence, argparse, and unit tests.
+Once you've completed the course, build both required
+[capstone projects](capstones/README.md):
 
-The supplied implementation is a readable starting point. Build features from
-the extension list one at a time, writing a test before or alongside each
-change. This turns the project from a code-reading exercise into an assessment
-of the whole course.
+- the [comparative SQLite key/value store](capstones/comparative/README.md);
+- the [idiomatic ingestion and reporting pipeline](capstones/idiomatic/README.md).
 
-For smaller application examples, see the
+The connected [Task Manager projects](project/README.md) remain useful smaller
+examples of classes, custom exceptions, persistence, HTTP, argparse, and tests.
+
+Use each guided starter one milestone at a time, writing a test before or
+alongside each change. Compare with the reference solution only after the
+selected milestone tests pass.
+
+For those smaller application examples, see the
 [Task REST client](project/task_rest_client/README.md),
 [Task REST API](project/task_rest_api/README.md), and storage-selectable
 [Task Manager](project/task_manager/README.md).

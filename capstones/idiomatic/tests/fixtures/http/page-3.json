@@ -1,0 +1,14 @@
+{
+  "page": 3,
+  "page_count": 3,
+  "items": [
+    {
+      "id": "http-003",
+      "occurred_at": "2026-07-16T11:02:00Z",
+      "source": "remote",
+      "category": "batch",
+      "duration_ms": 30,
+      "status": "failure"
+    }
+  ]
+}

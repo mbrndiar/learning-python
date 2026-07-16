@@ -1,0 +1,6 @@
+
+{"id":"evt-101","occurred_at":"2026-07-16T10:00:00Z","source":"database","category":"query","duration_ms":50,"status":"success"}
+{"id":"evt-101","occurred_at":"2026-07-16T10:01:00Z","source":"database","category":"other","duration_ms":999,"status":"failure"}
+{"id":"evt-102","occurred_at":"2026-07-16T10:02:00Z","source":"database","category":"query","duration_ms":"-1","status":"warning"}
+{"id":"evt-103","id":"again","occurred_at":"2026-07-16T10:03:00Z","source":"database","category":"query","duration_ms":10,"status":"success"}
+{"id":"evt-104","occurred_at":"2026-07-16T10:04:00Z","source":"database","duration_ms":10,"status":"success"}

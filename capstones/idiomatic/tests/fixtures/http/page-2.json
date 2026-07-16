@@ -1,0 +1,14 @@
+{
+  "page": 2,
+  "page_count": 3,
+  "items": [
+    {
+      "id": "http-002",
+      "occurred_at": "2026-07-16T11:01:00Z",
+      "source": "remote",
+      "category": "request",
+      "duration_ms": 20,
+      "status": "warning"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "filters": {
+    "from": null,
+    "to": null,
+    "category": null,
+    "status": null
+  },
+  "totals": {
+    "events": 5,
+    "duration_ms": 450,
+    "rejected": 3
+  },
+  "by_category": [
+    {"category": "batch", "events": 1, "duration_ms": 200},
+    {"category": "query", "events": 1, "duration_ms": 50},
+    {"category": "request", "events": 3, "duration_ms": 200}
+  ],
+  "by_status": [
+    {"status": "failure", "events": 1, "duration_ms": 200},
+    {"status": "success", "events": 3, "duration_ms": 175},
+    {"status": "warning", "events": 1, "duration_ms": 75}
+  ],
+  "rejects_by_code": [
+    {"code": "invalid_duration", "count": 1},
+    {"code": "invalid_shape", "count": 1},
+    {"code": "invalid_status", "count": 1}
+  ]
+}

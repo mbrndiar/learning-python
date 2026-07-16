@@ -16,6 +16,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--db", required=True, metavar="PATH")
     parser.add_argument("--json-errors", action="store_true")
+    parser.add_argument("--debug", action="store_true", help=argparse.SUPPRESS)
     commands = parser.add_subparsers(dest="command", required=True)
 
     ingest_parser = commands.add_parser("ingest", allow_abbrev=False)

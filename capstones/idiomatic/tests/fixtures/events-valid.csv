@@ -1,0 +1,5 @@
+id,occurred_at,source,category,duration_ms,status
+evt-001,2026-07-16T08:00:00Z,checkout,request,125,success
+evt-002,2026-07-16T08:01:00+02:00,api,request,75,warning
+evt-003,2026-07-16T08:02:00.123987Z,checkout,batch,200,failure
+evt-004,2026-07-16T08:03:00Z,api,request,0,success

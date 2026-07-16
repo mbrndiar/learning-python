@@ -26,8 +26,14 @@ warn_unused_configs = true
 
 [tool.coverage.run]
 branch = true
-source = ["project"]
-omit = ["project/**/test_*.py"]
+include = [
+    "project/**/*.py",
+    "capstones/idiomatic/solution/ingest_report/*.py",
+]
+omit = [
+    "project/**/test_*.py",
+    "capstones/idiomatic/solution/ingest_report/__main__.py",
+]
 
 [tool.coverage.report]
 fail_under = 85

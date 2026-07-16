@@ -1,6 +1,7 @@
 """Injectable boundaries for the idiomatic capstone."""
 
-from collections.abc import Iterable, Iterator, Mapping, Sequence
+from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
+from concurrent.futures import Executor
 from datetime import datetime
 from typing import Protocol
 
@@ -48,3 +49,6 @@ class PageFetcher(Protocol):
     """Fetch one HTTP page through an injectable transport boundary."""
 
     def fetch_page(self, base_url: str, page: int) -> Mapping[str, object]: ...
+
+
+ExecutorFactory = Callable[[int], Executor]

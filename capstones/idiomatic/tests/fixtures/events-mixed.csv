@@ -1,0 +1,6 @@
+id,occurred_at,source,category,duration_ms,status
+evt-101,2026-07-16T10:00:00Z,database,query,50,success
+evt-101,2026-07-16T10:01:00Z,database,other,999,failure
+evt-102,2026-07-16T10:02:00Z,database,query,-1,warning
+evt-103,2026-07-16T10:03:00Z,database,query,10,ok
+,,,,,

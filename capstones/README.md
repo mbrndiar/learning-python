@@ -12,18 +12,18 @@ package boundary. The shared tests choose one root with
 `CAPSTONE_IMPLEMENTATION=starter|solution`; they never copy code between the
 two implementations.
 
-## Current scaffold status
+## Current implementation status
 
-Both source roots currently provide importable packages, typed public values and
-protocols, command parsers, and explicit incomplete-operation errors. They do
-not implement any milestone behavior yet. This is intentional: the harness can
-be validated before either reference implementation is written.
+The idiomatic track now contains a complete standard-library reference solution,
+deterministic fixtures, and five shared milestone test groups. Its starter is a
+compileable, strictly typed guide with progressive `TODO(m1)` through
+`TODO(m5)` boundaries. The comparative track remains at its initial scaffold.
 
 ## Recommended workflow
 
 1. Read the track README and specification.
 2. Work in `starter/` one milestone at a time.
-3. Run only that milestone's selected tests as they are added.
+3. Run only that milestone's selected tests.
 4. Run the complete starter suite before comparing with `solution/`.
 5. Recreate useful ideas yourself rather than copying the reference source.
 
@@ -37,9 +37,12 @@ python -m compileall -q \
 for implementation in starter solution; do
   CAPSTONE_IMPLEMENTATION="$implementation" python -m unittest \
     discover -s capstones/comparative/tests -p 'test_*.py' -v
-  CAPSTONE_IMPLEMENTATION="$implementation" python -m unittest \
-    discover -s capstones/idiomatic/tests -p 'test_*.py' -v
 done
+
+CAPSTONE_IMPLEMENTATION=starter python -m unittest \
+  discover -s capstones/idiomatic/tests -p 'test_harness.py' -v
+CAPSTONE_IMPLEMENTATION=solution python -m unittest \
+  discover -s capstones/idiomatic/tests -p 'test_*.py' -v
 ```
 
 Repository quality checks also cover the scaffolding:

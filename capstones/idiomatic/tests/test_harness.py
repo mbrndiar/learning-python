@@ -1,9 +1,13 @@
 """Smoke tests for the idiomatic starter/solution harness."""
 
+import io
 import unittest
+from contextlib import redirect_stdout
 from importlib import import_module
+from pathlib import Path
 
 from implementation import IMPLEMENTATION
+from support import test_directory
 
 ingest_report = import_module("ingest_report")
 ingest_report_cli = import_module("ingest_report.cli")
@@ -55,12 +59,20 @@ class IdiomaticHarnessSmokeTests(unittest.TestCase):
             ["ingest", "ingest", "ingest", "report"],
         )
 
-    def test_selected_target_reaches_only_the_intentional_placeholder(self):
-        with self.assertRaisesRegex(
-            ingest_report.IncompleteImplementationError,
-            "idiomatic command execution.*intentionally incomplete",
-        ):
-            ingest_report_cli.main(["--db", "events.db", "report"])
+    def test_selected_target_has_the_expected_learning_boundary(self):
+        if IMPLEMENTATION == "starter":
+            with self.assertRaisesRegex(
+                ingest_report.IncompleteImplementationError,
+                "idiomatic command execution.*intentionally incomplete",
+            ):
+                ingest_report_cli.main(["--db", "events.db", "report"])
+            return
+        with test_directory() as directory:
+            with redirect_stdout(io.StringIO()):
+                exit_code = ingest_report_cli.main(
+                    ["--db", str(Path(directory) / "events.db"), "report"]
+                )
+        self.assertEqual(exit_code, 0)
 
 
 if __name__ == "__main__":

@@ -2,6 +2,7 @@
 
 from collections.abc import Mapping
 from dataclasses import dataclass
+from types import MappingProxyType
 from typing import Literal, TypeAlias
 
 Status: TypeAlias = Literal["success", "warning", "failure"]
@@ -28,6 +29,8 @@ class RawRecord:
     source_name: str
     record_number: int
     raw: Mapping[str, object]
+    source_kind: SourceKind | None = None
+    shape_error: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -40,6 +43,9 @@ class RejectedRecord:
     field: str | None
     message: str
     raw: Mapping[str, object]
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "raw", MappingProxyType(dict(self.raw)))
 
 
 @dataclass(frozen=True, slots=True)
