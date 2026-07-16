@@ -1,6 +1,5 @@
 """Milestone 5: HTTP protocol, bounded concurrency, partials, and subprocess CLI."""
 
-import io
 import json
 import os
 import sqlite3
@@ -9,13 +8,12 @@ import sys
 import threading
 import unittest
 from collections.abc import Iterator, Mapping
-from contextlib import closing, contextmanager, redirect_stderr, redirect_stdout
+from contextlib import closing, contextmanager
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlsplit
 
 from implementation import IMPLEMENTATION, SOURCE_ROOT
 from ingest_report.application import ingest_http
-from ingest_report.cli import main
 from ingest_report.errors import ApplicationError, PartialImportError
 from ingest_report.http_source import (
     MAX_RESPONSE_BYTES,
@@ -257,32 +255,37 @@ class IntegrationTests(unittest.TestCase):
             test_directory() as directory,
             loopback_server(pages, {2: 500}) as base_url,
         ):
-            stdout = io.StringIO()
-            stderr = io.StringIO()
-            with redirect_stdout(stdout), redirect_stderr(stderr):
-                exit_code = main(
-                    [
-                        "--json-errors",
-                        "--db",
-                        str(directory / "events.db"),
-                        "ingest",
-                        "--import-id",
-                        "partial-cli",
-                        "--format",
-                        "http",
-                        "--url",
-                        base_url,
-                        "--allow-partial",
-                    ]
-                )
-        self.assertEqual(exit_code, 4)
-        result = json.loads(stdout.getvalue())
+            process = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "ingest_report",
+                    "--json-errors",
+                    "--db",
+                    str(directory / "events.db"),
+                    "ingest",
+                    "--import-id",
+                    "partial-cli",
+                    "--format",
+                    "http",
+                    "--url",
+                    base_url,
+                    "--allow-partial",
+                ],
+                cwd=REPOSITORY_ROOT,
+                env={**os.environ, "PYTHONPATH": str(SOURCE_ROOT)},
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+        self.assertEqual(process.returncode, 4)
+        result = json.loads(process.stdout)
         self.assertEqual(
             (result["state"], result["accepted"], result["failed_pages"]),
             ("partial", 2, [2]),
         )
         self.assertEqual(
-            json.loads(stderr.getvalue())["error"]["code"],
+            json.loads(process.stderr)["error"]["code"],
             "partial_import",
         )
 
