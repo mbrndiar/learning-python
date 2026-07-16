@@ -1,0 +1,7 @@
+# Project-local runtime dependencies for the future server/client implementations.
+# Course-wide installation and CI integration are handled in a later phase.
+Flask>=3.1,<4
+fastapi>=0.115,<1
+httpx>=0.27,<1
+requests>=2.32,<3
+uvicorn>=0.34,<1
