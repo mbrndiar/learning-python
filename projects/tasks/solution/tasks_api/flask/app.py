@@ -1,5 +1,6 @@
 """Idiomatic Flask boundary for the Task HTTP API."""
 
+import json
 from collections.abc import Mapping
 from typing import NoReturn
 
@@ -8,6 +9,13 @@ from tasks_core.domain import UNSET, Task
 from tasks_core.errors import StorageError, TaskNotFoundError, ValidationError
 from tasks_core.service import TaskService
 from werkzeug.exceptions import BadRequest, MethodNotAllowed, NotFound
+
+MAX_REQUEST_BODY = 64 * 1024
+_METHODS_BY_ROUTE = {
+    "health": ("GET",),
+    "tasks": ("GET", "POST"),
+    "task": ("GET", "PATCH", "DELETE"),
+}
 
 
 class _InvalidJsonError(Exception):
@@ -34,14 +42,44 @@ def _error_response(
     return jsonify({"error": error}), status
 
 
+def _reject_duplicate_fields(pairs: list[tuple[str, object]]) -> dict[str, object]:
+    value: dict[str, object] = {}
+    for key, item in pairs:
+        if key in value:
+            raise _InvalidJsonError("request body must be valid JSON")
+        value[key] = item
+    return value
+
+
+def _reject_json_constant(value: str) -> NoReturn:
+    del value
+    raise _InvalidJsonError("request body must be valid JSON")
+
+
 def _json_object() -> dict[str, object]:
     if request.mimetype != "application/json":
-        raise _InvalidJsonError
+        raise _InvalidJsonError("request Content-Type must be application/json")
+    charset = request.mimetype_params.get("charset")
+    if charset is not None and charset.casefold() != "utf-8":
+        raise _InvalidJsonError("request JSON charset must be UTF-8")
     try:
-        request.get_data(cache=True).decode("utf-8")
-        value: object = request.get_json(cache=False)
-    except (BadRequest, UnicodeDecodeError) as error:
-        raise _InvalidJsonError from error
+        body = request.get_data(cache=False)
+        if len(body) > MAX_REQUEST_BODY:
+            raise _InvalidJsonError("request body is too large")
+        value: object = json.loads(
+            body.decode("utf-8"),
+            object_pairs_hook=_reject_duplicate_fields,
+            parse_constant=_reject_json_constant,
+        )
+    except (
+        BadRequest,
+        UnicodeDecodeError,
+        json.JSONDecodeError,
+        _InvalidJsonError,
+    ) as error:
+        if isinstance(error, _InvalidJsonError):
+            raise
+        raise _InvalidJsonError("request body must be valid JSON") from error
     if not isinstance(value, dict):
         raise ValidationError("request body must be a JSON object", field="body")
     return value
@@ -78,16 +116,61 @@ def _completed_filter() -> bool | None:
     values = request.args.getlist("completed")
     if len(values) != 1 or values[0] not in {"true", "false"}:
         raise ValidationError(
-            "completed must be true or false",
+            "completed filter must be true or false",
             field="completed",
         )
     return values[0] == "true"
+
+
+def _route(path: str) -> str | None:
+    if path == "/health":
+        return "health"
+    if path == "/tasks":
+        return "tasks"
+    if path.startswith("/tasks/"):
+        task_id = path.removeprefix("/tasks/")
+        if task_id and "/" not in task_id:
+            return "task"
+    return None
+
+
+def _validate_query(allowed: frozenset[str]) -> None:
+    unknown = sorted(set(request.args) - allowed)
+    if unknown:
+        field = unknown[0]
+        raise ValidationError(
+            f"unknown query parameter: {field}",
+            field=field,
+        )
 
 
 def create_app(service: TaskService) -> Flask:
     """Create one Flask application with an injected Task service."""
 
     app = Flask(__name__)
+
+    @app.before_request
+    def enforce_portable_contract() -> tuple[Response, int] | None:
+        route = _route(request.path)
+        if route is None:
+            return None
+        methods = _METHODS_BY_ROUTE[route]
+        if request.method not in methods:
+            response, status_code = _error_response(
+                "method_not_allowed",
+                "method is not allowed for this path",
+                405,
+            )
+            response.headers["Allow"] = ", ".join(methods)
+            return response, status_code
+
+        allowed_query = (
+            frozenset({"completed"})
+            if route == "tasks" and request.method == "GET"
+            else frozenset()
+        )
+        _validate_query(allowed_query)
+        return None
 
     @app.get("/health")
     def health() -> Response:
@@ -128,15 +211,17 @@ def create_app(service: TaskService) -> Flask:
         return jsonify(_task_payload(task))
 
     @app.delete("/tasks/<task_id>")
-    def delete_task(task_id: str) -> tuple[str, int]:
+    def delete_task(task_id: str) -> Response:
         service.delete_task(_task_id(task_id))
-        return "", 204
+        response = Response(status=204)
+        response.headers.pop("Content-Type", None)
+        return response
 
     @app.errorhandler(_InvalidJsonError)
-    def handle_invalid_json(_: _InvalidJsonError) -> tuple[Response, int]:
+    def handle_invalid_json(error: _InvalidJsonError) -> tuple[Response, int]:
         return _error_response(
             "invalid_json",
-            "request body must be valid JSON",
+            str(error),
             400,
         )
 
@@ -170,12 +255,16 @@ def create_app(service: TaskService) -> Flask:
     def handle_method_not_allowed(
         error: MethodNotAllowed,
     ) -> tuple[Response, int]:
+        route = _route(request.path)
+        methods = _METHODS_BY_ROUTE.get(route or "")
         response, status = _error_response(
             "method_not_allowed",
             "method is not allowed for this path",
             405,
         )
-        if error.valid_methods:
+        if methods is not None:
+            response.headers["Allow"] = ", ".join(methods)
+        elif error.valid_methods:
             response.headers["Allow"] = ", ".join(error.valid_methods)
         return response, status
 

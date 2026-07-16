@@ -37,6 +37,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     if not 1 <= settings.port <= 65535:
         build_parser().error("--port must be between 1 and 65535")
     serve(build_service(settings), settings.host, settings.port)
+    return 0
 
 
 __all__ = ["build_parser", "main"]

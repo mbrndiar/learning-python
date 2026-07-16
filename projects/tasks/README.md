@@ -6,9 +6,9 @@ unrelated applications. It is to keep one domain and one HTTP contract stable
 while observing what each library makes explicit, convenient, or implicit.
 
 The project includes matching typed `starter/` and `solution/` public APIs plus
-a shared test harness. The solution completes milestones one and two plus the
-transport-independent client command application; servers and the three
-concrete client transports remain intentionally scaffolded for later phases.
+a shared test harness. The starter keeps all five milestones intentionally
+guided and incomplete. The solution implements both repositories, all three
+servers and clients, the shared contracts, and the interoperability matrix.
 
 ## Course placement
 
@@ -93,7 +93,7 @@ These commands define the learner interface exposed by the source scaffold. Run
 them from the repository root; unfinished operations fail with an explicit
 milestone message.
 
-Install only the project runtime libraries:
+Install the project runtime and executable-contract libraries:
 
 ```bash
 python -m pip install -r projects/tasks/requirements.txt
@@ -103,10 +103,21 @@ Select `starter` or `solution` for tests:
 
 ```bash
 PROJECT_IMPLEMENTATION=starter \
-  pytest projects/tasks/tests/test_m1_domain.py -q
+  python -m pytest projects/tasks/tests -q
 
 PROJECT_IMPLEMENTATION=solution \
-  pytest projects/tasks/tests -q
+  python -m pytest projects/tasks/tests -q
+```
+
+Run the project quality gates:
+
+```bash
+python -m compileall -q \
+  projects/tasks/starter projects/tasks/solution projects/tasks/tests
+python -m ruff format --check projects/tasks
+python -m ruff check projects/tasks
+python -m mypy --strict --no-incremental projects/tasks/starter
+python -m mypy --strict --no-incremental projects/tasks/solution
 ```
 
 Start any server with either persistence backend:
@@ -150,7 +161,7 @@ not production deployment instructions.
 | --- | --- | --- |
 | `http.server` | Routing, byte decoding, content length, JSON serialization, headers, and status selection | Only standard-library building blocks |
 | Flask | Request contexts and response conversion | Concise routing, an application factory pattern, error handlers, and a test client |
-| FastAPI | Typed models and dependency wiring at the adapter boundary | Validation integration, response models, generated OpenAPI, and interactive local docs |
+| FastAPI | Typed models and dependency wiring at the adapter boundary | Validation integration, response models, and generated OpenAPI |
 | `urllib` | Request construction, encoding, response ownership, and HTTP error handling | A standard-library transport |
 | `requests` | Session/response ownership and status handling | A compact synchronous API |
 | `httpx` | Client lifetime, timeout configuration, and status handling | A modern API that can later extend to asynchronous use |

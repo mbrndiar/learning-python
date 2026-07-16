@@ -1,16 +1,29 @@
-"""Milestones three-through-five client contract placeholder."""
+"""Shared invocation helpers for every Task client transport."""
 
-from typing import NoReturn
+from collections.abc import Sequence
+from io import StringIO
 
-import pytest
+from tasks_cli.application import run
 from tasks_cli.transport import TransportFactory
 
 
-def run_client_contract(transport_factory: TransportFactory) -> NoReturn:
-    """Reserve the shared client contract without asserting HTTP behavior."""
+def invoke_client(
+    transport_factory: TransportFactory,
+    base_url: str,
+    argv: Sequence[str],
+) -> tuple[int, str, str]:
+    """Run one real client invocation with captured process streams."""
 
-    del transport_factory
-    pytest.skip("client transport behavior begins in milestone 3")
+    stdout = StringIO()
+    stderr = StringIO()
+    exit_code = run(
+        ["--base-url", base_url, "--timeout", "2", *argv],
+        transport_factory,
+        stdout,
+        stderr,
+        prog="test-tasks-client",
+    )
+    return exit_code, stdout.getvalue(), stderr.getvalue()
 
 
-__all__ = ["run_client_contract"]
+__all__ = ["invoke_client"]

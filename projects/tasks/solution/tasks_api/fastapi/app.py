@@ -30,10 +30,16 @@ logger = logging.getLogger(__name__)
 
 _INTERNAL_MESSAGE = "the server could not complete the request"
 _UNPROCESSABLE_STATUS = 422
+_MAX_REQUEST_BODY = 64 * 1024
 _JSON_METHOD_PATHS = (
     ("POST", re.compile(r"/tasks")),
     ("PATCH", re.compile(r"/tasks/[^/]+")),
 )
+_METHODS_BY_ROUTE = {
+    "health": ("GET",),
+    "tasks": ("GET", "POST"),
+    "task": ("GET", "PATCH", "DELETE"),
+}
 _ERROR_DESCRIPTIONS = {
     400: "The request body could not be decoded as JSON.",
     404: "The task or route was not found.",
@@ -82,39 +88,104 @@ def _expects_json(request: Request) -> bool:
     )
 
 
-def _has_json_content_type(request: Request) -> bool:
+def _json_content_type_error(request: Request) -> str | None:
     content_type = request.headers.get("content-type", "")
-    media_type = content_type.split(";", 1)[0].strip().casefold()
-    return media_type == "application/json" or (
-        media_type.startswith("application/") and media_type.endswith("+json")
-    )
+    parts = [part.strip() for part in content_type.split(";")]
+    if not parts or parts[0].casefold() != "application/json":
+        return "request Content-Type must be application/json"
+    for parameter in parts[1:]:
+        name, separator, value = parameter.partition("=")
+        if (
+            separator
+            and name.strip().casefold() == "charset"
+            and value.strip().strip('"').casefold() != "utf-8"
+        ):
+            return "request JSON charset must be UTF-8"
+    return None
 
 
 def _reject_json_constant(value: str) -> NoReturn:
     raise ValueError(f"invalid JSON constant: {value}")
 
 
+def _reject_duplicate_fields(pairs: list[tuple[str, object]]) -> dict[str, object]:
+    value: dict[str, object] = {}
+    for key, item in pairs:
+        if key in value:
+            raise ValueError(f"duplicate JSON property: {key}")
+        value[key] = item
+    return value
+
+
+def _match_route(path: str) -> str | None:
+    if path == "/health":
+        return "health"
+    if path == "/tasks":
+        return "tasks"
+    if path.startswith("/tasks/"):
+        task_id = path.removeprefix("/tasks/")
+        if task_id and "/" not in task_id:
+            return "task"
+    return None
+
+
 async def _validate_json_request(
     request: Request,
     call_next: Callable[[Request], Awaitable[Response]],
 ) -> Response:
+    route = _match_route(request.url.path)
+    if route is not None:
+        methods = _METHODS_BY_ROUTE[route]
+        if request.method not in methods:
+            return _error_response(
+                status.HTTP_405_METHOD_NOT_ALLOWED,
+                "method_not_allowed",
+                "method is not allowed for this path",
+                headers={"Allow": ", ".join(methods)},
+            )
+
+        allowed_query = (
+            {"completed"} if route == "tasks" and request.method == "GET" else set()
+        )
+        unknown_query = sorted(set(request.query_params) - allowed_query)
+        if unknown_query:
+            field = unknown_query[0]
+            return _error_response(
+                _UNPROCESSABLE_STATUS,
+                "validation_error",
+                f"unknown query parameter: {field}",
+                details={"field": field},
+            )
+
     if not _expects_json(request):
         return await call_next(request)
-    if not _has_json_content_type(request):
+    content_type_error = _json_content_type_error(request)
+    if content_type_error is not None:
         return _error_response(
             status.HTTP_400_BAD_REQUEST,
             "invalid_json",
-            "request Content-Type must be application/json",
+            content_type_error,
         )
 
     try:
-        text = (await request.body()).decode("utf-8")
-        json.loads(text, parse_constant=_reject_json_constant)
+        body = await request.body()
+        if len(body) > _MAX_REQUEST_BODY:
+            return _error_response(
+                status.HTTP_400_BAD_REQUEST,
+                "invalid_json",
+                "request body is too large",
+            )
+        text = body.decode("utf-8")
+        json.loads(
+            text,
+            object_pairs_hook=_reject_duplicate_fields,
+            parse_constant=_reject_json_constant,
+        )
     except (UnicodeDecodeError, json.JSONDecodeError, ValueError):
         return _error_response(
             status.HTTP_400_BAD_REQUEST,
             "invalid_json",
-            "request body must be valid UTF-8 JSON",
+            "request body must be valid JSON",
         )
     return await call_next(request)
 
@@ -171,11 +242,11 @@ def _validation_message(error: dict[str, Any]) -> tuple[str, dict[str, object]]:
         return "task ID must be a positive integer", {"field": "id"}
     if field == "completed":
         if location and location[0] == "query":
-            return "completed must be true or false", {"field": "completed"}
+            return "completed filter must be true or false", {"field": "completed"}
         return "completed must be a Boolean", {"field": "completed"}
     if field == "title":
         if error_type == "missing":
-            return "title is required", {"field": "title"}
+            return "missing property: title", {"field": "title"}
         if error_type in {"string_too_short", "string_too_long"}:
             return (
                 "title must contain between 1 and 120 characters",
@@ -185,7 +256,7 @@ def _validation_message(error: dict[str, Any]) -> tuple[str, dict[str, object]]:
     if error_type == "extra_forbidden" and location:
         unknown = str(location[-1])
         return f"unknown property: {unknown}", {"field": unknown}
-    return "request body must be a JSON object", {"field": "request"}
+    return "request body must be a JSON object", {"field": "body"}
 
 
 def _task_error_response(error: TaskError) -> JSONResponse:
@@ -241,6 +312,9 @@ def create_app(service: TaskService) -> FastAPI:
         ),
         servers=[{"url": "http://127.0.0.1:8000"}],
         redirect_slashes=False,
+        docs_url=None,
+        redoc_url=None,
+        openapi_url=None,
     )
 
     def provide_task_service() -> TaskService:
@@ -268,7 +342,7 @@ def create_app(service: TaskService) -> FastAPI:
             return _error_response(
                 status.HTTP_400_BAD_REQUEST,
                 "invalid_json",
-                "request body must be valid UTF-8 JSON",
+                "request body must be valid JSON",
             )
         message, details = _validation_message(first_error)
         return _error_response(
@@ -296,7 +370,7 @@ def create_app(service: TaskService) -> FastAPI:
             return _error_response(
                 status.HTTP_404_NOT_FOUND,
                 "not_found",
-                "path was not found",
+                "route was not found",
             )
         if error.status_code == status.HTTP_405_METHOD_NOT_ALLOWED:
             return _error_response(
@@ -366,7 +440,7 @@ def create_app(service: TaskService) -> FastAPI:
     ) -> list[Task]:
         if len(request.query_params.getlist("completed")) > 1:
             raise ValidationError(
-                "completed must appear at most once",
+                "completed filter must be true or false",
                 field="completed",
             )
         return [

@@ -19,7 +19,11 @@ import pytest
 import tasks_api.stdlib.__main__ as server_entrypoint
 import tasks_cli.urllib.adapter as urllib_adapter
 from implementation import IMPLEMENTATION
-from support import assert_client_parser, temporary_project_directory
+from support import (
+    assert_client_parser,
+    assert_server_parser,
+    temporary_project_directory,
+)
 from tasks_api.stdlib.__main__ import build_parser as build_server_parser
 from tasks_api.stdlib.__main__ import main as server_main
 from tasks_api.stdlib.app import create_server
@@ -192,22 +196,7 @@ def _raw_request(base_url: str, request: bytes) -> tuple[int, bytes]:
 
 
 def test_stdlib_launchers_parse_the_documented_commands() -> None:
-    arguments = build_server_parser().parse_args(
-        (
-            "--host",
-            "127.0.0.1",
-            "--port",
-            "0",
-            "--repository",
-            "markdown",
-            "--storage",
-            "tasks.md",
-        )
-    )
-    assert arguments.host == "127.0.0.1"
-    assert arguments.port == 0
-    assert arguments.repository == "markdown"
-    assert arguments.storage == Path("tasks.md")
+    assert_server_parser(build_server_parser())
     assert_client_parser(build_client_parser())
 
 
@@ -219,9 +208,9 @@ def test_starter_remains_guided_and_explicitly_incomplete() -> None:
     ):
         server_main(
             (
-                "--repository",
+                "--backend",
                 "sqlite",
-                "--storage",
+                "--data",
                 "tasks.db",
                 "--port",
                 "0",
@@ -519,9 +508,9 @@ def test_server_composition_root_selects_storage(
         assert (
             server_main(
                 (
-                    "--repository",
+                    "--backend",
                     repository,
-                    "--storage",
+                    "--data",
                     str(storage),
                     "--host",
                     "127.0.0.1",
@@ -587,10 +576,7 @@ def test_matching_urllib_cli_runs_normal_and_api_failure_flows(
             assert client_main(["--base-url", base_url, "show", "1"]) == 3
             captured = capsys.readouterr()
             assert captured.out == ""
-            assert (
-                captured.err
-                == "api: 404 not_found: task 1 was not found\n"
-            )
+            assert captured.err == "api: 404 not_found: task 1 was not found\n"
 
 
 @SOLUTION_ONLY

@@ -2,7 +2,6 @@
 
 import json
 import socket
-import time
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -11,11 +10,10 @@ from threading import Thread
 from typing import Any, ClassVar, cast
 
 import pytest
-import uvicorn
 import yaml  # type: ignore[import-untyped]
 from fastapi.testclient import TestClient
 from implementation import IMPLEMENTATION
-from support import PROJECT_ROOT, temporary_project_directory
+from support import PROJECT_ROOT, running_task_server, temporary_project_directory
 from tasks_api.fastapi import CreateTask, UpdateTask, create_app
 from tasks_api.fastapi.__main__ import main as server_main
 from tasks_cli.httpx import HttpxTransport
@@ -60,37 +58,11 @@ def _client() -> Iterator[TestClient]:
 @contextmanager
 def _live_app() -> Iterator[str]:
     with temporary_project_directory() as directory:
-        app = create_app(_service(directory / "live.db"))
-        listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        listener.bind(("127.0.0.1", 0))
-        listener.listen()
-        host, port = cast(tuple[str, int], listener.getsockname())
-        server = uvicorn.Server(
-            uvicorn.Config(
-                app,
-                log_level="error",
-                lifespan="off",
-            )
-        )
-        thread = Thread(
-            target=server.run,
-            kwargs={"sockets": [listener]},
-            daemon=True,
-        )
-        thread.start()
-        deadline = time.monotonic() + 5
-        while not server.started and thread.is_alive():
-            if time.monotonic() >= deadline:
-                raise RuntimeError("Uvicorn did not start on loopback")
-            time.sleep(0.01)
-        try:
-            yield f"http://{host}:{port}"
-        finally:
-            server.should_exit = True
-            thread.join(timeout=5)
-            listener.close()
-            assert not thread.is_alive()
+        with running_task_server(
+            "fastapi",
+            _service(directory / "live.db"),
+        ) as server:
+            yield server.base_url
 
 
 def _json(response: TransportResponse) -> object:

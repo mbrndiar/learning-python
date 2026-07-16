@@ -23,6 +23,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     settings = parse_server_settings(argv, prog="tasks-api-fastapi")
     serve(build_service(settings), settings.host, settings.port)
+    return 0
 
 
 __all__ = ["build_parser", "main"]

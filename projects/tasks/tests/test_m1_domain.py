@@ -82,11 +82,7 @@ class _FakeRepository:
         self.calls.append(("update", (task_id, update)))
         self._fail_if_configured()
         current = self.get(task_id)
-        title = (
-            current.title
-            if isinstance(update.title, UnsetType)
-            else update.title
-        )
+        title = current.title if isinstance(update.title, UnsetType) else update.title
         completed = (
             current.completed
             if isinstance(update.completed, UnsetType)

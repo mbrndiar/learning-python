@@ -1,26 +1,45 @@
-"""Milestones three-through-five black-box HTTP contract placeholder."""
+"""Shared assertions for every black-box Task HTTP server."""
 
-from typing import NoReturn, Protocol
+import json
+from collections.abc import Mapping
 
-import pytest
-
-
-class ServerHandle(Protocol):
-    @property
-    def base_url(self) -> str: ...
-
-    def close(self) -> None: ...
+from support import HttpResponse
 
 
-class ServerFactory(Protocol):
-    def __call__(self) -> ServerHandle: ...
+def decode_json(response: HttpResponse) -> object:
+    """Decode one strict UTF-8 JSON response."""
+
+    content_type = response.header("Content-Type")
+    assert content_type is not None
+    assert content_type.split(";", 1)[0].strip().casefold() == "application/json"
+    return json.loads(response.body.decode("utf-8"))
 
 
-def run_http_contract(server_factory: ServerFactory) -> NoReturn:
-    """Reserve the shared server contract without starting network resources."""
+def assert_json_response(
+    response: HttpResponse,
+    status: int,
+    payload: object,
+) -> None:
+    """Assert exact status and decoded JSON payload."""
 
-    del server_factory
-    pytest.skip("black-box HTTP behavior begins in milestone 3")
+    assert response.status == status
+    assert decode_json(response) == payload
 
 
-__all__ = ["ServerFactory", "ServerHandle", "run_http_contract"]
+def assert_error_response(
+    response: HttpResponse,
+    status: int,
+    code: str,
+    message: str,
+    *,
+    details: Mapping[str, object] | None = None,
+) -> None:
+    """Assert the exact shared error envelope."""
+
+    error: dict[str, object] = {"code": code, "message": message}
+    if details is not None:
+        error["details"] = dict(details)
+    assert_json_response(response, status, {"error": error})
+
+
+__all__ = ["assert_error_response", "assert_json_response", "decode_json"]

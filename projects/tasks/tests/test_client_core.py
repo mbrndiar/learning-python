@@ -461,6 +461,11 @@ def test_list_response_rejects_wrong_shape_or_order(value: object) -> None:
     [
         TransportResponse(200, {"Content-Type": "text/plain"}, b"{}"),
         TransportResponse(200, {}, b"{}"),
+        TransportResponse(
+            200,
+            {"Content-Type": "application/json; charset=iso-8859-1"},
+            json.dumps(TASK).encode(),
+        ),
         TransportResponse(200, JSON_HEADERS, b"\xff"),
         TransportResponse(200, JSON_HEADERS, b"{"),
         TransportResponse(

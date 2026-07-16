@@ -1,3 +1,3 @@
-"""Future reusable repository, HTTP, and client contracts."""
+"""Reusable repository, HTTP, and client contract helpers."""
 
 __all__: list[str] = []

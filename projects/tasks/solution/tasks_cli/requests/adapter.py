@@ -20,10 +20,15 @@ class RequestsTransport:
     """Task transport that owns one ``requests.Session``."""
 
     def __init__(self, base_url: str, timeout: float) -> None:
-        if not math.isfinite(timeout) or timeout <= 0:
+        if (
+            isinstance(timeout, bool)
+            or not isinstance(timeout, (int, float))
+            or not math.isfinite(timeout)
+            or timeout <= 0
+        ):
             raise ValueError("timeout must be positive and finite")
         self.base_url = normalize_base_url(base_url)
-        self.timeout = timeout
+        self.timeout = float(timeout)
         self._session = requests.Session()
         self._closed = False
 

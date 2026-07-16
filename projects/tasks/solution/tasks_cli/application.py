@@ -7,6 +7,7 @@ import sys
 from collections.abc import Mapping, Sequence
 from contextlib import redirect_stderr, redirect_stdout
 from dataclasses import dataclass
+from email.message import Message
 from io import StringIO
 from typing import NoReturn, TextIO, TypeAlias
 from unicodedata import category
@@ -318,7 +319,14 @@ def _content_type(headers: Mapping[str, str]) -> str:
     ]
     if len(values) != 1 or not isinstance(values[0], str):
         raise _MalformedResponse("response Content-Type was not application/json")
-    return values[0].split(";", 1)[0].strip().casefold()
+    message = Message()
+    message["content-type"] = values[0]
+    if message.get_content_type().casefold() != "application/json":
+        raise _MalformedResponse("response Content-Type was not application/json")
+    charset = message.get_content_charset()
+    if charset is not None and charset.casefold() != "utf-8":
+        raise _MalformedResponse("response JSON charset was not UTF-8")
+    return "application/json"
 
 
 def _reject_duplicate_fields(pairs: list[tuple[str, object]]) -> dict[str, object]:
