@@ -199,13 +199,18 @@ reference to jog your memory after finishing the course.
      [Ruff](https://docs.astral.sh/ruff/),
      [mypy](https://mypy.readthedocs.io/en/stable/), and
      [Coverage.py](https://coverage.readthedocs.io/en/stable/)
-10. **[Application Integration](lessons/10_application_integration/)**
-    - [`01_sqlite_basics.py`](lessons/10_application_integration/01_sqlite_basics.py) – storing and querying records with SQLite
-    - [`02_http_and_json.py`](lessons/10_application_integration/02_http_and_json.py) – HTTP routes, JSON boundaries and clients
+10. **[SQL and SQLite](lessons/10_sql_and_sqlite/)**
+    - [`01_relational_model_and_sql.py`](lessons/10_sql_and_sqlite/01_relational_model_and_sql.py) – schemas, constraints, parameterized CRUD, filtering, ordering, limits, and row mapping
+    - [`02_joins_aggregates_and_indexes.py`](lessons/10_sql_and_sqlite/02_joins_aggregates_and_indexes.py) – related tables, joins, grouped aggregates, indexes, and query plans
+    - [`03_transactions_and_sqlite.py`](lessons/10_sql_and_sqlite/03_transactions_and_sqlite.py) – transactions, generated IDs, SQLite affinity, pragmas, and limitations
+    - [`04_repository_pattern.py`](lessons/10_sql_and_sqlite/04_repository_pattern.py) – a small injected repository and reusable contract checks
 11. **[Concurrency](lessons/11_concurrency/)**
     - [`01_threading_and_multiprocessing.py`](lessons/11_concurrency/01_threading_and_multiprocessing.py) – `threading` for I/O-bound
       work and `multiprocessing` for CPU-bound work
     - [`02_asyncio_basics.py`](lessons/11_concurrency/02_asyncio_basics.py) – `async`/`await` and `asyncio.gather`
+
+Concurrency temporarily remains Module 11 until its separately planned
+renumbering. The pending REST/HTTP Module 11 is not part of this change.
 
 Work through the lessons in order, read the comments, then try modifying the
 code to experiment with the concepts. After each module, complete the

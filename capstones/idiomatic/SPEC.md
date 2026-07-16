@@ -39,7 +39,7 @@ generic storage API.
 | [Module 7: advanced Python](../../lessons/07_advanced_python/README.md) | Use iterators, generators, strict type hints, and `Protocol`-based capabilities. |
 | [Module 8: testing](../../lessons/08_testing/README.md) | Test normal, boundary, and failure behavior with `unittest`, fakes, and temporary resources. |
 | [Module 9: tooling and debugging](../../lessons/09_tooling_and_debugging/README.md) | Provide an `argparse` CLI, useful logging, strict mypy coverage, Ruff compliance, and measured tests. |
-| [Module 10: application integration](../../lessons/10_application_integration/README.md) | Use parameterized SQLite transactions and a narrowly specified HTTP/JSON boundary. |
+| [Module 10: SQL and SQLite](../../lessons/10_sql_and_sqlite/README.md) | Use schema constraints, parameterized SQL, transactions, row mapping, and a narrow repository boundary. |
 | [Module 11: concurrency](../../lessons/11_concurrency/README.md) | Fetch independent HTTP pages with bounded threads, deterministic collection, cancellation, and explicit cleanup. |
 
 ## Normative event model

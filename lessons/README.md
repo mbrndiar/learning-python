@@ -28,10 +28,14 @@ python lessons/01_basics/01_hello_world.py
 8. [`08_testing/`](08_testing/README.md) - testing with `unittest`
 9. [`09_tooling_and_debugging/`](09_tooling_and_debugging/README.md) -
    virtual environments, debugging, CLI arguments, logging and quality tools
-10. [`10_application_integration/`](10_application_integration/README.md) -
-   JSON APIs, SQLite and standard-library HTTP
+10. [`10_sql_and_sqlite/`](10_sql_and_sqlite/README.md) - relational modeling,
+   portable SQL fundamentals, SQLite behavior, and repository boundaries
 11. [`11_concurrency/`](11_concurrency/README.md) - threading,
     multiprocessing and asyncio
+
+> **Course-order compatibility:** Concurrency temporarily remains Module 11
+> until its separately planned renumbering. The pending REST/HTTP Module 11 is
+> not included here yet.
 
 ## ▶️ How to use a module
 
@@ -77,7 +81,8 @@ This distinction becomes important when modules are imported in module 5.
 - After modules 3–4, build a text analyzer using functions and collections.
 - After modules 5–6, model and persist a small collection of objects.
 - After modules 7–9, add annotations, tests, logging, and a CLI.
-- After module 10, replace file persistence with SQLite or a JSON API.
+- After module 10, replace file persistence with a constrained SQLite schema
+  and parameterized repository operations.
 - After module 11, explain which concurrency model—if any—fits the program.
 
 These checkpoints are deliberately open-ended. Define expected inputs and

@@ -35,6 +35,11 @@ after finishing the course, or while working through the exercises.
 | Coroutine | An `async def` function, used with `await` for concurrency |
 | JSON | A portable text representation of structured values |
 | SQLite | An embedded relational database available through `sqlite3` |
+| Primary key | A column or column set that uniquely identifies a row |
+| Foreign key | A constraint referring to a key in another table |
+| Transaction | A unit of database work committed or rolled back together |
+| Index | A database structure trading write cost and space for selected faster reads |
+| Repository | A boundary exposing domain-oriented persistence operations |
 
 ## Quick syntax reference
 
@@ -103,6 +108,23 @@ import json
 
 text = json.dumps({"name": "Ada", "active": True})
 data = json.loads(text)
+
+# Parameterized SQLite
+import sqlite3
+from contextlib import closing
+
+with closing(sqlite3.connect(":memory:")) as connection:
+    connection.execute(
+        "CREATE TABLE tasks (id INTEGER PRIMARY KEY, title TEXT NOT NULL)"
+    )
+    with connection:  # commits on success, rolls back when an exception escapes
+        connection.execute(
+            "INSERT INTO tasks (title) VALUES (?)",
+            ("Use parameters",),
+        )
+    rows = connection.execute(
+        "SELECT id, title FROM tasks ORDER BY id"
+    ).fetchall()
 
 # Decorators
 def logged(func):
