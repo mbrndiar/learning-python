@@ -10,6 +10,8 @@ from ..errors import StorageError, TaskNotFoundError, ValidationError
 
 _Row: TypeAlias = tuple[object, object, object]
 
+# AUTOINCREMENT prevents reuse of previously committed generated IDs after
+# deletion. Generated IDs remain increasing, but gaps are still possible.
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS tasks (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -22,7 +24,12 @@ _SELECT_COLUMNS = "SELECT id, title, completed FROM tasks"
 
 
 class SQLiteTaskRepository:
-    """Task repository using one short-lived SQLite connection per operation."""
+    """Task repository using one short-lived SQLite connection per operation.
+
+    ``closing`` deterministically closes each connection. For writes, the
+    connection's own context manager additionally commits on normal exit or
+    rolls back when the block raises; it does not itself close the connection.
+    """
 
     def __init__(self, database_path: str | Path) -> None:
         self.database_path = Path(database_path)
@@ -48,6 +55,8 @@ class SQLiteTaskRepository:
     @staticmethod
     def _map_row(row: _Row, *, operation: str) -> Task:
         task_id, title, completed = row
+        # Treat persisted data as an untrusted boundary: first verify SQLite's
+        # exact representation, then let Task enforce the domain invariants.
         if (
             type(task_id) is not int
             or not isinstance(title, str)
@@ -73,6 +82,8 @@ class SQLiteTaskRepository:
         *,
         operation: str,
     ) -> Task:
+        # SQL structure is fixed by this module, while caller-derived values
+        # are bound separately so they cannot be interpreted as SQL syntax.
         row = connection.execute(
             f"{_SELECT_COLUMNS} WHERE id = ?",
             (task_id,),
@@ -89,6 +100,8 @@ class SQLiteTaskRepository:
                     "INSERT INTO tasks (title, completed) VALUES (?, ?)",
                     (task.title, 0),
                 )
+                # lastrowid belongs to this insert cursor and identifies the
+                # row allocated by SQLite without a second "maximum ID" query.
                 task_id = cursor.lastrowid
                 if task_id is None:
                     raise StorageError(
@@ -146,6 +159,10 @@ class SQLiteTaskRepository:
         operation = "update"
         try:
             with closing(self._connect()) as connection, connection:
+                # The initial SELECT precedes sqlite3's implicit write
+                # transaction. UPDATE and the verification read commit or roll
+                # back together; serializing the entire read-modify-write cycle
+                # would require beginning a transaction before this SELECT.
                 current = self._get_with_connection(
                     connection,
                     task_id,

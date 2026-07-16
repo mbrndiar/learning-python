@@ -1,4 +1,8 @@
-"""Pydantic models used only at the FastAPI HTTP boundary."""
+"""Define strict Pydantic schemas for FastAPI's HTTP boundary.
+
+These models convert between untrusted JSON-shaped data and typed route values;
+the framework-neutral domain keeps its own validation and representations.
+"""
 
 from typing import Annotated, Literal, TypeAlias
 
@@ -28,7 +32,7 @@ Completed: TypeAlias = Annotated[bool, Field(strict=True)]
 
 
 class _Missing:
-    """Represent an omitted PATCH field without accepting a JSON value."""
+    """Represent an omitted PATCH field without adding a JSON-level sentinel."""
 
 
 MISSING = _Missing()
@@ -40,8 +44,11 @@ def _missing() -> _Missing:
 
 
 class BoundaryModel(BaseModel):
-    """Reject fields outside the documented HTTP contract."""
+    """Apply the closed-object policy shared by request and response models."""
 
+    # Strict field aliases below prevent coercion, while ``extra="forbid"``
+    # distinguishes misspelled client properties from valid domain input.
+    # Arbitrary types are needed only for the private omission sentinel.
     model_config = ConfigDict(
         extra="forbid",
         arbitrary_types_allowed=True,
@@ -57,6 +64,8 @@ class Health(BoundaryModel):
 class Task(BoundaryModel):
     """Serialized Task value."""
 
+    # Domain tasks are dataclasses, so response validation reads attributes
+    # rather than requiring routes to first manufacture dictionaries.
     model_config = ConfigDict(
         extra="forbid",
         from_attributes=True,
@@ -76,6 +85,9 @@ class CreateTask(BoundaryModel):
 class UpdateTask(BoundaryModel):
     """Request body preserving omitted fields for a partial update."""
 
+    # The private default makes omission representable to Pydantic while
+    # SkipJsonSchema keeps that implementation detail out of the HTTP schema.
+    # Routes still use ``model_fields_set`` as the authoritative presence check.
     title: Title | MissingField = Field(default_factory=_missing)
     completed: Completed | MissingField = Field(default_factory=_missing)
 

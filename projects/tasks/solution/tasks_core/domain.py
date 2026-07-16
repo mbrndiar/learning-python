@@ -1,4 +1,4 @@
-"""Task values and pure milestone-one validation."""
+"""Task values and boundary normalization independent of storage or frameworks."""
 
 from dataclasses import dataclass
 from enum import Enum
@@ -11,7 +11,11 @@ MAX_TITLE_LENGTH = 120
 
 
 class UnsetType(Enum):
-    """Singleton type used when a partial-update field was omitted."""
+    """Distinguish an omitted update field from an explicitly supplied value.
+
+    In particular, ``False`` must remain a real completion update rather than
+    being mistaken for a missing, falsey value.
+    """
 
     UNSET = "unset"
 
@@ -22,6 +26,8 @@ UNSET = UnsetType.UNSET
 def validate_task_id(value: object) -> int:
     """Validate and return a positive task identifier."""
 
+    # bool is a subclass of int in Python, so the explicit exclusion keeps IDs
+    # from silently accepting True as 1.
     if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
         raise ValidationError(
             "task ID must be a positive integer",
@@ -53,7 +59,7 @@ def validate_title(value: object) -> str:
 
 
 def validate_completed(value: object) -> bool:
-    """Validate and return a strict Boolean completion value."""
+    """Accept only bool, rather than coercing integers or other truthy values."""
 
     if not isinstance(value, bool):
         raise ValidationError("completed must be a Boolean", field="completed")
@@ -77,6 +83,9 @@ class Task:
     completed: bool
 
     def __post_init__(self) -> None:
+        # frozen dataclasses reject normal assignment even during post-init.
+        # object.__setattr__ permits this one-time normalization; later ordinary
+        # attribute assignment remains blocked by the generated frozen methods.
         object.__setattr__(self, "id", validate_task_id(self.id))
         object.__setattr__(self, "title", validate_title(self.title))
         object.__setattr__(self, "completed", validate_completed(self.completed))
@@ -118,7 +127,7 @@ class UpdateTaskInput:
 
 
 def normalize_create_input(title: object) -> CreateTaskInput:
-    """Return validated repository input for a create operation."""
+    """Convert an untyped boundary value into repository-ready create input."""
 
     return CreateTaskInput(title=validate_title(title))
 
@@ -128,7 +137,7 @@ def normalize_update_input(
     title: object = UNSET,
     completed: object = UNSET,
 ) -> UpdateTaskInput:
-    """Return a validated partial update, preserving omitted fields."""
+    """Normalize boundary values while preserving which fields were omitted."""
 
     normalized_title: str | UnsetType
     if isinstance(title, UnsetType):

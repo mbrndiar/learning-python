@@ -32,6 +32,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     """Compose local storage, the shared service, FastAPI, and Uvicorn."""
 
     settings = parse_server_settings(argv, prog="tasks-api-fastapi")
+    # ArgumentParser.error prints a launcher-level diagnostic and exits with
+    # status 2 before any repository or network resource is constructed.
     if not _is_loopback(settings.host):
         build_parser().error("--host must identify a loopback interface")
     if not 1 <= settings.port <= 65535:

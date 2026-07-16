@@ -1,4 +1,10 @@
-"""Milestone-one tests for domain, service, and shared boundaries."""
+"""Milestone-one contract for domain values and the framework-neutral service.
+
+Starter-only checks preserve explicit teaching failures at the intended TODOs;
+solution-only checks then define validation, immutable values, partial-update
+semantics, and error propagation.  Parser and transport-model checks run for
+both trees because their public scaffolding must be usable from the outset.
+"""
 
 from dataclasses import FrozenInstanceError
 
@@ -39,11 +45,15 @@ from tasks_core import (
 from tasks_core.repositories import TaskRepository
 
 STARTER = IMPLEMENTATION == "starter"
+# A single suite documents both phases: starter markers verify deliberate,
+# localized incompleteness while solution markers avoid demanding finished work.
 solution_only = pytest.mark.skipif(STARTER, reason="solution milestone-one behavior")
 starter_only = pytest.mark.skipif(not STARTER, reason="starter guidance behavior")
 
 
 class _FakeRepository:
+    """Record service delegation and inject storage failures without I/O."""
+
     def __init__(self) -> None:
         self.tasks = [
             Task(1, "Learn REST", False),
@@ -174,6 +184,8 @@ def test_starter_keeps_guided_milestone_failures_explicit() -> None:
     ):
         validate_title("Learn REST")
 
+    # The repository must remain untouched when execution stops at a guided
+    # service TODO; otherwise starter failures could hide unintended mutation.
     repository = _FakeRepository()
     service = TaskService(repository)
     with pytest.raises(
@@ -204,6 +216,8 @@ def test_task_id_requires_a_strict_positive_integer(value: object) -> None:
 
 @solution_only
 def test_title_accepts_trimmed_unicode_and_length_boundaries() -> None:
+    # The limit applies after trimming and counts Unicode code points rather than
+    # encoded bytes; one user-perceived character may contain multiple points.
     assert validate_title("  Café  ") == "Café"
     assert validate_title("x" * MAX_TITLE_LENGTH) == "x" * MAX_TITLE_LENGTH
     assert normalize_create_input("  Ship it  ") == CreateTaskInput("Ship it")
@@ -243,6 +257,8 @@ def test_completion_validation_is_strict_and_filter_allows_none() -> None:
 
 @solution_only
 def test_update_input_uses_a_sentinel_and_preserves_explicit_false() -> None:
+    # UNSET distinguishes omission from ``False``.  Collapsing both to a falsey
+    # value would make a legitimate request unable to reopen a completed task.
     title_only = normalize_update_input(title="  Clarify API  ")
     assert title_only == UpdateTaskInput(title="Clarify API")
     assert title_only.completed is UNSET
@@ -312,6 +328,8 @@ def test_service_rejects_invalid_boundaries_before_repository_access() -> None:
     repository = _FakeRepository()
     service = TaskService(repository)
 
+    # Validation belongs at the service boundary, before adapters can persist
+    # malformed state or expose backend-specific failure ordering.
     invalid_calls = (
         lambda: service.create_task(" "),
         lambda: service.list_tasks("false"),

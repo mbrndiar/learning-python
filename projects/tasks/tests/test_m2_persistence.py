@@ -1,4 +1,10 @@
-"""Milestone-two repository contracts and persistence-specific guarantees."""
+"""Milestone-two persistence tests for interchangeable repositories.
+
+Starter-only cases require clear guided failures rather than accidental partial
+implementations. Solution cases first apply one CRUD/reopen/ID contract
+to both backends, then probe SQLite transactions and Markdown canonical-format,
+replacement, cleanup, and in-process serialization guarantees.
+"""
 
 import sqlite3
 from concurrent.futures import ThreadPoolExecutor
@@ -25,6 +31,8 @@ from tasks_core.repositories import (
 )
 
 STARTER = IMPLEMENTATION == "starter"
+# Parametrized solution tests are intentionally skipped as a unit for starter
+# runs; the starter-specific test pinpoints the learner-facing TODO instead.
 solution_only = pytest.mark.skipif(STARTER, reason="solution milestone-two behavior")
 starter_only = pytest.mark.skipif(not STARTER, reason="starter guidance behavior")
 
@@ -38,6 +46,8 @@ starter_only = pytest.mark.skipif(not STARTER, reason="starter guidance behavior
 def repository_case(
     request: pytest.FixtureRequest,
 ) -> tuple[RepositoryFactory, str]:
+    """Pair each adapter with its native storage filename for one contract."""
+
     return cast(tuple[RepositoryFactory, str], request.param)
 
 
@@ -60,6 +70,8 @@ def test_starter_repository_adapters_fail_deliberately() -> None:
 def test_repository_contract_is_shared_by_both_backends(
     repository_case: tuple[RepositoryFactory, str],
 ) -> None:
+    # The parameter ID localizes parity failures to sqlite or markdown while
+    # keeping the behavioral sequence exactly identical.
     factory, filename = repository_case
     with temporary_project_directory() as directory:
         run_repository_contract(factory, directory / filename)
@@ -137,6 +149,8 @@ def test_sqlite_failed_mutations_roll_back_without_consuming_an_id() -> None:
         repository = SQLiteTaskRepository(path)
         assert repository.create(CreateTaskInput("First")).id == 1
 
+        # Triggers fail inside SQLite's mutation boundary, exercising rollback
+        # after an operation starts rather than merely rejecting bad input.
         with sqlite3.connect(path) as connection:
             connection.executescript(
                 """
@@ -242,6 +256,8 @@ def test_markdown_uses_the_exact_versioned_deterministic_format() -> None:
 def test_markdown_rejects_malformed_or_noncanonical_documents(
     document: str,
 ) -> None:
+    # These documents are often parseable Markdown but violate the repository's
+    # canonical on-disk grammar; accepting them would make rewrites ambiguous.
     with temporary_project_directory() as directory:
         path = directory / "tasks.md"
         path.write_text(document, encoding="utf-8", newline="")
@@ -279,6 +295,8 @@ def test_markdown_failed_replace_preserves_target_and_cleans_temporary_file(
         original = path.read_bytes()
         original_replace = Path.replace
 
+        # Fail only the final atomic replace so setup writes still use the real
+        # filesystem and the test observes the exact commit failure window.
         def fail_replace(source: Path, target: Path) -> Path:
             if source.parent == directory and target == path:
                 raise OSError("forced replace failure")
@@ -312,6 +330,8 @@ def test_markdown_serializes_concurrent_writes_within_one_process() -> None:
             repository = MarkdownTaskRepository(path)
             return repository.create(CreateTaskInput(f"Task {number:02d}"))
 
+        # Separate repository instances model callers that share a path but not
+        # object state; the path-scoped lock must still prevent lost updates.
         with ThreadPoolExecutor(max_workers=8) as executor:
             created = list(executor.map(create_task, range(24)))
 

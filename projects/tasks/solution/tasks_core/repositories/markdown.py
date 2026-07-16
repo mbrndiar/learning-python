@@ -26,6 +26,12 @@ _path_locks: dict[Path, RLock] = {}
 
 
 def _lock_for(path: Path) -> RLock:
+    """Share a lock between repository instances using the same absolute path.
+
+    This registry coordinates threads only inside this Python process. Other
+    processes, and path aliases that produce different keys, are not covered.
+    """
+
     key = path.absolute()
     with _locks_guard:
         lock = _path_locks.get(key)
@@ -42,7 +48,12 @@ class _Document:
 
 
 class MarkdownTaskRepository:
-    """One-file repository synchronized only between threads in this process."""
+    """Validated one-file repository with process-local thread coordination.
+
+    Each operation holds the per-path lock across its complete load/use cycle.
+    Mutations keep that lock through load-modify-save, preventing cooperating
+    instances in this process from losing one another's changes.
+    """
 
     def __init__(self, document_path: str | Path) -> None:
         self.document_path = Path(document_path)
@@ -64,6 +75,9 @@ class MarkdownTaskRepository:
             ) as stream:
                 return stream.read()
         except FileNotFoundError:
+            # A missing path is an uninitialized store, not an existing empty or
+            # malformed document. Publish the canonical empty representation so
+            # later readers observe the same validated on-disk format.
             document = _Document(next_id=1, tasks=[])
             self._save(document, operation)
             return self._render(document)
@@ -71,6 +85,8 @@ class MarkdownTaskRepository:
             raise self._storage_error(operation, str(error)) from error
 
     def _load(self, operation: str) -> _Document:
+        """Parse and validate the entire document before exposing any tasks."""
+
         text = self._read_text(operation)
         if not text.endswith("\n") or "\r" in text:
             raise self._storage_error(
@@ -159,6 +175,8 @@ class MarkdownTaskRepository:
             seen_ids.add(task_id)
             previous_id = task_id
 
+        # next-id is a persistent high-water mark: deleting the largest task
+        # must not make its identifier available to a later create.
         if tasks and next_id <= tasks[-1].id:
             raise self._storage_error(
                 operation,
@@ -181,6 +199,15 @@ class MarkdownTaskRepository:
         return "\n".join(lines) + "\n"
 
     def _save(self, document: _Document, operation: str) -> None:
+        """Replace the document from a fully written sibling temporary file.
+
+        Flushing drains Python's buffer and ``fsync`` requests persistence of
+        the temporary file before replacement. A same-directory replace avoids
+        exposing in-place partial writes where the platform provides atomic
+        replacement. The parent directory is not fsynced, so crash durability
+        of the name change is not guaranteed.
+        """
+
         temporary_path = self.document_path.with_name(
             f".{self.document_path.name}.{uuid4().hex}.tmp"
         )
@@ -197,6 +224,8 @@ class MarkdownTaskRepository:
         except (OSError, UnicodeError) as error:
             raise self._storage_error(operation, str(error)) from error
         finally:
+            # Cleanup is best effort so a secondary unlink failure cannot hide
+            # the operation's original success or failure.
             try:
                 temporary_path.unlink(missing_ok=True)
             except OSError:

@@ -21,6 +21,8 @@ class TaskError(Exception):
     ) -> None:
         self.code = code
         self.message = message
+        # Shallow-copy the top-level mapping so later key changes cannot alter an
+        # error already crossing a boundary; nested mutable values remain shared.
         self.details = dict(details or {})
         super().__init__(message)
 
@@ -63,6 +65,8 @@ class IncompleteImplementationError(NotImplementedError):
 def incomplete(feature: str) -> NoReturn:
     """Raise the single deliberate failure used by scaffold operations."""
 
+    # The starter remains importable and type-correct; unfinished behavior fails
+    # explicitly instead of leaking a plausible-looking placeholder result.
     raise IncompleteImplementationError(
         f"{feature} is intentionally incomplete; implement the matching milestone"
     )

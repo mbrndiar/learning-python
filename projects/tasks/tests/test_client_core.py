@@ -1,4 +1,10 @@
-"""Transport-independent Task client application contract."""
+"""Contract for the CLI application above urllib, Requests, and HTTPX.
+
+The fake transport isolates command parsing, typed requests, strict response
+decoding, stable exit categories, and ownership/cleanup from any HTTP library.
+Starter-only checks retain a compileable guided TODO; solution-only checks
+define the behavior every concrete transport must expose to the application.
+"""
 
 import ast
 import json
@@ -24,6 +30,8 @@ from tasks_cli.application import parse_request, run
 from tasks_core import IncompleteImplementationError
 
 STARTER = IMPLEMENTATION == "starter"
+# The shared parser and type scaffolding remain testable in both trees, while
+# command execution is deliberately incomplete until the learner solves it.
 solution_only = pytest.mark.skipif(STARTER, reason="solution client-core behavior")
 starter_only = pytest.mark.skipif(not STARTER, reason="starter guidance behavior")
 
@@ -32,6 +40,8 @@ JSON_HEADERS = {"Content-Type": "application/json; charset=utf-8"}
 
 
 class _FakeTransport:
+    """Record typed requests and inject send or cleanup failures deterministically."""
+
     def __init__(
         self,
         response: TransportResponse | None = None,
@@ -113,6 +123,8 @@ def _invoke(
 
 
 def _public_surface(path: Path) -> dict[str, str]:
+    # AST comparison inspects source without importing the non-selected tree,
+    # preserving the harness guarantee that only one implementation is loaded.
     tree = ast.parse(path.read_text(encoding="utf-8"))
     names = {
         "AddCommand",
@@ -341,6 +353,8 @@ def test_transport_failures_are_stable_and_never_escape(
     failure: Exception,
     expected_stderr: str,
 ) -> None:
+    # Library-neutral errors retain their category; unexpected implementation
+    # details are deliberately collapsed before reaching process stderr.
     transport = _FakeTransport(failure=failure)
 
     exit_code, stdout, stderr, selected, _ = _invoke(
@@ -355,6 +369,8 @@ def test_transport_failures_are_stable_and_never_escape(
 
 @solution_only
 def test_factory_and_cleanup_failures_are_transport_failures() -> None:
+    # Construction and close are part of transport ownership just as much as
+    # send(), so neither lifecycle edge may escape the CLI boundary.
     transport = _FakeTransport(
         _json_response(200, []),
         close_failure=RuntimeError("library close detail"),
@@ -485,6 +501,8 @@ def test_list_response_rejects_wrong_shape_or_order(value: object) -> None:
 def test_success_response_rejects_content_json_and_status_failures(
     response: TransportResponse,
 ) -> None:
+    # Each case is superficially successful HTTP but violates the common wire
+    # contract; accepting library-specific permissiveness would break parity.
     result = _invoke(["show", "7"], response)
 
     assert result[0] == 4

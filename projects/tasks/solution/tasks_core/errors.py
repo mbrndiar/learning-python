@@ -1,4 +1,4 @@
-"""Stable domain errors and intentional learning placeholders."""
+"""Typed failures that keep successful core and repository results non-nullable."""
 
 from collections.abc import Mapping
 from typing import Literal, NoReturn, TypeAlias
@@ -11,7 +11,7 @@ ErrorCode: TypeAlias = Literal[
 
 
 class TaskError(Exception):
-    """Expected application failure safe to translate at a boundary."""
+    """Expected application failure safe for an adapter to translate."""
 
     def __init__(
         self,
@@ -38,7 +38,7 @@ class ValidationError(TaskError):
 
 
 class TaskNotFoundError(TaskError):
-    """A valid task identifier does not exist."""
+    """Signal absence explicitly instead of returning an optional Task."""
 
     def __init__(self, task_id: int) -> None:
         self.task_id = task_id

@@ -1,4 +1,8 @@
-"""Idiomatic Flask boundary for the Task HTTP API."""
+"""Adapt Flask's request/response lifecycle to the Task service contract.
+
+The app factory captures a process-owned service while Flask supplies request
+contexts, URL matching, response conversion, and the local development server.
+"""
 
 import json
 from collections.abc import Mapping
@@ -57,6 +61,9 @@ def _reject_json_constant(value: str) -> NoReturn:
 
 
 def _json_object() -> dict[str, object]:
+    # ``request`` is Flask's context-local proxy for the active request. Convert
+    # its byte stream once at this boundary so the service never depends on
+    # framework objects or permissive JSON defaults.
     if request.mimetype != "application/json":
         raise _InvalidJsonError("request Content-Type must be application/json")
     charset = request.mimetype_params.get("charset")
@@ -145,12 +152,15 @@ def _validate_query(allowed: frozenset[str]) -> None:
 
 
 def create_app(service: TaskService) -> Flask:
-    """Create one Flask application with an injected Task service."""
+    """Create a Flask app whose route closures share the injected service."""
 
     app = Flask(__name__)
 
     @app.before_request
     def enforce_portable_contract() -> tuple[Response, int] | None:
+        # Flask normally owns method routing and query values, but this early
+        # boundary check keeps this adapter's errors and Allow headers aligned
+        # with the explicit stdlib and FastAPI implementations.
         route = _route(request.path)
         if route is None:
             return None
@@ -172,6 +182,8 @@ def create_app(service: TaskService) -> Flask:
         _validate_query(allowed_query)
         return None
 
+    # Routes stay thin: they convert HTTP inputs and outputs while validation of
+    # task rules and persistence orchestration remains in TaskService.
     @app.get("/health")
     def health() -> Response:
         return jsonify({"status": "ok"})
@@ -217,6 +229,8 @@ def create_app(service: TaskService) -> Flask:
         response.headers.pop("Content-Type", None)
         return response
 
+    # Central handlers keep route control flow focused on successful operations
+    # and give framework, boundary, and domain failures one JSON envelope.
     @app.errorhandler(_InvalidJsonError)
     def handle_invalid_json(error: _InvalidJsonError) -> tuple[Response, int]:
         return _error_response(
@@ -240,6 +254,8 @@ def create_app(service: TaskService) -> Flask:
 
     @app.errorhandler(StorageError)
     def handle_storage(error: StorageError) -> tuple[Response, int]:
+        # Log the original exception for diagnosis, but expose only the stable
+        # internal-error contract to clients.
         app.logger.error("Task storage failure", exc_info=error)
         return _error_response(
             "internal_error",
@@ -281,8 +297,11 @@ def create_app(service: TaskService) -> Flask:
 
 
 def serve(service: TaskService, host: str, port: int) -> NoReturn:
-    """Run Flask's development server with explicit local-development settings."""
+    """Run Flask's local development server without a reloader child process."""
 
+    # Disabling the reloader keeps one process and therefore one composed service
+    # instance; Flask's built-in server is appropriate here for local learning,
+    # not presented as a production deployment guarantee.
     create_app(service).run(
         host=host,
         port=port,

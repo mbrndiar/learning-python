@@ -1,4 +1,11 @@
-"""Executable HTTP, client, lifecycle, OpenAPI, and interoperability contracts."""
+"""Cross-adapter black-box contracts for the completed Task application.
+
+The same HTTP cases run against stdlib, Flask, and FastAPI; client cases run
+against urllib, Requests, and HTTPX; and the interoperability matrix combines
+them.  Parametrization is the diagnostic boundary: a failure names the concrete
+server/client/backend while the assertion remains one transport-neutral API
+contract.  Starter runs keep parser/schema checks but skip unfinished behavior.
+"""
 
 import json
 import socket
@@ -117,6 +124,8 @@ class _FailureRepository:
 
 @pytest.fixture(params=SERVER_NAMES)
 def live_sqlite_server(request: pytest.FixtureRequest) -> Iterator[LiveServer]:
+    """Run each server against identical fresh SQLite state."""
+
     if not IS_SOLUTION:
         pytest.skip("solution-only black-box HTTP contract")
     server_name = cast(ServerName, request.param)
@@ -128,6 +137,8 @@ def live_sqlite_server(request: pytest.FixtureRequest) -> Iterator[LiveServer]:
 
 @pytest.fixture(params=CLIENT_NAMES)
 def transport_factory(request: pytest.FixtureRequest) -> TransportFactory:
+    """Select each transport without changing the client contract body."""
+
     return TRANSPORT_FACTORIES[cast(ClientName, request.param)]
 
 
@@ -135,6 +146,8 @@ def transport_factory(request: pytest.FixtureRequest) -> TransportFactory:
 def test_http_contract_normal_crud_filter_and_204(
     live_sqlite_server: LiveServer,
 ) -> None:
+    # This black-box sequence deliberately avoids framework test clients, so
+    # status, headers, envelopes, persistence, and ID behavior share one oracle.
     base_url = live_sqlite_server.base_url
     assert_json_response(
         request_http(base_url, "GET", "/health"),
@@ -210,6 +223,8 @@ def test_http_contract_normal_crud_filter_and_204(
 
 
 INVALID_BODY_CASES = (
+    # Raw bytes preserve malformed inputs that higher-level JSON helpers would
+    # normalize before any server implementation could inspect them.
     pytest.param(
         "POST",
         "/tasks",
@@ -559,6 +574,8 @@ def test_http_contract_normalizes_unknown_routes(
 @solution_only
 @pytest.mark.parametrize("server_name", SERVER_NAMES)
 def test_http_contract_sanitizes_internal_failures(server_name: ServerName) -> None:
+    # One injected repository failure proves each framework maps private storage
+    # diagnostics to the same public 500 envelope.
     service = TaskService(_FailureRepository())
     with running_task_server(server_name, service) as server:
         response = request_http(server.base_url, "GET", "/tasks")
@@ -577,6 +594,8 @@ def test_http_contract_sanitizes_internal_failures(server_name: ServerName) -> N
 def test_loopback_cleanup_runs_during_assertion_failure(
     server_name: ServerName,
 ) -> None:
+    # The deliberate test-body failure exercises context-manager unwinding, not
+    # the normal success path; a second close confirms cleanup is idempotent.
     with temporary_project_directory() as directory:
         service = TaskService(SQLiteTaskRepository(directory / "tasks.db"))
         server: LiveServer | None = None
@@ -624,6 +643,8 @@ class _RecordingHandler(BaseHTTPRequestHandler):
 def test_client_transport_contract_sends_json_and_captures_errors(
     transport_factory: TransportFactory,
 ) -> None:
+    # A single controlled peer makes encoding/status behavior comparable across
+    # all libraries and localizes failures to the transport fixture parameter.
     _RecordingHandler.requests.clear()
     with running_handler_server(_RecordingHandler) as server:
         transport = transport_factory(f"{server.base_url}/api", 1.0)
@@ -733,6 +754,8 @@ class _SlowHandler(BaseHTTPRequestHandler):
 def test_client_transport_contract_uses_finite_timeouts(
     transport_factory: TransportFactory,
 ) -> None:
+    # Per-test Events prevent state leakage between transport parameters.  The
+    # handler is released in finally so timeout verification cannot strand it.
     _SlowHandler.started = Event()
     _SlowHandler.release = Event()
     _SlowHandler.completed = Event()
@@ -772,6 +795,8 @@ def test_server_entrypoints_select_each_backend(
     filename: str,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    # Replacing only ``serve`` tests CLI composition without starting a second
+    # lifecycle; the persisted file proves the requested backend reached service.
     module = SERVER_MODULES[server_name]
     with temporary_project_directory() as directory:
         data = directory / filename
@@ -808,6 +833,8 @@ def test_sqlite_client_server_interoperability_matrix(
     client_name: ClientName,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
+    # Every client/server pair receives the same commands and assertions.  A
+    # failing node therefore identifies an interoperability seam, not test drift.
     client_main = CLIENT_MAINS[client_name]
     with temporary_project_directory() as directory:
         service = build_service(
@@ -869,6 +896,8 @@ def test_matching_client_server_markdown_smoke(
     server_name: ServerName,
     client_name: ClientName,
 ) -> None:
+    # The full 3x3 matrix uses SQLite; these representative pairs add coverage
+    # that wire compatibility also survives the alternate persistence format.
     with temporary_project_directory() as directory:
         data = directory / "tasks.md"
         service = build_service(ServerSettings("127.0.0.1", 0, "markdown", data))
@@ -922,6 +951,8 @@ def test_generated_fastapi_openapi_is_focused_compatible() -> None:
     )
     validate(generated)
 
+    # Generated metadata may vary by framework version, so compare only routes,
+    # operations, responses, and schemas that define client compatibility.
     assert generated["openapi"] == intended["openapi"]
     assert set(generated["paths"]) == set(intended["paths"])
     for path, intended_path in intended["paths"].items():

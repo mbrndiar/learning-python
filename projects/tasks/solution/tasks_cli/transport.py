@@ -1,4 +1,8 @@
-"""Library-neutral outbound HTTP transport contract."""
+"""Library-neutral outbound HTTP transport contract.
+
+Adapters expose only status, headers, and body bytes so the application, rather
+than an HTTP library, owns response decoding and validation policy.
+"""
 
 import math
 from collections.abc import Mapping
@@ -13,7 +17,7 @@ _HTTP_METHODS = frozenset({"GET", "POST", "PATCH", "DELETE"})
 
 
 def normalize_base_url(value: str) -> str:
-    """Validate and normalize an absolute HTTP API base URL."""
+    """Return an unambiguous HTTP(S) base URL safe for path composition."""
 
     if not value or value != value.strip():
         raise ValueError("base URL must be an absolute HTTP or HTTPS URL")
@@ -23,6 +27,8 @@ def normalize_base_url(value: str) -> str:
     except ValueError as error:
         raise ValueError("base URL must be an absolute HTTP or HTTPS URL") from error
 
+    # Credentials, query strings, and fragments would make later path/query
+    # composition ambiguous, so they are rejected at the configuration boundary.
     scheme = parsed.scheme.casefold()
     hostname = parsed.hostname
     if (
@@ -51,11 +57,15 @@ def normalize_base_url(value: str) -> str:
 
 
 def build_url(base_url: str, request: "TransportRequest") -> str:
-    """Encode one explicit transport request as an absolute URL."""
+    """Encode path and query components without letting either change the URL shape."""
 
+    # Quote the path separately from urlencode so data such as ``?`` or ``#`` in
+    # a path cannot become URL syntax, while slash remains a path separator.
     url = f"{normalize_base_url(base_url)}{quote(request.path, safe='/')}"
     if not request.query:
         return url
+    # ``urlencode`` gives query keys and values their own escaping rules instead
+    # of relying on error-prone string concatenation.
     return f"{url}?{urlencode(request.query, quote_via=quote)}"
 
 
@@ -75,7 +85,7 @@ def _is_json_value(value: object) -> bool:
 
 @dataclass(frozen=True, slots=True)
 class TransportRequest:
-    """One normalized HTTP request independent of a client library."""
+    """One validated request that any supported HTTP library can represent."""
 
     method: HttpMethod
     path: str
@@ -83,6 +93,8 @@ class TransportRequest:
     json_body: Mapping[str, JsonValue] | None = None
 
     def __post_init__(self) -> None:
+        # Validate and shallow-copy top-level mappings so later key changes
+        # cannot alter the request; nested JSON containers remain shared.
         if self.method not in _HTTP_METHODS:
             raise ValueError("unsupported HTTP method")
         if not self.path.startswith("/"):
@@ -101,7 +113,7 @@ class TransportRequest:
 
 @dataclass(frozen=True, slots=True)
 class TransportResponse:
-    """Raw HTTP response information consumed by the command application."""
+    """Raw status, headers, and owned body bytes for application validation."""
 
     status: int
     headers: Mapping[str, str]
@@ -112,7 +124,7 @@ class TransportResponse:
 
 
 class TransportError(Exception):
-    """Library-neutral failure while sending or receiving a request."""
+    """Library-neutral non-HTTP-response failure during one exchange."""
 
     def __init__(self, message: str) -> None:
         self.message = message
@@ -124,15 +136,15 @@ class TransportConnectionError(TransportError):
 
 
 class TransportTimeoutError(TransportConnectionError):
-    """The HTTP exchange exceeded the configured finite timeout."""
+    """The HTTP exchange exceeded its required positive, finite timeout."""
 
 
 @runtime_checkable
 class TaskTransport(Protocol):
-    """Send Task API requests and own transport cleanup."""
+    """Send once per call and release all adapter-owned network resources."""
 
     def send(self, request: TransportRequest) -> TransportResponse:
-        """Send one request without retrying it."""
+        """Send one request without retries, preserving non-idempotent semantics."""
 
         ...
 

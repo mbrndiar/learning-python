@@ -7,18 +7,32 @@ from ..errors import incomplete
 
 
 class MarkdownTaskRepository:
-    """Task repository backed by one versioned Markdown checklist."""
+    """Task repository backed by one versioned Markdown checklist.
+
+    The format is human-readable but still untrusted persistence data: every
+    operation must parse and validate the complete document before using it.
+    Mutations should publish a complete same-directory replacement rather than
+    rewrite the target in place. Replacement atomicity depends on the platform
+    and filesystem, and directory-entry crash durability is not guaranteed
+    without also syncing the parent directory.
+    """
 
     def __init__(self, document_path: str | Path) -> None:
         self.document_path = Path(document_path)
-        # TODO(milestone 2): share an in-process lock for this storage path.
+        # TODO(milestone 2): share a re-entrant lock for this absolute path key.
+        # Matching keys serialize load-modify-save in this process; other
+        # processes and path aliases such as symlinks or `..` are not coordinated.
 
     def create(self, task: CreateTaskInput) -> Task:
-        # TODO(milestone 2): lock, strictly load, allocate next-id, and atomically save.
+        # TODO(milestone 2): lock, strictly load, allocate next-id, and save.
+        # Increment the stored next-id instead of deriving an ID from existing
+        # rows; deleted identifiers must remain gaps.
         incomplete(f"milestone 2 Markdown create in {self.document_path}: {task!r}")
 
     def list(self, completed: bool | None = None) -> list[Task]:
         # TODO(milestone 2): validate metadata and every checklist row.
+        # Reject unsupported versions, malformed rows, duplicate/out-of-order
+        # IDs, invalid titles, and a next-id that could reuse an existing ID.
         incomplete(
             "milestone 2 Markdown list in "
             f"{self.document_path}: completed={completed!r}"
@@ -26,6 +40,8 @@ class MarkdownTaskRepository:
 
     def get(self, task_id: int) -> Task:
         # TODO(milestone 2): reject malformed data before searching for the ID.
+        # Returning an early match from a partially parsed file could hide later
+        # corruption and make different operations disagree about stored state.
         incomplete(f"milestone 2 Markdown get in {self.document_path}: {task_id}")
 
     def update(
@@ -34,13 +50,16 @@ class MarkdownTaskRepository:
         update: UpdateTaskInput,
     ) -> Task:
         # TODO(milestone 2): perform one locked load-modify-save operation.
+        # Preserve each UNSET field from the current immutable Task and publish
+        # either the complete updated document or no replacement.
         incomplete(
             f"milestone 2 Markdown update in {self.document_path}: "
             f"{task_id}, update={update!r}"
         )
 
     def delete(self, task_id: int) -> None:
-        # TODO(milestone 2): retain next-id while publishing a complete sibling file.
+        # TODO(milestone 2): retain next-id while using the shared publication
+        # path, so deletion cannot make an identifier reusable.
         incomplete(f"milestone 2 Markdown delete in {self.document_path}: {task_id}")
 
 

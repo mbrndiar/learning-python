@@ -28,7 +28,11 @@ Completed: TypeAlias = Annotated[bool, Field(strict=True)]
 
 
 class _Missing:
-    """Represent an omitted PATCH field without accepting a JSON value."""
+    """Represent an omitted PATCH field without accepting a JSON value.
+
+    Explicit JSON null remains invalid; omission is an internal boundary state
+    that will later map to the core's UNSET sentinel.
+    """
 
 
 MISSING = _Missing()
@@ -42,6 +46,8 @@ def _missing() -> _Missing:
 class BoundaryModel(BaseModel):
     """Reject fields outside the documented HTTP contract."""
 
+    # Framework models deliberately reject unknown input instead of silently
+    # accepting fields that the portable OpenAPI contract does not define.
     model_config = ConfigDict(
         extra="forbid",
         arbitrary_types_allowed=True,
@@ -49,14 +55,16 @@ class BoundaryModel(BaseModel):
 
 
 class Health(BoundaryModel):
-    """TODO: return this model from the readiness route."""
+    """TODO: return this fixed response from the GET /health readiness route."""
 
     status: Literal["ok"]
 
 
 class Task(BoundaryModel):
-    """TODO: convert domain Tasks to this response-only model."""
+    """TODO: convert domain Tasks to this response-only boundary model."""
 
+    # from_attributes lets Pydantic read the domain dataclass without teaching
+    # tasks_core about Pydantic or duplicating a manual response dictionary.
     model_config = ConfigDict(
         extra="forbid",
         from_attributes=True,
@@ -68,20 +76,28 @@ class Task(BoundaryModel):
 
 
 class CreateTask(BoundaryModel):
-    """TODO: inject this request model into the create route."""
+    """TODO: inject this strict request model into the create route."""
 
     title: Title
 
 
 class UpdateTask(BoundaryModel):
-    """TODO: preserve omitted PATCH fields when calling TaskService."""
+    """TODO: preserve omitted PATCH fields when calling TaskService.
+
+    Consult Pydantic's set-field tracking: a default sentinel means omitted,
+    whereas a supplied value must cross the domain validation boundary.
+    """
 
     title: Title | MissingField = Field(default_factory=_missing)
     completed: Completed | MissingField = Field(default_factory=_missing)
 
 
 class ErrorBody(BoundaryModel):
-    """TODO: use this payload from centralized exception handlers."""
+    """TODO: use this payload from centralized exception handlers.
+
+    One error model keeps FastAPI validation, domain failures, and sanitized
+    unexpected failures compatible with the shared HTTP envelope.
+    """
 
     code: ErrorCode
     message: Annotated[str, Field(min_length=1)]

@@ -7,7 +7,13 @@ from ..domain import CreateTaskInput, Task, UpdateTaskInput
 
 @runtime_checkable
 class TaskRepository(Protocol):
-    """Create, query, mutate, and delete Task values."""
+    """Persistence contract consumed by the framework-neutral service.
+
+    Missing single-task operations raise ``TaskNotFoundError`` rather than
+    returning ``None``, so every successful result is a complete ``Task``.
+    Repository-assigned IDs increase monotonically and are not recycled after
+    deletion; gaps are allowed.
+    """
 
     def create(self, task: CreateTaskInput) -> Task:
         """Persist a new incomplete task."""
@@ -29,7 +35,7 @@ class TaskRepository(Protocol):
         task_id: int,
         update: UpdateTaskInput,
     ) -> Task:
-        """Atomically apply a partial update."""
+        """Apply all supplied fields atomically or leave the task unchanged."""
 
         ...
 

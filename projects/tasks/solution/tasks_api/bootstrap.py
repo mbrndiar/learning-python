@@ -1,4 +1,8 @@
-"""Typed command parsing and dependency construction for server launchers."""
+"""Compose persistence and service dependencies at the process boundary.
+
+HTTP adapters receive an already-built service, so selecting storage remains a
+launcher concern rather than leaking infrastructure choices into route code.
+"""
 
 import argparse
 from collections.abc import Sequence
@@ -66,7 +70,7 @@ def parse_server_settings(
     *,
     prog: str = "tasks-api",
 ) -> ServerSettings:
-    """Parse one server launch without starting network resources."""
+    """Convert command-line strings into typed settings without opening resources."""
 
     arguments = _ServerArguments()
     build_server_parser(prog).parse_args(argv, namespace=arguments)
@@ -79,7 +83,7 @@ def parse_server_settings(
 
 
 def build_repository(backend: Backend, data: str | Path) -> TaskRepository:
-    """Construct the selected milestone-two persistence adapter."""
+    """Construct the persistence adapter selected at the application edge."""
 
     if backend == "sqlite":
         return SQLiteTaskRepository(data)
@@ -89,8 +93,10 @@ def build_repository(backend: Backend, data: str | Path) -> TaskRepository:
 
 
 def build_service(settings: ServerSettings) -> TaskService:
-    """Construct the shared service for one server process."""
+    """Assemble the dependency graph shared by one server process."""
 
+    # The composition root is the only layer that needs to know which concrete
+    # repository satisfies the service's TaskRepository dependency.
     return TaskService(build_repository(settings.backend, settings.data))
 
 

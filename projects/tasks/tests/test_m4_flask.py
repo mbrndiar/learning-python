@@ -1,4 +1,11 @@
-"""Milestone-four tests for the Flask server and Requests client."""
+"""Milestone-four tests for Flask integration and the Requests transport.
+
+The starter retains explicit lifecycle/client TODOs while the solution tests
+cover dependency-injected app factories, Flask error normalization, persistence
+composition, Requests-native argument mapping, and deterministic resource
+cleanup.  Framework-specific tests complement—not replace—the shared REST
+contract that later compares all adapters as black boxes.
+"""
 
 import json
 import logging
@@ -42,11 +49,15 @@ from werkzeug.serving import make_server
 from werkzeug.test import TestResponse
 
 STARTER = IMPLEMENTATION == "starter"
+# Keep guidance checks runnable without treating deliberately absent milestone
+# behavior as a regression in the starter tree.
 solution_only = pytest.mark.skipif(STARTER, reason="solution milestone-four behavior")
 starter_only = pytest.mark.skipif(not STARTER, reason="starter guidance behavior")
 
 
 class _FailureRepository:
+    """Make every repository operation fail at the service boundary."""
+
     def __init__(self, error: Exception) -> None:
         self._error = error
 
@@ -76,12 +87,16 @@ class _FailureRepository:
 
 @contextmanager
 def _loopback_server(app: Flask) -> Iterator[str]:
+    """Own a threaded Werkzeug server bound to an ephemeral loopback port."""
+
     server = make_server("127.0.0.1", 0, app, threaded=True)
     thread = Thread(target=server.serve_forever, daemon=True)
     thread.start()
     try:
         yield f"http://127.0.0.1:{server.server_port}"
     finally:
+        # Werkzeug separates graceful shutdown from listener cleanup; both are
+        # required before asserting the worker thread has terminated.
         server.shutdown()
         thread.join(timeout=2)
         server.server_close()
@@ -113,6 +128,8 @@ def test_flask_and_requests_launchers_parse_the_documented_commands() -> None:
 
 @starter_only
 def test_starter_keeps_milestone_four_guidance_deliberately_incomplete() -> None:
+    # Named incomplete errors keep the exercise discoverable and distinguish a
+    # pending milestone from an accidental framework/import failure.
     with pytest.raises(
         IncompleteImplementationError,
         match=r"milestone 4 Flask server lifecycle.*intentionally incomplete",
@@ -129,6 +146,8 @@ def test_starter_keeps_milestone_four_guidance_deliberately_incomplete() -> None
 @solution_only
 def test_flask_factory_uses_injected_services_without_global_state() -> None:
     with temporary_project_directory() as directory:
+        # Two independent apps expose accidental module-level service state:
+        # mutating one must never alter the other's repository.
         first = create_app(
             build_service(
                 ServerSettings(
@@ -186,6 +205,8 @@ def test_flask_test_client_covers_normal_and_boundary_task_flows() -> None:
             "completed": False,
         }
 
+        # The exact upper boundary guards against framework validation becoming
+        # stricter than the domain's normalized 120-character contract.
         boundary_title = "x" * 120
         boundary = client.post("/tasks", json={"title": boundary_title})
         assert boundary.status_code == 201
@@ -301,6 +322,8 @@ def test_flask_logs_failures_and_sanitizes_internal_errors(
     secret: str,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
+    # Storage and unexpected failures take the same public path so neither can
+    # leak the injected secret through Flask's default exception handling.
     app = create_app(TaskService(_FailureRepository(error)))
     with caplog.at_level(logging.ERROR):
         response = app.test_client().get("/tasks")
@@ -365,6 +388,8 @@ def test_requests_transport_uses_native_arguments_and_owns_resources(
         def close(self) -> None:
             self.closed = True
 
+    # A recording Session verifies Requests receives params/json natively rather
+    # than a pre-encoded approximation, and that response and session both close.
     session = RecordingSession()
     monkeypatch.setattr(requests_library, "Session", lambda: session)
     transport = RequestsTransport("http://127.0.0.1:8000/", 1.25)
@@ -420,6 +445,8 @@ def test_requests_translates_library_failures(
         def close(self) -> None:
             pass
 
+    # Inject at Session.request so each Requests exception is normalized at the
+    # adapter boundary without making a real network call.
     monkeypatch.setattr(requests_library, "Session", FailingSession)
     transport = RequestsTransport("http://127.0.0.1:8000", 1.0)
     try:

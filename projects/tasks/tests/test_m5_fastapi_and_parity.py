@@ -1,4 +1,10 @@
-"""Milestone five FastAPI, HTTPX, OpenAPI, and focused parity checks."""
+"""Milestone-five tests for FastAPI, HTTPX, OpenAPI, and focused parity.
+
+The starter exposes schema scaffolding but deliberately stops at named app and
+transport TODOs.  The solution checks FastAPI's normalization around Pydantic,
+HTTPX ownership and error translation, generated-schema intent, and parity
+between in-process TestClient calls and real loopback HTTP exchanges.
+"""
 
 import json
 import socket
@@ -49,6 +55,8 @@ def _service(path: Path) -> TaskService:
 
 @contextmanager
 def _client() -> Iterator[TestClient]:
+    """Own app storage and the framework-specific TestClient lifecycle."""
+
     with temporary_project_directory() as directory:
         app = create_app(_service(directory / "tasks.db"))
         with TestClient(app, raise_server_exceptions=False) as client:
@@ -57,6 +65,8 @@ def _client() -> Iterator[TestClient]:
 
 @contextmanager
 def _live_app() -> Iterator[str]:
+    """Expose the same app over a real, finite-lived loopback server."""
+
     with temporary_project_directory() as directory:
         with running_task_server(
             "fastapi",
@@ -73,6 +83,8 @@ def test_starter_exposes_guided_models_and_explicit_todos() -> None:
     if IS_SOLUTION:
         pytest.skip("starter-only guidance check")
 
+    # Models are provided early so learners can inspect the target schema even
+    # though application and transport execution remain deliberately incomplete.
     assert CreateTask.model_json_schema()["additionalProperties"] is False
     update_schema = UpdateTask.model_json_schema()
     assert set(update_schema["properties"]) == {"title", "completed"}
@@ -121,6 +133,8 @@ def test_fastapi_normal_and_boundary_flows() -> None:
 
 @solution_only
 def test_fastapi_applies_title_length_after_domain_trimming() -> None:
+    # Pydantic must not reject padded input before the domain trims it to the
+    # valid upper boundary.
     title = "x" * 120
     with _client() as client:
         response = client.post("/tasks", json={"title": f"  {title}  "})
@@ -207,6 +221,8 @@ def test_fastapi_normalizes_request_failures(
     code: str,
     field: str | None,
 ) -> None:
+    # The table mixes Starlette parsing, Pydantic validation, and domain rules;
+    # identical envelopes prevent framework provenance from leaking to clients.
     with _client() as client:
         response = client.request(method, path, **kwargs)
         assert response.status_code == status_code
@@ -274,6 +290,8 @@ def test_generated_openapi_matches_checked_in_route_and_schema_intent() -> None:
         (PROJECT_ROOT / "docs" / "openapi.yaml").read_text(encoding="utf-8")
     )
 
+    # Compare the compatibility-bearing subset rather than formatting or
+    # framework-generated descriptions that are not part of the teaching API.
     assert generated["openapi"] == intended["openapi"]
     assert set(generated["paths"]) == set(intended["paths"])
     for path, intended_path in intended["paths"].items():
@@ -327,6 +345,8 @@ class _ControlledHandler(BaseHTTPRequestHandler):
 @solution_only
 def test_httpx_transport_uses_params_json_and_captures_http_status_and_body() -> None:
     _ControlledHandler.requests.clear()
+    # A controlled peer observes HTTPX's actual wire request and returns a
+    # non-2xx response, which the transport must capture rather than raise.
     server = ThreadingHTTPServer(("127.0.0.1", 0), _ControlledHandler)
     thread = Thread(target=server.serve_forever, daemon=True)
     thread.start()
@@ -389,6 +409,8 @@ def _exercise(
 
 @solution_only
 def test_testclient_and_loopback_httpx_observe_the_same_contract() -> None:
+    # Replaying one operation sequence through both paths catches middleware or
+    # serialization differences hidden by FastAPI's in-process TestClient.
     with _client() as client:
 
         def testclient_send(

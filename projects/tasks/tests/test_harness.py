@@ -1,4 +1,10 @@
-"""Smoke tests for source selection and matching public boundaries."""
+"""Guard the shared harness before milestone behavior is exercised.
+
+The starter and solution are separate source roots with matching public APIs.
+These smoke tests prove imports come only from the selected root, compare both
+trees in fresh interpreters to avoid module-cache contamination, and verify the
+checked-in fixtures on which later black-box contracts depend.
+"""
 
 import json
 import os
@@ -47,6 +53,8 @@ PUBLIC_MODULES = (
 
 
 def _public_manifest(source_root: Path) -> object:
+    # Importing in a subprocess gives each tree an uncontaminated sys.path and
+    # module cache; comparing both trees in this pytest process would not.
     script = textwrap.dedent(
         f"""
         import importlib
@@ -95,6 +103,8 @@ def test_selected_source_root_owns_every_public_module() -> None:
 
 
 def test_starter_and_solution_public_imports_and_signatures_match() -> None:
+    # Starter incompleteness is behavioral, not structural: learners should be
+    # able to fill TODOs without discovering a different public API.
     assert _public_manifest(PROJECT_ROOT / "starter") == _public_manifest(
         PROJECT_ROOT / "solution"
     )

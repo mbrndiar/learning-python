@@ -185,6 +185,8 @@ def parse_request(
     arguments = _Arguments()
     parser.parse_args(argv, namespace=arguments)
 
+    # Parsing ends with library-neutral values. No HTTP client is constructed
+    # until syntax and command-specific requirements are known to be valid.
     settings = ClientSettings(
         base_url=arguments.base_url,
         timeout=arguments.timeout,
@@ -228,9 +230,21 @@ def run(
     *,
     prog: str = "tasks-cli",
 ) -> int:
-    """Implement shared request construction, validation, and rendering."""
+    """Implement the client policy once for all three HTTP libraries.
+
+    Milestones three through five should:
+    1. map the command to a method, unencoded path/query components and JSON body;
+    2. create one transport, send once with a finite timeout, and always close it;
+    3. validate status, Content-Type, UTF-8, strict JSON and response shape;
+    4. render success to stdout and categorized failures to stderr.
+
+    Preserve the documented exit policy: 0 success, 2 usage, 3 API failure,
+    4 malformed server response, and 5 connection/transport failure.
+    """
 
     request = parse_request(argv, prog=prog)
+    # Keep command policy here rather than duplicating it in urllib, Requests and
+    # HTTPX. Adapters should only translate this transport-neutral request/result.
     del transport_factory, stdout, stderr
     incomplete(f"client command execution for {request.command!r}")
 

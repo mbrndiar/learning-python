@@ -6,13 +6,21 @@ from tasks_cli.transport import TaskTransport, TransportRequest, TransportRespon
 
 
 class UrllibTransport:
-    """Task transport implemented with the Python standard library."""
+    """Task transport implemented with the Python standard library.
+
+    This milestone makes encoding, Request construction, response ownership and
+    exception translation visible before higher-level clients hide those steps.
+    """
 
     def __init__(self, base_url: str, timeout: float) -> None:
         self.base_url = base_url
         self.timeout = timeout
 
     def send(self, request: TransportRequest) -> TransportResponse:
+        # TODO(milestone 3): build the encoded URL, serialize strict UTF-8 JSON,
+        # set headers, open once with the configured timeout, read and close the
+        # response, and preserve an HTTPError as an ordinary HTTP response.
+        # Translate connection and timeout failures without retrying mutations.
         incomplete(
             "milestone 3 urllib request "
             f"{request.method} {request.path}, "
@@ -20,7 +28,11 @@ class UrllibTransport:
         )
 
     def close(self) -> None:
-        """Release transport resources once milestone three owns some."""
+        """Release transport resources once milestone three owns some.
+
+        A plain urllib implementation need not keep a session, but the shared
+        protocol still gives every adapter the same explicit cleanup boundary.
+        """
 
 
 def create_transport(base_url: str, timeout: float) -> TaskTransport:

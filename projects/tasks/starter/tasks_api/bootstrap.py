@@ -82,6 +82,8 @@ def build_repository(backend: Backend, data: str | Path) -> TaskRepository:
     """Construct the selected milestone-two persistence adapter."""
 
     # TODO(milestone 2): keep backend selection here, outside every HTTP framework.
+    # This is the composition root: server adapters receive an already-wired
+    # service and therefore stay independent of persistence configuration.
     if backend == "sqlite":
         return SQLiteTaskRepository(data)
     if backend == "markdown":

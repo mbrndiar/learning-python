@@ -1,4 +1,4 @@
-"""Low-level ``urllib`` transport boundary for milestone three."""
+"""Standard-library transport that converts ``urllib`` behavior to the shared contract."""
 
 import json
 import math
@@ -21,6 +21,8 @@ from tasks_cli.transport import (
 
 
 class _ReadableResponse(Protocol):
+    """The response operations this adapter owns regardless of success status."""
+
     status: int
     headers: Message
 
@@ -36,6 +38,8 @@ class _NoRedirectHandler(HTTPRedirectHandler):
 
 
 def _open(request: Request, timeout: float) -> _ReadableResponse:
+    """Open once with redirects disabled and transfer response ownership to the caller."""
+
     return cast(
         _ReadableResponse,
         build_opener(_NoRedirectHandler()).open(request, timeout=timeout),
@@ -48,7 +52,7 @@ def _message(value: object, fallback: str) -> str:
 
 
 class UrllibTransport:
-    """Task transport implemented with the Python standard library."""
+    """One-shot standard-library transport with explicit response ownership."""
 
     def __init__(self, base_url: str, timeout: float) -> None:
         if (
@@ -63,6 +67,8 @@ class UrllibTransport:
         self._closed = False
 
     def send(self, request: TransportRequest) -> TransportResponse:
+        """Send once, fully capture the response, and close its network handle."""
+
         if self._closed:
             raise TransportError("transport is closed")
 
@@ -88,10 +94,15 @@ class UrllibTransport:
                 response = _open(urllib_request, self.timeout)
                 status = response.status
             except HTTPError as error:
+                # urllib raises HTTPError for non-2xx statuses, but it also carries
+                # the server response. Treat it as data so the application can
+                # validate API error bodies and status/code consistency.
                 response = cast(_ReadableResponse, error)
                 status = error.code
             return self._capture_response(response, status)
         except URLError as error:
+            # urllib wraps many connection failures in URLError; its ``reason``
+            # preserves whether the finite timeout expired.
             if isinstance(error.reason, TimeoutError):
                 raise TransportTimeoutError("request timed out") from error
             raise TransportConnectionError(
@@ -111,6 +122,8 @@ class UrllibTransport:
         response: _ReadableResponse,
         status: int,
     ) -> TransportResponse:
+        """Read owned bytes and release the response even if reading fails."""
+
         try:
             body = response.read()
             headers = {name: value for name, value in response.headers.items()}
@@ -119,7 +132,7 @@ class UrllibTransport:
             response.close()
 
     def close(self) -> None:
-        """Mark this one-shot transport closed."""
+        """Idempotently close a transport with no persistent session to release."""
 
         self._closed = True
 

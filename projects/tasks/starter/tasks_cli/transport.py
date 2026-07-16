@@ -23,6 +23,9 @@ def normalize_base_url(value: str) -> str:
     except ValueError as error:
         raise ValueError("base URL must be an absolute HTTP or HTTPS URL") from error
 
+    # The base identifies only an API origin/path prefix. Credentials, query and
+    # fragment belong to different concerns and would make request composition
+    # ambiguous or leak sensitive values.
     scheme = parsed.scheme.casefold()
     hostname = parsed.hostname
     if (
@@ -39,6 +42,7 @@ def normalize_base_url(value: str) -> str:
     if any(character.isspace() for character in value):
         raise ValueError("base URL must not contain whitespace")
 
+    # urlsplit removes IPv6 brackets; restore them when rebuilding the netloc.
     host = hostname.casefold()
     if ":" in host:
         host = f"[{host}]"
@@ -53,6 +57,8 @@ def normalize_base_url(value: str) -> str:
 def build_url(base_url: str, request: "TransportRequest") -> str:
     """Encode one explicit transport request as an absolute URL."""
 
+    # Encode path and query independently so task IDs or future values cannot
+    # escape into URL syntax through string concatenation.
     url = f"{normalize_base_url(base_url)}{quote(request.path, safe='/')}"
     if not request.query:
         return url
@@ -63,6 +69,8 @@ def _is_json_value(value: object) -> bool:
     if value is None or isinstance(value, (str, bool, int)):
         return True
     if isinstance(value, float):
+        # JSON has no portable NaN or infinity values even though Python's json
+        # module can emit them unless explicitly constrained.
         return math.isfinite(value)
     if isinstance(value, list):
         return all(_is_json_value(item) for item in value)
@@ -94,6 +102,8 @@ class TransportRequest:
             raise ValueError("request query keys and values must be strings")
         if self.json_body is not None and not _is_json_value(dict(self.json_body)):
             raise ValueError("request body must contain JSON-compatible values")
+        # Shallow-copy the top-level mappings so later key changes cannot alter
+        # the request; nested JSON lists or dictionaries remain shared.
         object.__setattr__(self, "query", dict(self.query))
         if self.json_body is not None:
             object.__setattr__(self, "json_body", dict(self.json_body))
@@ -101,7 +111,11 @@ class TransportRequest:
 
 @dataclass(frozen=True, slots=True)
 class TransportResponse:
-    """Raw HTTP response information consumed by the command application."""
+    """Raw HTTP response information consumed by the command application.
+
+    Adapters return bytes rather than decoded JSON so the shared application can
+    enforce one Content-Type, charset and strict-decoding policy for all clients.
+    """
 
     status: int
     headers: Mapping[str, str]
@@ -129,7 +143,12 @@ class TransportTimeoutError(TransportConnectionError):
 
 @runtime_checkable
 class TaskTransport(Protocol):
-    """Send Task API requests and own transport cleanup."""
+    """Send Task API requests and own transport cleanup.
+
+    A CLI invocation creates one transport, uses it for one command, and closes
+    it. The contract forbids automatic retry because repeating a mutation could
+    create or apply it twice.
+    """
 
     def send(self, request: TransportRequest) -> TransportResponse:
         """Send one request without retrying it."""

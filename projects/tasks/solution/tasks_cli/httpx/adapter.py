@@ -17,7 +17,7 @@ from tasks_cli.transport import (
 
 
 class HttpxTransport:
-    """Own one finite-timeout ``httpx.Client`` for a CLI invocation."""
+    """Own one finite-timeout ``httpx.Client`` for a complete CLI invocation."""
 
     def __init__(self, base_url: str, timeout: float) -> None:
         if (
@@ -34,16 +34,21 @@ class HttpxTransport:
             timeout=httpx.Timeout(self.timeout),
             follow_redirects=False,
             trust_env=False,
+            # Retrying here could repeat POST/PATCH effects; the transport
+            # contract deliberately makes one network attempt per send call.
             transport=httpx.HTTPTransport(retries=0),
         )
         self._closed = False
 
     def send(self, request: TransportRequest) -> TransportResponse:
-        """Send one request and capture status, headers, and raw body."""
+        """Send once and return owned status, headers, and raw body bytes."""
 
         if self._closed:
             raise TransportError("HTTPX transport is closed")
         try:
+            # HTTPX owns URL/query and JSON encoding. ``read`` materializes the
+            # body and releases the connection back to the client pool; the
+            # stream context guarantees response closure.
             with self._client.stream(
                 request.method,
                 request.path.removeprefix("/"),
@@ -58,6 +63,9 @@ class HttpxTransport:
                     headers=dict(response.headers),
                     body=body,
                 )
+        # Timeout is a distinct connection category. Other HTTPX protocol or
+        # network failures become connection errors, while HTTP status failures
+        # remain ordinary responses because ``raise_for_status`` is not called.
         except httpx.TimeoutException as error:
             raise TransportTimeoutError(
                 str(error).strip() or "request timed out"
@@ -68,13 +76,15 @@ class HttpxTransport:
             ) from error
 
     def close(self) -> None:
-        """Close the owned client exactly once."""
+        """Idempotently close the one client and its connection pool."""
 
         if not self._closed:
             self._client.close()
             self._closed = True
 
     def __enter__(self) -> "HttpxTransport":
+        """Allow callers to make transport ownership explicit with ``with``."""
+
         return self
 
     def __exit__(
@@ -83,6 +93,8 @@ class HttpxTransport:
         exception: BaseException | None,
         traceback: TracebackType | None,
     ) -> None:
+        """Release the owned client when leaving a context for any reason."""
+
         del exception_type, exception, traceback
         self.close()
 

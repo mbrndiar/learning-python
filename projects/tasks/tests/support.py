@@ -1,4 +1,11 @@
-"""Deterministic paths and parser helpers for Task milestone tests."""
+"""Deterministic storage, HTTP, and lifecycle support for milestone tests.
+
+The helpers own every resource they create: project-local temporary storage,
+finite-time loopback connections, listener sockets, and server threads.  The
+three frameworks start differently, so ``LiveServer`` presents one explicit
+state machine and cleanup contract while preserving those implementation
+differences for black-box parity tests.
+"""
 
 import argparse
 import http.client
@@ -67,7 +74,7 @@ class HttpResponse:
 
 @dataclass(slots=True)
 class LiveServer:
-    """Own one loopback server, its thread, listener, and shutdown callbacks."""
+    """Own a loopback server from ready state through one idempotent close."""
 
     base_url: str
     thread: Thread
@@ -81,6 +88,10 @@ class LiveServer:
         return self._closed
 
     def close(self) -> None:
+        """Attempt graceful shutdown, force if supported, then release handles."""
+
+        # Context managers and startup error paths may converge here.  Marking
+        # closed first makes cleanup idempotent even if a callback raises.
         if self._closed:
             return
         self._closed = True
@@ -91,11 +102,15 @@ class LiveServer:
         except BaseException as error:
             shutdown_error = error
 
+        # Frameworks get a bounded graceful window before an adapter-specific
+        # forced stop; tests must never hang indefinitely on server cleanup.
         self.thread.join(timeout=SHUTDOWN_TIMEOUT)
         if self.thread.is_alive() and self._force_shutdown is not None:
             self._force_shutdown()
             self.thread.join(timeout=SHUTDOWN_TIMEOUT)
 
+        # Listener/file-descriptor cleanup is still attempted after a shutdown
+        # error; a cleanup failure is retained and reported rather than hidden.
         try:
             self._close_resources()
         except BaseException as error:
@@ -110,7 +125,11 @@ class LiveServer:
 
 @contextmanager
 def temporary_project_directory() -> Iterator[Path]:
-    """Create cleaned test storage below this project, never in system temp."""
+    """Create automatically cleaned storage below the test project.
+
+    Keeping persistence artifacts beside the project makes their placement
+    deterministic and satisfies environments that prohibit system temp paths.
+    """
 
     with TemporaryDirectory(prefix=".tasks-test-", dir=TEST_ROOT) as directory:
         yield Path(directory)
@@ -125,7 +144,7 @@ def request_http(
     headers: dict[str, str] | None = None,
     timeout: float = REQUEST_TIMEOUT,
 ) -> HttpResponse:
-    """Send one finite-timeout HTTP request and close its connection."""
+    """Own one finite-time HTTP exchange and always close its connection."""
 
     parsed = urlsplit(base_url)
     if parsed.hostname is None or parsed.port is None:
@@ -175,6 +194,8 @@ def request_json(
 
 
 def _wait_until_ready(server: LiveServer) -> None:
+    """Advance a started server to ready or cleanly fail within a deadline."""
+
     deadline = time.monotonic() + STARTUP_TIMEOUT
     while time.monotonic() < deadline:
         if not server.thread.is_alive():
@@ -193,7 +214,12 @@ def _wait_until_ready(server: LiveServer) -> None:
 
 
 def start_task_server(server_name: ServerName, service: object) -> LiveServer:
-    """Start one Task server on an ephemeral loopback port."""
+    """Start one framework server on an OS-assigned loopback port.
+
+    Port zero avoids collisions between parallel cases. stdlib and Werkzeug
+    expose bound server objects directly; the harness pre-binds Uvicorn's socket
+    to learn its ephemeral port before the worker thread starts.
+    """
 
     if server_name == "stdlib":
         from tasks_api.stdlib.app import create_server
@@ -240,6 +266,9 @@ def start_task_server(server_name: ServerName, service: object) -> LiveServer:
         import uvicorn
         from tasks_api.fastapi.app import create_app
 
+        # Uvicorn can bind inside ``run``. Supplying this listener instead removes
+        # the port-discovery race and gives ``LiveServer`` a concrete resource to
+        # close during both graceful and forced shutdown.
         listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         listener.bind((LOOPBACK_HOST, 0))
@@ -287,7 +316,7 @@ def start_task_server(server_name: ServerName, service: object) -> LiveServer:
 def start_handler_server(
     handler: type[BaseHTTPRequestHandler],
 ) -> LiveServer:
-    """Start a controlled standard-library HTTP handler on loopback."""
+    """Start a controlled failure-injection handler on an ephemeral port."""
 
     server = ThreadingHTTPServer((LOOPBACK_HOST, 0), handler)
     server.daemon_threads = True
@@ -312,7 +341,7 @@ def running_task_server(
     server_name: ServerName,
     service: object,
 ) -> Iterator[LiveServer]:
-    """Yield a ready loopback Task server and always release its resources."""
+    """Yield only a ready server and close it even when the test body fails."""
 
     server = start_task_server(server_name, service)
     try:
@@ -336,7 +365,7 @@ def running_handler_server(
 
 @contextmanager
 def unavailable_loopback_url() -> Iterator[str]:
-    """Reserve a non-listening loopback endpoint for connection-failure tests."""
+    """Reserve then expose a non-listening endpoint for deterministic failure."""
 
     listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     listener.bind((LOOPBACK_HOST, 0))

@@ -19,7 +19,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    """Parse settings and start the standard-library adapter."""
+    """Compose dependencies, then transfer control to the blocking server."""
 
     settings = parse_server_settings(argv, prog="tasks-api-stdlib")
     serve(build_service(settings), settings.host, settings.port)

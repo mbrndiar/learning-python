@@ -1,4 +1,10 @@
-"""Focused milestone-three tests for the standard-library adapters."""
+"""Milestone-three tests for the stdlib HTTP server and urllib client.
+
+Starter-only checks keep lifecycle and command execution as explicit guided
+gaps.  Solution-only checks exercise raw HTTP framing, normalized API errors,
+composition, transport resource ownership, and a matching client/server flow;
+later cross-framework contracts reuse these expectations at a broader level.
+"""
 
 from __future__ import annotations
 
@@ -51,6 +57,8 @@ STARTER_ONLY = pytest.mark.skipif(
 
 
 class _FailingRepository:
+    """Inject private storage diagnostics to test logging versus wire output."""
+
     def create(self, task: CreateTaskInput) -> Task:
         del task
         raise StorageError("top-secret storage diagnostic", operation="create")
@@ -86,6 +94,8 @@ def _running_server(
     repository: str = "sqlite",
     service: TaskService | None = None,
 ) -> Iterator[tuple[str, ThreadingHTTPServer, threading.Thread]]:
+    """Own a stdlib server on an ephemeral port for the full test lifetime."""
+
     if service is None:
         task_repository = (
             SQLiteTaskRepository(storage)
@@ -93,6 +103,8 @@ def _running_server(
             else MarkdownTaskRepository(storage)
         )
         service = TaskService(task_repository)
+    # Port zero lets the OS allocate a free loopback listener, avoiding fixed-
+    # port collisions when parametrized or parallel test runs overlap.
     server = create_server(service, "127.0.0.1", 0)
     thread = threading.Thread(
         target=server.serve_forever,
@@ -104,6 +116,9 @@ def _running_server(
     try:
         yield f"http://{host}:{port}", server, thread
     finally:
+        # Shutdown stops serve_forever, server_close releases the listener, and
+        # the bounded join proves the serve-loop thread terminates. Daemon
+        # request threads have no completion guarantee.
         server.shutdown()
         server.server_close()
         thread.join(timeout=2)
@@ -114,6 +129,8 @@ def _running_server(
 def _running_handler(
     handler: type[BaseHTTPRequestHandler],
 ) -> Iterator[str]:
+    """Run a controlled peer used to inject transport-level responses."""
+
     server = ThreadingHTTPServer(("127.0.0.1", 0), handler)
     server.daemon_threads = True
     thread = threading.Thread(
@@ -140,6 +157,8 @@ def _request(
     body: bytes | None = None,
     headers: Mapping[str, str] | None = None,
 ) -> tuple[int, dict[str, str], bytes]:
+    """Perform one finite-time request and close the owned connection."""
+
     parsed = urlsplit(base_url)
     assert parsed.hostname is not None
     assert parsed.port is not None
@@ -176,6 +195,8 @@ def _json_body(body: bytes) -> object:
 
 
 def _raw_request(base_url: str, request: bytes) -> tuple[int, bytes]:
+    """Bypass http.client validation to probe malformed HTTP framing."""
+
     parsed = urlsplit(base_url)
     assert parsed.hostname is not None
     assert parsed.port is not None
@@ -202,6 +223,8 @@ def test_stdlib_launchers_parse_the_documented_commands() -> None:
 
 @STARTER_ONLY
 def test_starter_remains_guided_and_explicitly_incomplete() -> None:
+    # These failures are part of the teaching contract: starter execution must
+    # stop at named TODOs rather than crash later with incidental exceptions.
     with pytest.raises(
         IncompleteImplementationError,
         match=r"milestone 3 standard-library server lifecycle.*intentionally incomplete",
@@ -302,6 +325,8 @@ def test_server_normal_crud_filter_and_not_found_flow() -> None:
 
 @SOLUTION_ONLY
 def test_server_rejects_malformed_oversized_and_semantic_bodies() -> None:
+    # The byte-level cases separate JSON transport failures (400) from valid
+    # JSON that violates domain/request shape (422).
     cases = (
         (b"{}", {}, "request Content-Type must be application/json"),
         (
@@ -389,6 +414,8 @@ def test_server_rejects_malformed_oversized_and_semantic_bodies() -> None:
 
 @SOLUTION_ONLY
 def test_server_requires_one_valid_content_length() -> None:
+    # A raw socket is required because normal HTTP clients repair or reject the
+    # malformed Content-Length headers before the server can observe them.
     with temporary_project_directory() as directory:
         with _running_server(directory / "tasks.db") as (base_url, _, _):
             status, body = _raw_request(
@@ -469,6 +496,8 @@ def test_server_enforces_methods_routes_ids_and_query_filter() -> None:
 def test_server_logs_storage_details_but_sanitizes_internal_error(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
+    # Operators need the injected diagnostic in logs, while clients receive a
+    # stable envelope that cannot disclose backend or credential details.
     caplog.set_level("ERROR", logger="tasks_api.stdlib.app")
     service = TaskService(_FailingRepository())
     with temporary_project_directory() as directory:
@@ -644,6 +673,8 @@ def test_urllib_transport_closes_responses_and_translates_library_errors(
         def close(self) -> None:
             self.closed = True
 
+    # Monkeypatch the narrow open seam so response ownership and exception
+    # translation are tested without depending on urllib's network stack.
     response = FakeResponse()
     monkeypatch.setattr(
         urllib_adapter,
@@ -724,6 +755,8 @@ def test_urllib_cli_reports_malformed_response_and_connection_failure(
 
 @SOLUTION_ONLY
 def test_loopback_shutdown_closes_socket_and_joins_thread() -> None:
+    # Leaving the context is the observable lifecycle boundary: both the file
+    # descriptor and worker thread must be gone before the next test starts.
     with temporary_project_directory() as directory:
         with _running_server(directory / "tasks.db") as (
             base_url,

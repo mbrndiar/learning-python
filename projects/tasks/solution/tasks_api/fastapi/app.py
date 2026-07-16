@@ -1,4 +1,9 @@
-"""Typed FastAPI boundary for milestone five."""
+"""Adapt FastAPI, Pydantic, and Uvicorn to the Task service contract.
+
+FastAPI provides dependency resolution and typed request/response validation;
+middleware and handlers narrow its defaults to the project's shared HTTP
+contract before domain operations run.
+"""
 
 import json
 import logging
@@ -133,6 +138,9 @@ async def _validate_json_request(
     request: Request,
     call_next: Callable[[Request], Awaitable[Response]],
 ) -> Response:
+    # Middleware runs before route dependency/model parsing. Uvicorn has already
+    # handled HTTP framing; this layer aligns media-type, query, and strict-JSON
+    # errors before FastAPI turns the body into a Pydantic validation error.
     route = _match_route(request.url.path)
     if route is not None:
         methods = _METHODS_BY_ROUTE[route]
@@ -168,6 +176,9 @@ async def _validate_json_request(
         )
 
     try:
+        # Starlette caches ``request.body()``, so downstream Pydantic parsing can
+        # reuse it. The body is fully buffered before this length check; the
+        # limit validates the contract but is not a streaming memory bound.
         body = await request.body()
         if len(body) > _MAX_REQUEST_BODY:
             return _error_response(
@@ -227,6 +238,9 @@ TaskId = Annotated[
 
 
 def _validation_message(error: dict[str, Any]) -> tuple[str, dict[str, object]]:
+    # Framework validation describes transport shape and types. Translate its
+    # rich location/type records into the smaller framework-neutral API errors;
+    # TaskService remains responsible for domain rules.
     location = error.get("loc", ())
     field = next(
         (
@@ -287,6 +301,9 @@ def _task_error_response(error: TaskError) -> JSONResponse:
 
 
 def _install_openapi_schema(app: FastAPI) -> None:
+    # FastAPI generates OpenAPI from routes and Pydantic models. Two contract
+    # details are runtime-enforced outside ordinary field annotations, so patch
+    # the generated document once and cache the adjusted schema on the app.
     schema = app.openapi()
     components = schema.get("components", {}).get("schemas", {})
     update_schema = components.get("UpdateTask")
@@ -302,7 +319,7 @@ def _install_openapi_schema(app: FastAPI) -> None:
 
 
 def create_app(service: TaskService) -> FastAPI:
-    """Create an application whose service dependency is process-owned."""
+    """Create an app whose dependency provider closes over one Task service."""
 
     app = FastAPI(
         title="Task REST API",
@@ -320,9 +337,13 @@ def create_app(service: TaskService) -> FastAPI:
     def provide_task_service() -> TaskService:
         return service
 
+    # FastAPI resolves this annotation for each route call, while the provider
+    # returns the service assembled once by the launcher composition root.
     Service = Annotated[TaskService, Depends(provide_task_service)]
     app.middleware("http")(_validate_json_request)
 
+    # Exception handlers separate framework validation from domain failures and
+    # sanitize unexpected errors instead of exposing tracebacks to clients.
     @app.exception_handler(RequestValidationError)
     async def handle_request_validation(
         request: Request,
@@ -405,6 +426,8 @@ def create_app(service: TaskService) -> FastAPI:
             _INTERNAL_MESSAGE,
         )
 
+    # Response models validate and serialize successful return values, keeping
+    # the documented output contract active rather than descriptive only.
     @app.get(
         "/health",
         operation_id="getHealth",
@@ -470,6 +493,9 @@ def create_app(service: TaskService) -> FastAPI:
         task_id: TaskId,
         task_service: Service,
     ) -> Task:
+        # ``None`` could be an explicit JSON value, so field values alone cannot
+        # express PATCH omission. Pydantic records supplied keys separately;
+        # translate absent keys to the domain's UNSET partial-update sentinel.
         title: object = UNSET
         completed_value: object = UNSET
         if "title" in body.model_fields_set:
@@ -501,8 +527,11 @@ def create_app(service: TaskService) -> FastAPI:
 
 
 def serve(service: TaskService, host: str, port: int) -> NoReturn:
-    """Run the local learning application with Uvicorn."""
+    """Run Uvicorn's blocking lifecycle for the composed local application."""
 
+    # Passing the app object keeps construction and service ownership in this
+    # process. Uvicorn owns startup and socket shutdown, and installs signal
+    # handlers when this blocking lifecycle runs in the main thread.
     uvicorn.run(
         create_app(service),
         host=host,

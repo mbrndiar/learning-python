@@ -1,4 +1,8 @@
-"""Low-level ``http.server`` boundary for milestone three."""
+"""Implement the Task HTTP boundary directly on ``http.server``.
+
+Unlike Flask and FastAPI, this adapter owns routing, message framing, JSON
+decoding, error translation, and socket-server lifecycle explicitly.
+"""
 
 import json
 import logging
@@ -74,6 +78,9 @@ def _error_payload(
 
 
 def _handler_for(service: TaskService) -> type[BaseHTTPRequestHandler]:
+    # ``ThreadingHTTPServer`` constructs handlers itself, so a factory closure
+    # injects the process-owned service without using globals or changing the
+    # handler constructor expected by the standard library.
     class TaskRequestHandler(BaseHTTPRequestHandler):
         """Translate explicit HTTP requests into Task service operations."""
 
@@ -108,6 +115,9 @@ def _handler_for(service: TaskService) -> type[BaseHTTPRequestHandler]:
             _LOGGER.info("%s - %s", self.address_string(), format % args)
 
         def _dispatch(self) -> None:
+            # Boundary and domain failures have stable public mappings. Unknown
+            # failures are logged server-side but deliberately sanitized on the
+            # wire so implementation details do not become part of the API.
             try:
                 self._dispatch_request()
             except _BoundaryError as error:
@@ -126,6 +136,9 @@ def _handler_for(service: TaskService) -> type[BaseHTTPRequestHandler]:
                 self._send_internal_error()
 
         def _dispatch_request(self) -> None:
+            # BaseHTTPRequestHandler leaves the request target as text. Split it
+            # before routing so path decoding and query parsing follow separate
+            # URL rules rather than treating the whole target as a file path.
             try:
                 target = urlsplit(self.path, allow_fragments=False)
                 path = unquote(target.path, encoding="utf-8", errors="strict")
@@ -145,6 +158,8 @@ def _handler_for(service: TaskService) -> type[BaseHTTPRequestHandler]:
                 )
 
             allowed_methods = _METHODS_BY_ROUTE[route]
+            # The handler methods all converge here; the route table is the
+            # single source for dispatch and the Allow response header.
             if self.command not in allowed_methods:
                 raise _BoundaryError(
                     HTTPStatus.METHOD_NOT_ALLOWED,
@@ -295,6 +310,10 @@ def _handler_for(service: TaskService) -> type[BaseHTTPRequestHandler]:
 
         def _read_json(self) -> object:
             self._validate_content_type()
+            # This handler does not decode transfer codings, so it requires one
+            # unambiguous Content-Length before reading the body. Closing on
+            # framing failures also protects request boundaries if HTTP/1.1
+            # persistence is enabled later.
             if self.headers.get("Transfer-Encoding") is not None:
                 self.close_connection = True
                 raise _BoundaryError(
@@ -335,6 +354,9 @@ def _handler_for(service: TaskService) -> type[BaseHTTPRequestHandler]:
                     "request body is too large",
                 )
 
+            # Trust the validated length only up to the configured bound. Closing
+            # after framing failures avoids reusing a connection whose unread
+            # request bytes are no longer safely delimited.
             body = self.rfile.read(content_length)
             if len(body) != content_length:
                 self.close_connection = True
@@ -344,6 +366,9 @@ def _handler_for(service: TaskService) -> type[BaseHTTPRequestHandler]:
                     "request body was incomplete",
                 )
             try:
+                # Decode bytes strictly at the HTTP boundary. The JSON hooks also
+                # reject duplicate object names and non-standard NaN/Infinity
+                # constants that Python's decoder otherwise accepts.
                 text = body.decode("utf-8")
                 return json.loads(
                     text,
@@ -424,6 +449,9 @@ def _handler_for(service: TaskService) -> type[BaseHTTPRequestHandler]:
             for name, value in (headers or {}).items():
                 self.send_header(name, value)
             self.end_headers()
+            # For a HEAD request reaching this helper, preserve the computed
+            # headers but suppress body bytes. The route table currently rejects
+            # HEAD itself with 405.
             if self.command != "HEAD":
                 self.wfile.write(body)
 
@@ -440,15 +468,18 @@ def create_server(
     host: str,
     port: int,
 ) -> ThreadingHTTPServer:
-    """Create a configured standard-library HTTP server."""
+    """Create a configured standard-library HTTP server without running it."""
 
     server = ThreadingHTTPServer((host, port), _handler_for(service))
+    # Request threads must not keep the learning server process alive after the
+    # main serve loop has been stopped; in-flight work is not given a shutdown
+    # completion guarantee by this local adapter.
     server.daemon_threads = True
     return server
 
 
 def serve(service: TaskService, host: str, port: int) -> None:
-    """Own the standard-library server lifecycle."""
+    """Run the blocking serve loop and always release its listening socket."""
 
     server = create_server(service, host, port)
     try:

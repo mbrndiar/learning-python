@@ -1,4 +1,8 @@
-"""Shared command parsing and execution policy for all Task clients."""
+"""Shared parsing, execution, and rendering policy for all Task clients.
+
+Keeping these phases outside the adapters makes every HTTP library obey the same
+CLI validation, API contract, output formatting, and exit-code rules.
+"""
 
 import argparse
 import json
@@ -105,7 +109,7 @@ ClientCommand: TypeAlias = (
 
 @dataclass(frozen=True, slots=True)
 class ClientRequest:
-    """One parsed CLI invocation before transport-specific execution."""
+    """Validated settings and command produced before any network I/O."""
 
     settings: ClientSettings
     command: ClientCommand
@@ -113,7 +117,7 @@ class ClientRequest:
 
 @dataclass(frozen=True, slots=True)
 class ClientResult:
-    """Rendered process result returned by command execution."""
+    """One stream payload and exit code, ready for the process boundary."""
 
     exit_code: int
     stdout: str | None = None
@@ -238,7 +242,7 @@ def parse_request(
     *,
     prog: str = "tasks-cli",
 ) -> ClientRequest:
-    """Parse and normalize one documented client invocation."""
+    """Parse and validate CLI text into a transport-independent request."""
 
     parser = build_parser(prog)
     arguments = _Arguments()
@@ -280,6 +284,8 @@ def parse_request(
 
 
 def _request_for(command: ClientCommand) -> TransportRequest:
+    """Map the closed command model to the Task API method, path, query, and body."""
+
     if isinstance(command, AddCommand):
         return TransportRequest("POST", "/tasks", json_body={"title": command.title})
     if isinstance(command, ListCommand):
@@ -312,6 +318,11 @@ def _request_for(command: ClientCommand) -> TransportRequest:
 
 
 def _content_type(headers: Mapping[str, str]) -> str:
+    """Require one normalized JSON media type with no non-UTF-8 charset claim."""
+
+    # Header names are case-insensitive. Reject multiple differently-cased keys
+    # still present in the mapping, while recognizing that an adapter may already
+    # have combined or discarded duplicate fields received on the wire.
     values = [
         value
         for name, value in headers.items()
@@ -330,6 +341,8 @@ def _content_type(headers: Mapping[str, str]) -> str:
 
 
 def _reject_duplicate_fields(pairs: list[tuple[str, object]]) -> dict[str, object]:
+    """Reject ambiguous objects instead of silently keeping the last field."""
+
     result: dict[str, object] = {}
     for key, value in pairs:
         if key in result:
@@ -339,10 +352,14 @@ def _reject_duplicate_fields(pairs: list[tuple[str, object]]) -> dict[str, objec
 
 
 def _reject_json_constant(value: str) -> NoReturn:
+    """Reject NaN and infinities, which Python accepts but JSON does not."""
+
     raise _InvalidJsonValue(f"invalid JSON constant: {value}")
 
 
 def _decode_json(response: TransportResponse) -> object:
+    """Decode only strict UTF-8 JSON after validating its declared media type."""
+
     if _content_type(response.headers) != "application/json":
         raise _MalformedResponse("response Content-Type was not application/json")
     try:
@@ -358,6 +375,10 @@ def _decode_json(response: TransportResponse) -> object:
 
 
 def _validate_response(response: TransportResponse) -> None:
+    """Validate the adapter result before trusting any response fields."""
+
+    # A transport is an injected boundary, so runtime checks protect the shared
+    # application even if an adapter or test double violates the static protocol.
     if (
         not isinstance(response.status, int)
         or isinstance(response.status, bool)
@@ -371,6 +392,8 @@ def _validate_response(response: TransportResponse) -> None:
 
 
 def _decode_error(response: TransportResponse) -> _ApiFailure:
+    """Validate the API error envelope and its status-specific error code."""
+
     value = _decode_json(response)
     if not isinstance(value, dict) or set(value) != {"error"}:
         raise _MalformedResponse("API error envelope fields were malformed")
@@ -398,6 +421,8 @@ def _decode_error(response: TransportResponse) -> _ApiFailure:
     ):
         raise _MalformedResponse("API error values were malformed")
 
+    # Matching code to status prevents a syntactically valid envelope from
+    # misrepresenting which API failure actually occurred.
     expected_code = _ERROR_CODE_BY_STATUS.get(response.status)
     if expected_code is None:
         raise _MalformedResponse(f"unexpected HTTP status: {response.status}")
@@ -413,6 +438,8 @@ def _expect_status(
     expected_status: int,
     allowed_error_statuses: frozenset[int],
 ) -> None:
+    """Accept the command's success status or a documented API error status."""
+
     _validate_response(response)
     if response.status == expected_status:
         return
@@ -422,6 +449,8 @@ def _expect_status(
 
 
 def _decode_task(value: object) -> _TaskPayload:
+    """Validate every field of an untrusted Task response object."""
+
     if not isinstance(value, dict) or set(value) != {
         "id",
         "title",
@@ -460,6 +489,8 @@ def _decode_list_response(
     response: TransportResponse,
     allowed_error_statuses: frozenset[int],
 ) -> list[_TaskPayload]:
+    """Decode the list contract, including its deterministic ascending order."""
+
     _expect_status(response, 200, allowed_error_statuses)
     value = _decode_json(response)
     if not isinstance(value, list):
@@ -478,6 +509,8 @@ def _success_value(
     command: ClientCommand,
     response: TransportResponse,
 ) -> JsonValue:
+    """Apply each command's exact success, error, and response-body contract."""
+
     if isinstance(command, AddCommand):
         return _decode_task_response(
             response,
@@ -506,16 +539,22 @@ def _success_value(
         ).as_json()
 
     _expect_status(response, 204, frozenset({404, 405, 422, 500}))
+    # HTTP 204 forbids a message body; accepting one would hide a server contract
+    # violation even if the bytes happened to contain useful JSON.
     if response.body:
         raise _MalformedResponse("204 response body was not empty")
     return {"deleted": command.task_id}
 
 
 def _render(value: JsonValue) -> str:
+    """Render validated domain data only; decoding never controls CLI formatting."""
+
     return json.dumps(value, ensure_ascii=False)
 
 
 def _execute(request: ClientRequest, transport: TaskTransport) -> ClientResult:
+    """Execute one mapped request and convert only validated success data."""
+
     raw_response: object = transport.send(_request_for(request.command))
     if not isinstance(raw_response, TransportResponse):
         raise _MalformedResponse("transport response was invalid")
@@ -526,6 +565,8 @@ def _execute(request: ClientRequest, transport: TaskTransport) -> ClientResult:
 
 
 def _transport_result(error: BaseException) -> ClientResult:
+    """Translate transport categories to stable stderr text and exit code 5."""
+
     if isinstance(error, TransportTimeoutError):
         message = error.message.strip() or "request timed out"
         return ClientResult(
@@ -545,6 +586,8 @@ def _execute_with_factory(
     request: ClientRequest,
     transport_factory: TransportFactory,
 ) -> ClientResult:
+    """Own one transport for the invocation and close it on every outcome."""
+
     try:
         transport = transport_factory(
             request.settings.base_url,
@@ -573,6 +616,8 @@ def _execute_with_factory(
         except Exception as error:
             result = _transport_result(error)
     finally:
+        # Cleanup failures replace success because resource release is part of a
+        # successful invocation, but they do not obscure a more useful prior error.
         try:
             transport.close()
         except IncompleteImplementationError:
@@ -599,8 +644,10 @@ def run(
     *,
     prog: str = "tasks-cli",
 ) -> int:
-    """Parse, execute, and render one client invocation through injected I/O."""
+    """Run one invocation with stdout reserved for success and stderr for failures."""
 
+    # argparse normally writes directly to process streams and raises SystemExit.
+    # Capturing it keeps ``run`` testable and enforces the CLI's compact usage error.
     parser_stdout = StringIO()
     parser_stderr = StringIO()
     try:
@@ -615,6 +662,8 @@ def run(
         return EXIT_USAGE
 
     result = _execute_with_factory(request, transport_factory)
+    # Exactly one selected stream receives a newline-terminated payload; the
+    # result's exit code is returned unchanged to the launcher.
     if result.stdout is not None:
         stdout.write(f"{result.stdout}\n")
     if result.stderr is not None:

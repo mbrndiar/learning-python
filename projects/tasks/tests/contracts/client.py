@@ -1,4 +1,10 @@
-"""Shared invocation helpers for every Task client transport."""
+"""Invoke the shared CLI application through any concrete client transport.
+
+The helper captures process-level output and supplies the same finite timeout
+for urllib, Requests, and HTTPX.  Contract tests therefore compare observable
+exit categories and envelopes without depending on a library's exception or
+response types.
+"""
 
 from collections.abc import Sequence
 from io import StringIO
@@ -12,7 +18,7 @@ def invoke_client(
     base_url: str,
     argv: Sequence[str],
 ) -> tuple[int, str, str]:
-    """Run one real client invocation with captured process streams."""
+    """Run one transport-neutral client invocation with owned text streams."""
 
     stdout = StringIO()
     stderr = StringIO()

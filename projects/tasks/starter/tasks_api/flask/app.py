@@ -8,14 +8,23 @@ from tasks_core.service import TaskService
 
 
 def create_app(service: TaskService) -> Flask:
-    """TODO: create a Flask app whose routes close over the injected service."""
+    """TODO: create a Flask app whose thin routes use the injected service.
+
+    Let Flask provide request/response mechanics, but keep the shared contract
+    explicit: validate the JSON boundary, return documented statuses/envelopes,
+    and centralize expected and unexpected exception translation.
+    """
 
     del service
     incomplete("milestone 4 Flask application factory")
 
 
 def serve(service: TaskService, host: str, port: int) -> NoReturn:
-    """TODO: run the local Flask server without debug mode or a reloader."""
+    """TODO: own one local Flask server without debug mode or a reloader.
+
+    The reloader starts extra process state that would obscure ownership and make
+    the educational launcher and its tests nondeterministic.
+    """
 
     del service, host, port
     incomplete("milestone 4 Flask server lifecycle")

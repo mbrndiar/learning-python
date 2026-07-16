@@ -1,4 +1,4 @@
-"""Application service boundary shared by all HTTP adapters."""
+"""Framework-neutral application boundary shared by every transport adapter."""
 
 from .domain import (
     UNSET,
@@ -12,7 +12,12 @@ from .repositories.protocol import TaskRepository
 
 
 class TaskService:
-    """Validate boundary values and delegate domain operations."""
+    """Validate caller-owned values before invoking persistence.
+
+    Repositories therefore receive normalized domain inputs, and a validation
+    failure cannot begin a storage operation. Keeping this policy here lets
+    HTTP, CLI, or other adapters share the same core behavior.
+    """
 
     def __init__(self, repository: TaskRepository) -> None:
         self._repository = repository
@@ -41,6 +46,8 @@ class TaskService:
     ) -> Task:
         """Apply a partial task update."""
 
+        # Normalize the complete request before crossing the repository
+        # boundary so an invalid field cannot accompany a partial write.
         normalized_id = validate_task_id(task_id)
         update = normalize_update_input(title=title, completed=completed)
         return self._repository.update(normalized_id, update)

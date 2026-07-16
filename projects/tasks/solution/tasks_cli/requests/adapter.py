@@ -17,7 +17,7 @@ from tasks_cli.transport import (
 
 
 class RequestsTransport:
-    """Task transport that owns one ``requests.Session``."""
+    """Task transport that owns one reusable ``requests.Session`` per CLI run."""
 
     def __init__(self, base_url: str, timeout: float) -> None:
         if (
@@ -33,13 +33,19 @@ class RequestsTransport:
         self._closed = False
 
     def send(self, request: TransportRequest) -> TransportResponse:
-        """Send one request using Requests' native query and JSON arguments."""
+        """Make one Requests call using its native query and JSON serialization.
+
+        Requests follows redirects by default, so one library call is not
+        necessarily one wire request; this adapter adds no retry loop.
+        """
 
         if self._closed:
             raise TransportError("transport is closed")
 
         url = f"{self.base_url}{quote(request.path, safe='/')}"
         try:
+            # ``params`` and ``json`` delegate component encoding to Requests
+            # instead of rebuilding URL/query/body rules in this adapter.
             response = self._session.request(
                 method=request.method,
                 url=url,
@@ -50,6 +56,8 @@ class RequestsTransport:
                 timeout=self.timeout,
             )
             try:
+                # Copy the complete body before closing: TransportResponse owns
+                # bytes and does not keep a live Requests response or socket.
                 return TransportResponse(
                     status=response.status_code,
                     headers=dict(response.headers),
@@ -57,6 +65,8 @@ class RequestsTransport:
                 )
             finally:
                 response.close()
+        # Translate library exceptions into the finite categories understood by
+        # the shared application; an HTTP status itself remains a response.
         except requests.Timeout as error:
             raise TransportTimeoutError("request timed out") from error
         except requests.ConnectionError as error:
@@ -65,7 +75,7 @@ class RequestsTransport:
             raise TransportError("request failed") from error
 
     def close(self) -> None:
-        """Release the owned Requests session."""
+        """Idempotently release the one session owned by this transport."""
 
         if not self._closed:
             try:
