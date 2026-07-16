@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from ..domain import Task
+from ..domain import CreateTaskInput, Task, UpdateTaskInput
 from ..errors import incomplete
 
 
@@ -12,8 +12,8 @@ class SQLiteTaskRepository:
     def __init__(self, database_path: str | Path) -> None:
         self.database_path = Path(database_path)
 
-    def create(self, title: str) -> Task:
-        incomplete(f"milestone 2 SQLite create in {self.database_path}: {title!r}")
+    def create(self, task: CreateTaskInput) -> Task:
+        incomplete(f"milestone 2 SQLite create in {self.database_path}: {task!r}")
 
     def list(self, completed: bool | None = None) -> list[Task]:
         incomplete(
@@ -26,13 +26,11 @@ class SQLiteTaskRepository:
     def update(
         self,
         task_id: int,
-        *,
-        title: str | None = None,
-        completed: bool | None = None,
+        update: UpdateTaskInput,
     ) -> Task:
         incomplete(
             f"milestone 2 SQLite update in {self.database_path}: "
-            f"{task_id}, title={title!r}, completed={completed!r}"
+            f"{task_id}, update={update!r}"
         )
 
     def delete(self, task_id: int) -> None:

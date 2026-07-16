@@ -1,10 +1,8 @@
 """Low-level ``urllib`` transport boundary for milestone three."""
 
-from collections.abc import Mapping
-
 from tasks_core.errors import incomplete
 
-from tasks_cli.transport import TaskTransport, TransportResponse
+from tasks_cli.transport import TaskTransport, TransportRequest, TransportResponse
 
 
 class UrllibTransport:
@@ -14,17 +12,11 @@ class UrllibTransport:
         self.base_url = base_url
         self.timeout = timeout
 
-    def request(
-        self,
-        method: str,
-        path: str,
-        *,
-        query: Mapping[str, str] | None = None,
-        json_body: Mapping[str, object] | None = None,
-    ) -> TransportResponse:
+    def send(self, request: TransportRequest) -> TransportResponse:
         incomplete(
             "milestone 3 urllib request "
-            f"{method} {path}, query={query!r}, json={json_body!r}"
+            f"{request.method} {request.path}, "
+            f"query={request.query!r}, json={request.json_body!r}"
         )
 
     def close(self) -> None:

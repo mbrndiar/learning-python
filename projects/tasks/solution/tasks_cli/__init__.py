@@ -1,14 +1,57 @@
 """Shared Task command application and outbound transport boundary."""
 
-from .application import ClientSettings, build_parser, main, run
-from .transport import TaskTransport, TransportFactory, TransportResponse
+from .application import (
+    AddCommand,
+    ClientCommand,
+    ClientRequest,
+    ClientResult,
+    ClientSettings,
+    CompleteCommand,
+    ListCommand,
+    RemoveCommand,
+    ShowCommand,
+    UpdateCommand,
+    build_parser,
+    main,
+    parse_request,
+    run,
+)
+from .transport import (
+    HttpMethod,
+    JsonScalar,
+    JsonValue,
+    TaskTransport,
+    TransportConnectionError,
+    TransportError,
+    TransportFactory,
+    TransportRequest,
+    TransportResponse,
+    TransportTimeoutError,
+)
 
 __all__ = [
+    "AddCommand",
+    "ClientCommand",
+    "ClientRequest",
+    "ClientResult",
     "ClientSettings",
+    "CompleteCommand",
+    "HttpMethod",
+    "JsonScalar",
+    "JsonValue",
+    "ListCommand",
+    "RemoveCommand",
+    "ShowCommand",
     "TaskTransport",
+    "TransportConnectionError",
+    "TransportError",
     "TransportFactory",
+    "TransportRequest",
     "TransportResponse",
+    "TransportTimeoutError",
+    "UpdateCommand",
     "build_parser",
     "main",
+    "parse_request",
     "run",
 ]

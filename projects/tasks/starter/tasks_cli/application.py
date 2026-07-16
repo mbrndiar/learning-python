@@ -2,9 +2,10 @@
 
 import argparse
 import math
+import sys
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import cast
+from typing import TypeAlias
 
 from tasks_core.errors import incomplete
 
@@ -17,6 +18,86 @@ class ClientSettings:
 
     base_url: str
     timeout: float
+
+
+@dataclass(frozen=True, slots=True)
+class AddCommand:
+    """Create one task from a title."""
+
+    title: str
+
+
+@dataclass(frozen=True, slots=True)
+class ListCommand:
+    """List tasks with an optional completion filter."""
+
+    completed: bool | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class ShowCommand:
+    """Fetch one task by ID."""
+
+    task_id: int
+
+
+@dataclass(frozen=True, slots=True)
+class UpdateCommand:
+    """Update one or both mutable task fields."""
+
+    task_id: int
+    title: str | None
+    completed: bool | None
+
+
+@dataclass(frozen=True, slots=True)
+class CompleteCommand:
+    """Mark one task complete."""
+
+    task_id: int
+
+
+@dataclass(frozen=True, slots=True)
+class RemoveCommand:
+    """Delete one task."""
+
+    task_id: int
+
+
+ClientCommand: TypeAlias = (
+    AddCommand
+    | ListCommand
+    | ShowCommand
+    | UpdateCommand
+    | CompleteCommand
+    | RemoveCommand
+)
+
+
+@dataclass(frozen=True, slots=True)
+class ClientRequest:
+    """One parsed CLI invocation before transport-specific execution."""
+
+    settings: ClientSettings
+    command: ClientCommand
+
+
+@dataclass(frozen=True, slots=True)
+class ClientResult:
+    """Rendered process result returned by command execution."""
+
+    exit_code: int
+    stdout: str | None = None
+    stderr: str | None = None
+
+
+class _Arguments(argparse.Namespace):
+    base_url: str
+    timeout: float
+    command: str
+    title: str | None
+    completed: str | None
+    id: int | None
 
 
 def _positive_id(value: str) -> int:
@@ -41,6 +122,12 @@ def _positive_timeout(value: str) -> float:
     return timeout
 
 
+def _completion_value(value: str | None) -> bool | None:
+    if value is None:
+        return None
+    return value == "true"
+
+
 def build_parser(prog: str = "tasks-cli") -> argparse.ArgumentParser:
     """Build the common parser for every documented client command."""
 
@@ -49,6 +136,7 @@ def build_parser(prog: str = "tasks-cli") -> argparse.ArgumentParser:
         description="Call the Task REST API",
         allow_abbrev=False,
     )
+    parser.set_defaults(title=None, completed=None, id=None)
     parser.add_argument("--base-url", default="http://127.0.0.1:8000")
     parser.add_argument("--timeout", type=_positive_timeout, default=5.0)
     commands = parser.add_subparsers(dest="command", required=True)
@@ -75,11 +163,57 @@ def build_parser(prog: str = "tasks-cli") -> argparse.ArgumentParser:
     return parser
 
 
-def run(arguments: argparse.Namespace, transport: TaskTransport) -> int:
+def parse_request(
+    argv: Sequence[str] | None = None,
+    *,
+    prog: str = "tasks-cli",
+) -> ClientRequest:
+    """Parse and normalize one documented client invocation."""
+
+    parser = build_parser(prog)
+    arguments = _Arguments()
+    parser.parse_args(argv, namespace=arguments)
+
+    settings = ClientSettings(
+        base_url=arguments.base_url,
+        timeout=arguments.timeout,
+    )
+    if arguments.command == "add":
+        if arguments.title is None:
+            parser.error("add requires TITLE")
+        command: ClientCommand = AddCommand(arguments.title)
+    elif arguments.command == "list":
+        command = ListCommand(_completion_value(arguments.completed))
+    elif arguments.command == "show":
+        if arguments.id is None:
+            parser.error("show requires ID")
+        command = ShowCommand(arguments.id)
+    elif arguments.command == "update":
+        if arguments.id is None:
+            parser.error("update requires ID")
+        completed = _completion_value(arguments.completed)
+        if arguments.title is None and completed is None:
+            parser.error("update requires --title, --completed, or both")
+        command = UpdateCommand(arguments.id, arguments.title, completed)
+    elif arguments.command == "complete":
+        if arguments.id is None:
+            parser.error("complete requires ID")
+        command = CompleteCommand(arguments.id)
+    elif arguments.command == "remove":
+        if arguments.id is None:
+            parser.error("remove requires ID")
+        command = RemoveCommand(arguments.id)
+    else:
+        parser.error(f"unsupported command: {arguments.command}")
+
+    return ClientRequest(settings=settings, command=command)
+
+
+def run(request: ClientRequest, transport: TaskTransport) -> ClientResult:
     """Execute one parsed command through the selected transport."""
 
     del transport
-    incomplete(f"client command execution for {arguments.command!r}")
+    incomplete(f"client command execution for {request.command!r}")
 
 
 def main(
@@ -88,18 +222,38 @@ def main(
     transport_factory: TransportFactory,
     prog: str = "tasks-cli",
 ) -> int:
-    """Parse, execute, and close one client invocation."""
+    """Parse, execute, render, and close one client invocation."""
 
-    arguments = build_parser(prog).parse_args(argv)
-    settings = ClientSettings(
-        base_url=cast(str, arguments.base_url),
-        timeout=cast(float, arguments.timeout),
+    request = parse_request(argv, prog=prog)
+    transport = transport_factory(
+        request.settings.base_url,
+        request.settings.timeout,
     )
-    transport = transport_factory(settings.base_url, settings.timeout)
     try:
-        return run(arguments, transport)
+        result = run(request, transport)
     finally:
         transport.close()
 
+    if result.stdout is not None:
+        print(result.stdout)
+    if result.stderr is not None:
+        print(result.stderr, file=sys.stderr)
+    return result.exit_code
 
-__all__ = ["ClientSettings", "build_parser", "main", "run"]
+
+__all__ = [
+    "AddCommand",
+    "ClientCommand",
+    "ClientRequest",
+    "ClientResult",
+    "ClientSettings",
+    "CompleteCommand",
+    "ListCommand",
+    "RemoveCommand",
+    "ShowCommand",
+    "UpdateCommand",
+    "build_parser",
+    "main",
+    "parse_request",
+    "run",
+]

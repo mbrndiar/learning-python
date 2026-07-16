@@ -1,7 +1,13 @@
 """Stable domain errors and intentional learning placeholders."""
 
 from collections.abc import Mapping
-from typing import NoReturn
+from typing import Literal, NoReturn, TypeAlias
+
+ErrorCode: TypeAlias = Literal[
+    "validation_error",
+    "not_found",
+    "internal_error",
+]
 
 
 class TaskError(Exception):
@@ -9,7 +15,7 @@ class TaskError(Exception):
 
     def __init__(
         self,
-        code: str,
+        code: ErrorCode,
         message: str,
         details: Mapping[str, object] | None = None,
     ) -> None:
@@ -22,13 +28,32 @@ class TaskError(Exception):
 class ValidationError(TaskError):
     """A request or domain value violates the Task contract."""
 
+    def __init__(self, message: str, *, field: str) -> None:
+        self.field = field
+        super().__init__(
+            "validation_error",
+            message,
+            {"field": field},
+        )
+
 
 class TaskNotFoundError(TaskError):
     """A valid task identifier does not exist."""
 
+    def __init__(self, task_id: int) -> None:
+        self.task_id = task_id
+        super().__init__("not_found", f"task {task_id} was not found")
+
 
 class StorageError(TaskError):
     """Persistence could not safely complete an operation."""
+
+    def __init__(self, message: str, *, operation: str | None = None) -> None:
+        self.operation = operation
+        details: dict[str, object] = {}
+        if operation is not None:
+            details["operation"] = operation
+        super().__init__("internal_error", message, details)
 
 
 class IncompleteImplementationError(NotImplementedError):
@@ -44,6 +69,7 @@ def incomplete(feature: str) -> NoReturn:
 
 
 __all__ = [
+    "ErrorCode",
     "IncompleteImplementationError",
     "StorageError",
     "TaskError",

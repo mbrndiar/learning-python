@@ -2,14 +2,14 @@
 
 from typing import Protocol, runtime_checkable
 
-from ..domain import Task
+from ..domain import CreateTaskInput, Task, UpdateTaskInput
 
 
 @runtime_checkable
 class TaskRepository(Protocol):
     """Create, query, mutate, and delete Task values."""
 
-    def create(self, title: str) -> Task:
+    def create(self, task: CreateTaskInput) -> Task:
         """Persist a new incomplete task."""
 
         ...
@@ -27,9 +27,7 @@ class TaskRepository(Protocol):
     def update(
         self,
         task_id: int,
-        *,
-        title: str | None = None,
-        completed: bool | None = None,
+        update: UpdateTaskInput,
     ) -> Task:
         """Atomically apply a partial update."""
 

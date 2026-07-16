@@ -5,10 +5,10 @@ use it through three HTTP client libraries. The point is not to create three
 unrelated applications. It is to keep one domain and one HTTP contract stable
 while observing what each library makes explicit, convenient, or implicit.
 
-The project currently includes matching typed `starter/` and `solution/`
-scaffolds plus a shared test harness. Domain, persistence, server, and client
-operations remain intentionally incomplete until their milestone implementation
-phases.
+The project includes matching typed `starter/` and `solution/` public APIs plus
+a shared test harness. The solution completes milestone one; persistence,
+server, and concrete client operations remain intentionally scaffolded for
+their later milestone implementation phases.
 
 ## Course placement
 
@@ -53,6 +53,11 @@ projects/tasks/
 `tasks_core` owns the Task value, validation, service, repository protocol,
 SQLite repository, and versioned Markdown repository. It has no dependency on
 an HTTP server or client library.
+
+Partial updates use the public `UNSET` sentinel through `UpdateTaskInput`.
+Omitted fields remain `UNSET`, while `completed=False` is an explicit update;
+`None` is never used to mean omission and remains invalid at the service
+boundary.
 
 `tasks_api` contains thin inbound adapters over the shared service. `tasks_cli`
 contains one shared command application and three thin outbound transports.

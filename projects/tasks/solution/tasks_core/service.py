@@ -1,49 +1,54 @@
 """Application service boundary shared by all HTTP adapters."""
 
-from .domain import Task
-from .errors import incomplete
+from .domain import (
+    UNSET,
+    Task,
+    normalize_create_input,
+    normalize_update_input,
+    validate_completed_filter,
+    validate_task_id,
+)
 from .repositories.protocol import TaskRepository
 
 
 class TaskService:
-    """Coordinate validation and repository operations."""
+    """Validate boundary values and delegate domain operations."""
 
     def __init__(self, repository: TaskRepository) -> None:
-        self.repository = repository
+        self._repository = repository
 
     def create_task(self, title: object) -> Task:
         """Create one incomplete task."""
 
-        incomplete(f"milestone 1 task creation for {title!r}")
+        return self._repository.create(normalize_create_input(title))
 
     def list_tasks(self, completed: object | None = None) -> list[Task]:
         """List tasks, optionally filtered by completion state."""
 
-        incomplete(f"milestone 1 task listing for {completed!r}")
+        return self._repository.list(validate_completed_filter(completed))
 
     def get_task(self, task_id: object) -> Task:
         """Return one task by identifier."""
 
-        incomplete(f"milestone 1 task lookup for {task_id!r}")
+        return self._repository.get(validate_task_id(task_id))
 
     def update_task(
         self,
         task_id: object,
         *,
-        title: object | None = None,
-        completed: object | None = None,
+        title: object = UNSET,
+        completed: object = UNSET,
     ) -> Task:
         """Apply a partial task update."""
 
-        incomplete(
-            "milestone 1 task update "
-            f"for {task_id!r}, title={title!r}, completed={completed!r}"
-        )
+        normalized_id = validate_task_id(task_id)
+        update = normalize_update_input(title=title, completed=completed)
+        return self._repository.update(normalized_id, update)
 
     def delete_task(self, task_id: object) -> None:
         """Delete one task by identifier."""
 
-        incomplete(f"milestone 1 task deletion for {task_id!r}")
+        self._repository.delete(validate_task_id(task_id))
 
 
 __all__ = ["TaskService"]

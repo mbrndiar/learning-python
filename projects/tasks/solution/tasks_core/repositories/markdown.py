@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from ..domain import Task
+from ..domain import CreateTaskInput, Task, UpdateTaskInput
 from ..errors import incomplete
 
 
@@ -12,8 +12,8 @@ class MarkdownTaskRepository:
     def __init__(self, document_path: str | Path) -> None:
         self.document_path = Path(document_path)
 
-    def create(self, title: str) -> Task:
-        incomplete(f"milestone 2 Markdown create in {self.document_path}: {title!r}")
+    def create(self, task: CreateTaskInput) -> Task:
+        incomplete(f"milestone 2 Markdown create in {self.document_path}: {task!r}")
 
     def list(self, completed: bool | None = None) -> list[Task]:
         incomplete(
@@ -27,13 +27,11 @@ class MarkdownTaskRepository:
     def update(
         self,
         task_id: int,
-        *,
-        title: str | None = None,
-        completed: bool | None = None,
+        update: UpdateTaskInput,
     ) -> Task:
         incomplete(
             f"milestone 2 Markdown update in {self.document_path}: "
-            f"{task_id}, title={title!r}, completed={completed!r}"
+            f"{task_id}, update={update!r}"
         )
 
     def delete(self, task_id: int) -> None:
