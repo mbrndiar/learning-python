@@ -1,5 +1,7 @@
 """HTTPX transport boundary for milestone five."""
 
+from types import TracebackType
+
 from tasks_core.errors import incomplete
 
 from tasks_cli.transport import TaskTransport, TransportRequest, TransportResponse
@@ -13,6 +15,8 @@ class HttpxTransport:
         self.timeout = timeout
 
     def send(self, request: TransportRequest) -> TransportResponse:
+        # TODO(milestone 5): send with params/json, capture status/body, and
+        # translate HTTPX timeout and HTTP errors without retrying.
         incomplete(
             "milestone 5 httpx call "
             f"{request.method} {request.path}, "
@@ -20,11 +24,23 @@ class HttpxTransport:
         )
 
     def close(self) -> None:
-        """Release the future client owned by this transport."""
+        """TODO: idempotently close the owned ``httpx.Client``."""
+
+    def __enter__(self) -> "HttpxTransport":
+        return self
+
+    def __exit__(
+        self,
+        exception_type: type[BaseException] | None,
+        exception: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        del exception_type, exception, traceback
+        self.close()
 
 
 def create_transport(base_url: str, timeout: float) -> TaskTransport:
-    """Create one HTTPX transport without importing the optional library."""
+    """Create the guided HTTPX transport for one CLI invocation."""
 
     return HttpxTransport(base_url, timeout)
 
