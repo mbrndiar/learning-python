@@ -30,14 +30,11 @@ class RequestsTransport:
         self.base_url = normalize_base_url(base_url)
         self.timeout = float(timeout)
         self._session = requests.Session()
+        self._session.trust_env = False
         self._closed = False
 
     def send(self, request: TransportRequest) -> TransportResponse:
-        """Make one Requests call using its native query and JSON serialization.
-
-        Requests follows redirects by default, so one library call is not
-        necessarily one wire request; this adapter adds no retry loop.
-        """
+        """Make one wire request using Requests-native query and JSON serialization."""
 
         if self._closed:
             raise TransportError("transport is closed")
@@ -54,6 +51,7 @@ class RequestsTransport:
                     dict(request.json_body) if request.json_body is not None else None
                 ),
                 timeout=self.timeout,
+                allow_redirects=False,
             )
             try:
                 # Copy the complete body before closing: TransportResponse owns

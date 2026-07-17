@@ -21,6 +21,7 @@ def validate_key(value: str) -> str:
     slash-separated components.  ``fixtures/keys.json`` fixes the boundaries.
     """
 
+    # TODO(m1): Enforce the frozen opaque-key boundary without normalization.
     incomplete("comparative key validation")
 
 
@@ -32,6 +33,7 @@ def parse_set_expectation(value: str) -> SetExpectation:
     integers; all other spellings share the specified ``expect`` error.
     """
 
+    # TODO(m1): Accept only the command-specific canonical expectation forms.
     incomplete("comparative set expectation parsing")
 
 
@@ -42,6 +44,7 @@ def parse_delete_expectation(value: str) -> DeleteExpectation:
     and error shape are identical to the set expectation boundary.
     """
 
+    # TODO(m1): Keep delete expectations distinct from set expectations.
     incomplete("comparative delete expectation parsing")
 
 
@@ -55,6 +58,7 @@ def parse_json_value(text: str) -> JsonValue:
     without prescribing a parser or normalization algorithm.
     """
 
+    # TODO(m1): Preserve byte, syntax, then deterministic tree-error precedence.
     incomplete("comparative restricted JSON parsing")
 
 
@@ -66,4 +70,5 @@ def normalized_json(value: JsonValue) -> str:
     observable; insignificant whitespace is forbidden in persisted text.
     """
 
+    # TODO(m1): Emit compact JSON without changing the normalized semantic value.
     incomplete("comparative normalized JSON encoding")

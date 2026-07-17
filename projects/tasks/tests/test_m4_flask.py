@@ -380,6 +380,7 @@ def test_requests_transport_uses_native_arguments_and_owns_resources(
             self.calls: list[dict[str, object]] = []
             self.response = RecordingResponse()
             self.closed = False
+            self.trust_env = True
 
         def request(self, **arguments: object) -> RecordingResponse:
             self.calls.append(arguments)
@@ -388,12 +389,13 @@ def test_requests_transport_uses_native_arguments_and_owns_resources(
         def close(self) -> None:
             self.closed = True
 
-    # A recording Session verifies Requests receives params/json natively rather
-    # than a pre-encoded approximation, and that response and session both close.
+    # A recording Session verifies native params/json, explicit Requests defaults,
+    # and deterministic ownership of both response and session.
     session = RecordingSession()
     monkeypatch.setattr(requests_library, "Session", lambda: session)
     transport = RequestsTransport("http://127.0.0.1:8000/", 1.25)
 
+    assert session.trust_env is False
     response = transport.send(
         TransportRequest(
             "POST",
@@ -412,6 +414,7 @@ def test_requests_transport_uses_native_arguments_and_owns_resources(
             "params": {"source": "requests"},
             "json": {"title": "Native"},
             "timeout": 1.25,
+            "allow_redirects": False,
         }
     ]
     assert session.response.closed

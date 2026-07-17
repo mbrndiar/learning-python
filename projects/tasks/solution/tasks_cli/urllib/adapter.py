@@ -6,7 +6,7 @@ from email.message import Message
 from http.client import HTTPException
 from typing import Protocol, cast
 from urllib.error import HTTPError, URLError
-from urllib.request import HTTPRedirectHandler, Request, build_opener
+from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
 from tasks_cli.transport import (
     TaskTransport,
@@ -38,11 +38,14 @@ class _NoRedirectHandler(HTTPRedirectHandler):
 
 
 def _open(request: Request, timeout: float) -> _ReadableResponse:
-    """Open once with redirects disabled and transfer response ownership to the caller."""
+    """Open once without ambient proxies or redirects, transferring ownership."""
 
     return cast(
         _ReadableResponse,
-        build_opener(_NoRedirectHandler()).open(request, timeout=timeout),
+        build_opener(ProxyHandler({}), _NoRedirectHandler()).open(
+            request,
+            timeout=timeout,
+        ),
     )
 
 

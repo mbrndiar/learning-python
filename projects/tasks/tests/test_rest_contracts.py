@@ -688,6 +688,29 @@ class _MalformedHandler(BaseHTTPRequestHandler):
         del format, args
 
 
+class _RedirectHandler(BaseHTTPRequestHandler):
+    requests: ClassVar[list[str]] = []
+
+    def do_GET(self) -> None:
+        type(self).requests.append(self.path)
+        if self.path == "/redirect":
+            self.send_response(302)
+            self.send_header("Location", "/target")
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+            return
+
+        body = b'{"followed":true}'
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def log_message(self, format: str, *args: object) -> None:
+        del format, args
+
+
 class _CapturingFactory:
     def __init__(self, factory: TransportFactory) -> None:
         self.factory = factory
@@ -696,6 +719,22 @@ class _CapturingFactory:
     def __call__(self, base_url: str, timeout: float) -> TaskTransport:
         self.transport = self.factory(base_url, timeout)
         return self.transport
+
+
+@solution_only
+def test_client_transport_contract_does_not_follow_redirects(
+    transport_factory: TransportFactory,
+) -> None:
+    _RedirectHandler.requests = []
+    with running_handler_server(_RedirectHandler) as server:
+        transport = transport_factory(server.base_url, 1.0)
+        try:
+            response = transport.send(TransportRequest("GET", "/redirect"))
+        finally:
+            transport.close()
+
+    assert response.status == 302
+    assert _RedirectHandler.requests == ["/redirect"]
 
 
 @solution_only
@@ -781,6 +820,81 @@ def test_all_server_and_client_entrypoints_parse_documented_options() -> None:
     ):
         assert_client_parser(parser_factory())
     assert CLIENT_COMMANDS
+
+
+def _server_arguments(host: str, port: str) -> list[str]:
+    return [
+        "--host",
+        host,
+        "--port",
+        port,
+        "--backend",
+        "sqlite",
+        "--data",
+        "unused.db",
+    ]
+
+
+@pytest.mark.parametrize("server_name", SERVER_NAMES)
+@pytest.mark.parametrize("host", ["localhost", "127.0.0.1", "::1"])
+@pytest.mark.parametrize("port", ["0", "65535"])
+def test_server_parsers_accept_loopback_hosts_and_port_boundaries(
+    server_name: ServerName,
+    host: str,
+    port: str,
+) -> None:
+    arguments = (
+        SERVER_MODULES[server_name]
+        .build_parser()
+        .parse_args(_server_arguments(host, port))
+    )
+
+    assert arguments.host == host
+    assert arguments.port == int(port)
+
+
+@pytest.mark.parametrize("server_name", SERVER_NAMES)
+@pytest.mark.parametrize("host", ["0.0.0.0", "192.0.2.1", "::", "example.com"])
+def test_server_launchers_reject_non_loopback_hosts_before_resources(
+    server_name: ServerName,
+    host: str,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    module = SERVER_MODULES[server_name]
+
+    def unexpected_build_service(settings: ServerSettings) -> TaskService:
+        del settings
+        raise AssertionError("validation must run before repository construction")
+
+    monkeypatch.setattr(module, "build_service", unexpected_build_service)
+
+    with pytest.raises(SystemExit, match="2"):
+        module.main(_server_arguments(host, "8000"))
+
+    assert "loopback" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize("server_name", SERVER_NAMES)
+@pytest.mark.parametrize("port", ["-1", "65536"])
+def test_server_launchers_reject_out_of_range_ports_before_resources(
+    server_name: ServerName,
+    port: str,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    module = SERVER_MODULES[server_name]
+
+    def unexpected_build_service(settings: ServerSettings) -> TaskService:
+        del settings
+        raise AssertionError("validation must run before repository construction")
+
+    monkeypatch.setattr(module, "build_service", unexpected_build_service)
+
+    with pytest.raises(SystemExit, match="2"):
+        module.main(_server_arguments("127.0.0.1", port))
+
+    assert "0 and 65535" in capsys.readouterr().err
 
 
 @solution_only

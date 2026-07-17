@@ -15,7 +15,7 @@ from http.client import HTTPResponse
 from typing import IO, cast
 from urllib.error import HTTPError, URLError
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
-from urllib.request import HTTPRedirectHandler, Request, build_opener
+from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
 from .errors import ApplicationError
 from .models import RawRecord
@@ -75,8 +75,9 @@ def validate_loopback_url(base_url: str) -> None:
     """Validate the target URL spelling before any request is opened.
 
     Numeric literals avoid DNS, while ``localhost`` trusts resolver configuration.
-    urllib may still honor environment proxy settings. Arbitrary hostnames and
-    userinfo are rejected, and redirects are disabled separately.
+    This textual target policy is separate from transport routing: the fetcher
+    disables ambient proxies, while redirects are disabled independently.
+    Arbitrary hostnames and userinfo are rejected.
     """
 
     parsed = urlsplit(base_url)
@@ -100,7 +101,7 @@ class URLPageFetcher:
 
     def __init__(self, timeout: float = 10.0):
         self.timeout = timeout
-        self._opener = build_opener(_NoRedirects())
+        self._opener = build_opener(ProxyHandler({}), _NoRedirects())
 
     @staticmethod
     def _page_url(base_url: str, page: int) -> str:

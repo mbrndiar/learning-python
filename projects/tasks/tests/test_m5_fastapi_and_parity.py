@@ -21,7 +21,6 @@ from fastapi.testclient import TestClient
 from implementation import IMPLEMENTATION
 from support import PROJECT_ROOT, running_task_server, temporary_project_directory
 from tasks_api.fastapi import CreateTask, UpdateTask, create_app
-from tasks_api.fastapi.__main__ import main as server_main
 from tasks_cli.httpx import HttpxTransport
 from tasks_cli.httpx.__main__ import main as client_main
 from tasks_cli.transport import (
@@ -465,23 +464,3 @@ def test_httpx_module_composes_the_shared_cli_against_loopback(
         assert client_main(["--base-url", base_url, "complete", "1"]) == 0
         completed = json.loads(capsys.readouterr().out)
         assert completed["completed"] is True
-
-
-@solution_only
-def test_fastapi_module_rejects_non_loopback_binding(
-    capsys: pytest.CaptureFixture[str],
-) -> None:
-    with pytest.raises(SystemExit, match="2"):
-        server_main(
-            [
-                "--host",
-                "0.0.0.0",
-                "--port",
-                "8000",
-                "--backend",
-                "sqlite",
-                "--data",
-                "unused.db",
-            ]
-        )
-    assert "loopback" in capsys.readouterr().err

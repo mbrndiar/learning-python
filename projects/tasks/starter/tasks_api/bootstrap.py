@@ -3,6 +3,7 @@
 import argparse
 from collections.abc import Sequence
 from dataclasses import dataclass
+from ipaddress import ip_address
 from pathlib import Path
 from typing import Literal
 
@@ -41,6 +42,29 @@ def _backend(value: str) -> Backend:
     raise argparse.ArgumentTypeError("backend must be sqlite or markdown")
 
 
+def _loopback_host(value: str) -> str:
+    if value.casefold() == "localhost":
+        return value
+    try:
+        if ip_address(value).is_loopback:
+            return value
+    except ValueError:
+        pass
+    raise argparse.ArgumentTypeError("host must identify a loopback interface")
+
+
+def _port(value: str) -> int:
+    try:
+        port = int(value)
+    except ValueError:
+        raise argparse.ArgumentTypeError(
+            "port must be an integer between 0 and 65535"
+        ) from None
+    if not 0 <= port <= 65535:
+        raise argparse.ArgumentTypeError("port must be between 0 and 65535")
+    return port
+
+
 def build_server_parser(prog: str = "tasks-api") -> argparse.ArgumentParser:
     """Build the common server launcher parser."""
 
@@ -49,8 +73,8 @@ def build_server_parser(prog: str = "tasks-api") -> argparse.ArgumentParser:
         description="Serve the Task REST API",
         allow_abbrev=False,
     )
-    parser.add_argument("--host", default="127.0.0.1")
-    parser.add_argument("--port", type=int, default=8000)
+    parser.add_argument("--host", type=_loopback_host, default="127.0.0.1")
+    parser.add_argument("--port", type=_port, default=8000)
     parser.add_argument(
         "--backend",
         choices=("sqlite", "markdown"),

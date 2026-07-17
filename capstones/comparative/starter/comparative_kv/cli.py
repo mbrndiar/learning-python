@@ -59,6 +59,7 @@ def run(arguments: argparse.Namespace) -> int:
     LF to stdout, nothing to stderr, and returns its specified exit code.
     """
 
+    # TODO(m2): Preserve validation order and emit exactly one contract envelope.
     incomplete(f"comparative command execution for {arguments.command!r}")
 
 

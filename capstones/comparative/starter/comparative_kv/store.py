@@ -62,4 +62,7 @@ def open_store(path: str | Path) -> Store:
     internal design that never repairs unknown state or exposes partial results.
     """
 
+    # TODO(m3): Open, classify, initialize, migrate, or reject storage atomically.
+    # TODO(m4): Preserve global revision, expectation, and failure invariants.
+    # TODO(m5): Keep those invariants under independent-process contention.
     incomplete(f"comparative SQLite storage for {Path(path)}")

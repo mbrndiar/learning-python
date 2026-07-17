@@ -22,6 +22,8 @@ from .models import DeleteExpectation, JsonValue, SetExpectation
 MAX_SAFE_INTEGER = 9_007_199_254_740_991
 MAX_VALUE_BYTES = 65_536
 MAX_CONTAINER_DEPTH = 32
+_SAFE_INTEGER_DIGITS = len(str(MAX_SAFE_INTEGER))
+_EXPONENT_SATURATION = MAX_VALUE_BYTES + _SAFE_INTEGER_DIGITS
 KEY_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._/-]{0,127}\Z")
 # Encode the JSON number grammar directly: zero has no leading peers, and a
 # present fraction or exponent must contain at least one decimal digit.
@@ -123,9 +125,10 @@ def _parse_json(text: str, *, require_normalized: bool) -> JsonValue:
     if len(text.encode("utf-8", errors="surrogatepass")) > MAX_VALUE_BYTES:
         fail("invalid_value", {"reason": "byte_limit"}, 2)
 
-    # A small lexical pass records formatting and bounds nesting independently
-    # of semantic normalization.  Decoder hooks then retain number tokens and
-    # object pairs instead of prematurely converting or deduplicating them.
+    # This pass records formatting only. Syntax must be established by the JSON
+    # decoder before valid-tree checks such as container depth can take effect.
+    # Decoder hooks retain number tokens and object pairs instead of prematurely
+    # converting or deduplicating them.
     metadata = _Metadata(whitespace=_scan_json(text))
     try:
         raw = json.loads(
@@ -157,14 +160,12 @@ def _raw_object(pairs: list[tuple[str, object]]) -> _RawObject:
 
 
 def _scan_json(text: str) -> bool:
-    """Record outside-string whitespace and reject excessive lexical nesting.
+    """Record outside-string whitespace without validating JSON structure.
 
-    This is deliberately not a second JSON parser.  It only understands enough
-    string escaping to avoid counting brackets or whitespace inside strings;
-    ``json.loads`` remains responsible for the complete RFC 8259 grammar.
+    It understands only enough string escaping to ignore whitespace inside
+    strings; ``json.loads`` remains responsible for the complete RFC 8259 grammar.
     """
 
-    depth = 0
     in_string = False
     escaped = False
     whitespace = False
@@ -179,12 +180,6 @@ def _scan_json(text: str) -> bool:
             continue
         if character == '"':
             in_string = True
-        elif character in "[{":
-            depth += 1
-            if depth > MAX_CONTAINER_DEPTH:
-                fail("invalid_value", {"reason": "depth_limit"}, 2)
-        elif character in "]}":
-            depth = max(0, depth - 1)
         elif character in " \t\r\n":
             whitespace = True
     return whitespace
@@ -316,14 +311,18 @@ def _normalize_number(token: str) -> int:
 def _saturating_exponent(text: str) -> int:
     """Parse an exponent into a bounded magnitude for later scale arithmetic.
 
-    Saturation prevents an arbitrarily long exponent token from constructing an
-    equally large Python integer. Public byte and binary64-finiteness checks run
-    before this implementation guard.
+    Bounded digit-by-digit parsing avoids constructing an integer from attacker-
+    sized exponent text. An accepted token has at most ``MAX_VALUE_BYTES`` decimal
+    digits; beyond that count plus the 16 safe-integer digits, any nonzero result
+    is already provably out of range or non-integral, so saturation is sufficient.
     """
 
     negative = text.startswith("-")
     digits = text[1:] if text[:1] in ("+", "-") else text
     value = 0
     for character in digits:
-        value = min(MAX_VALUE_BYTES + 1, value * 10 + ord(character) - ord("0"))
+        value = min(
+            _EXPONENT_SATURATION,
+            value * 10 + ord(character) - ord("0"),
+        )
     return -value if negative else value

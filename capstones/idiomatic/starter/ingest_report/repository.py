@@ -59,10 +59,13 @@ class SQLiteEventRepository:
     def report(self, filters: ReportFilters) -> Report:
         """Return deterministic parameterized aggregate queries.
 
+        Treat this repository as a public boundary: validate and canonicalize time
+        bounds even when a caller bypasses the CLI, and return that filter snapshot.
         Combine optional event predicates with AND and inclusive time bounds.
-        Reject summaries remain unfiltered, invalid ranges fail before querying,
-        and every grouped result has explicit Unicode-stable ordering independent
-        of insertion order.
+        All aggregates must share one explicitly owned read snapshot. Reject
+        summaries remain unfiltered, invalid ranges fail before querying, and every
+        grouped result has explicit Unicode-stable ordering independent of
+        insertion order.
         """
 
         # TODO(m3): use the filter, empty-report, hostile-value, and ordering tests

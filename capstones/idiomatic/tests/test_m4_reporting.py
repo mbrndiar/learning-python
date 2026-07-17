@@ -92,6 +92,63 @@ class ReportingTests(unittest.TestCase):
                 )
             self.assertEqual(invalid.exception.code, "invalid_filter")
 
+    def test_direct_timestamp_filters_are_normalized_and_returned(self):
+        with test_directory() as directory:
+            repository = self._populated_repository(directory / "events.db")
+            report = repository.report(
+                ReportFilters(
+                    from_timestamp="2026-07-16T10:00:00+02:00",
+                    to_timestamp="2026-07-16T10:03:00+02:00",
+                )
+            )
+            self.assertEqual(
+                report.filters,
+                ReportFilters(
+                    from_timestamp="2026-07-16T08:00:00.000Z",
+                    to_timestamp="2026-07-16T08:03:00.000Z",
+                ),
+            )
+            self.assertEqual(report.totals.events, 3)
+
+    def test_invalid_direct_timestamp_is_a_stable_filter_error(self):
+        with test_directory() as directory:
+            repository = SQLiteEventRepository(directory / "events.db")
+            with self.assertRaises(ApplicationError) as invalid:
+                repository.report(ReportFilters(from_timestamp="2026-07-16T08:00:00"))
+            self.assertEqual(
+                (
+                    invalid.exception.code,
+                    invalid.exception.exit_code,
+                    invalid.exception.details,
+                ),
+                ("invalid_filter", 2, {"field": "from"}),
+            )
+
+    def test_report_aggregates_use_one_explicit_deferred_read_transaction(self):
+        statements: list[str] = []
+
+        class TracedRepository(SQLiteEventRepository):
+            def _checked_connection(self):
+                connection = super()._checked_connection()
+                connection.set_trace_callback(statements.append)
+                return connection
+
+        with test_directory() as directory:
+            TracedRepository(directory / "events.db").report(ReportFilters())
+
+        normalized = [" ".join(statement.split()).upper() for statement in statements]
+        self.assertEqual(normalized[0], "BEGIN DEFERRED")
+        self.assertEqual(normalized[-1], "COMMIT")
+        self.assertEqual(
+            [
+                statement
+                for statement in normalized[1:-1]
+                if statement.startswith("SELECT")
+            ],
+            normalized[1:-1],
+        )
+        self.assertEqual(len(normalized[1:-1]), 5)
+
     def test_empty_report_has_zero_totals_empty_arrays_and_text_markers(self):
         with test_directory() as directory:
             report = SQLiteEventRepository(directory / "events.db").report(

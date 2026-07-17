@@ -68,7 +68,7 @@ def normalize_timestamp(value: object) -> str | None:
 
 
 def normalize_filter_timestamp(value: str, option: str) -> str:
-    """Normalize a CLI report bound or raise a stable input error."""
+    """Normalize a report bound or raise a stable input error."""
 
     normalized = normalize_timestamp(value)
     if normalized is None:

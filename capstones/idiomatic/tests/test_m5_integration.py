@@ -10,6 +10,7 @@ import unittest
 from collections.abc import Iterator, Mapping
 from contextlib import closing, contextmanager
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from unittest.mock import patch
 from urllib.parse import parse_qs, urlsplit
 
 from implementation import IMPLEMENTATION, SOURCE_ROOT
@@ -36,8 +37,11 @@ from support import (
 class _HTTPHandler(BaseHTTPRequestHandler):
     bodies: dict[int, bytes] = {}
     statuses: dict[int, int] = {}
+    request_paths: list[str] | None = None
 
     def do_GET(self) -> None:
+        if self.request_paths is not None:
+            self.request_paths.append(self.path)
         values = parse_qs(urlsplit(self.path).query)
         page = int(values.get("page", ["0"])[0])
         body = self.bodies.get(page, b"missing")
@@ -59,11 +63,16 @@ class _HTTPHandler(BaseHTTPRequestHandler):
 def loopback_server(
     bodies: Mapping[int, bytes],
     statuses: Mapping[int, int] | None = None,
+    request_paths: list[str] | None = None,
 ) -> Iterator[str]:
     handler = type(
         "ConfiguredHTTPHandler",
         (_HTTPHandler,),
-        {"bodies": dict(bodies), "statuses": dict(statuses or {})},
+        {
+            "bodies": dict(bodies),
+            "statuses": dict(statuses or {}),
+            "request_paths": request_paths,
+        },
     )
     server = ThreadingHTTPServer(("127.0.0.1", 0), handler)
     thread = threading.Thread(target=server.serve_forever)
@@ -234,6 +243,37 @@ class IntegrationTests(unittest.TestCase):
 
         with self.assertRaises(ApplicationError):
             validate_loopback_url("https://example.com/events")
+
+    def test_loopback_fetch_ignores_ambient_proxy_configuration(self):
+        target_requests: list[str] = []
+        proxy_requests: list[str] = []
+        with (
+            loopback_server(
+                {1: b'{"route":"target"}'},
+                request_paths=target_requests,
+            ) as base_url,
+            loopback_server(
+                {1: b'{"route":"proxy"}'},
+                request_paths=proxy_requests,
+            ) as proxy_url,
+        ):
+            proxy_origin = f"http://{urlsplit(proxy_url).netloc}"
+            with patch.dict(
+                os.environ,
+                {
+                    "http_proxy": proxy_origin,
+                    "HTTP_PROXY": proxy_origin,
+                    "all_proxy": proxy_origin,
+                    "ALL_PROXY": proxy_origin,
+                    "no_proxy": "",
+                    "NO_PROXY": "",
+                },
+            ):
+                payload = URLPageFetcher().fetch_page(base_url, 1)
+
+        self.assertEqual(payload["route"], "target")
+        self.assertEqual(target_requests, ["/events?page=1"])
+        self.assertEqual(proxy_requests, [])
 
     def test_page_protocol_validation_and_partial_collection(self):
         # Cross-page metadata is part of the protocol, not trusted payload data.

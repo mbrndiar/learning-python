@@ -9,7 +9,8 @@ class RequestsTransport:
     """TODO: own one ``requests.Session`` for this CLI invocation.
 
     A Session makes connection ownership explicit and must be closed by this
-    adapter; avoid module-level requests functions that hide that lifecycle.
+    adapter; avoid module-level requests functions that hide that lifecycle. Set
+    ``Session.trust_env = False`` so ambient proxies cannot change the call.
     """
 
     def __init__(self, base_url: str, timeout: float) -> None:
@@ -22,8 +23,7 @@ class RequestsTransport:
         Let Requests encode query and JSON values, but return only status,
         copied headers and raw bytes. Translate timeout/connection/library
         failures to the shared transport errors and do not add a retry loop.
-        Requests follows redirects by default, so one Session.request call may
-        still produce more than one wire request.
+        Pass ``allow_redirects=False`` so one send is one wire request.
         """
 
         incomplete(

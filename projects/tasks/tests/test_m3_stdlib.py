@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import cast
 from urllib.error import URLError
 from urllib.parse import urlsplit
+from urllib.request import ProxyHandler, Request
 
 import pytest
 import tasks_api.stdlib.__main__ as server_entrypoint
@@ -606,6 +607,36 @@ def test_matching_urllib_cli_runs_normal_and_api_failure_flows(
             captured = capsys.readouterr()
             assert captured.out == ""
             assert captured.err == "api: 404 not_found: task 1 was not found\n"
+
+
+@SOLUTION_ONLY
+def test_urllib_opener_explicitly_disables_ambient_proxies(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    marker = object()
+    handlers: tuple[object, ...] = ()
+
+    class RecordingOpener:
+        def open(self, request: object, *, timeout: float) -> object:
+            assert isinstance(request, Request)
+            assert timeout == 1.0
+            return marker
+
+    def record_build_opener(*configured: object) -> RecordingOpener:
+        nonlocal handlers
+        handlers = configured
+        return RecordingOpener()
+
+    monkeypatch.setattr(urllib_adapter, "build_opener", record_build_opener)
+
+    response = urllib_adapter._open(Request("http://127.0.0.1/tasks"), 1.0)
+
+    proxy_handlers = [
+        handler for handler in handlers if isinstance(handler, ProxyHandler)
+    ]
+    assert response is marker
+    assert len(proxy_handlers) == 1
+    assert proxy_handlers[0].proxies == {}
 
 
 @SOLUTION_ONLY

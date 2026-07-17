@@ -23,7 +23,7 @@ from .models import (
     Status,
     StatusSummary,
 )
-from .validation import validate_import_id
+from .validation import normalize_filter_timestamp, validate_import_id
 
 SCHEMA_VERSION = 1
 APPLICATION_ID = 0x49525031
@@ -371,10 +371,24 @@ class SQLiteEventRepository:
     def report(self, filters: ReportFilters) -> Report:
         """Query deterministic aggregates with inclusive AND-combined filters."""
 
+        canonical_filters = ReportFilters(
+            from_timestamp=(
+                normalize_filter_timestamp(filters.from_timestamp, "from")
+                if filters.from_timestamp is not None
+                else None
+            ),
+            to_timestamp=(
+                normalize_filter_timestamp(filters.to_timestamp, "to")
+                if filters.to_timestamp is not None
+                else None
+            ),
+            category=filters.category,
+            status=filters.status,
+        )
         if (
-            filters.from_timestamp is not None
-            and filters.to_timestamp is not None
-            and filters.from_timestamp > filters.to_timestamp
+            canonical_filters.from_timestamp is not None
+            and canonical_filters.to_timestamp is not None
+            and canonical_filters.from_timestamp > canonical_filters.to_timestamp
         ):
             raise ApplicationError(
                 "invalid_filter",
@@ -383,58 +397,64 @@ class SQLiteEventRepository:
             )
         clauses: list[str] = []
         parameters: list[str] = []
-        if filters.from_timestamp is not None:
+        if canonical_filters.from_timestamp is not None:
             clauses.append("occurred_at >= ?")
-            parameters.append(filters.from_timestamp)
-        if filters.to_timestamp is not None:
+            parameters.append(canonical_filters.from_timestamp)
+        if canonical_filters.to_timestamp is not None:
             clauses.append("occurred_at <= ?")
-            parameters.append(filters.to_timestamp)
-        if filters.category is not None:
+            parameters.append(canonical_filters.to_timestamp)
+        if canonical_filters.category is not None:
             clauses.append("category = ?")
-            parameters.append(filters.category)
-        if filters.status is not None:
+            parameters.append(canonical_filters.category)
+        if canonical_filters.status is not None:
             clauses.append("status = ?")
-            parameters.append(filters.status)
+            parameters.append(canonical_filters.status)
         # Only fixed SQL fragments are composed; every user value is bound.
         # Joining clauses with AND gives intersection semantics to all filters.
         where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
 
         try:
             with closing(self._checked_connection()) as connection:
-                # SUM returns NULL for an empty match set; COALESCE keeps report
-                # totals numeric and identical for filtered and empty databases.
-                totals_row = connection.execute(
-                    f"""
-                    SELECT COUNT(*) AS events,
-                           COALESCE(SUM(duration_ms), 0) AS duration_ms
-                    FROM events {where}
-                    """,
-                    parameters,
-                ).fetchone()
-                category_rows = connection.execute(
-                    f"""
-                    SELECT category, COUNT(*) AS events,
-                           COALESCE(SUM(duration_ms), 0) AS duration_ms
-                    FROM events {where}
-                    GROUP BY category
-                    """,
-                    parameters,
-                ).fetchall()
-                status_rows = connection.execute(
-                    f"""
-                    SELECT status, COUNT(*) AS events,
-                           COALESCE(SUM(duration_ms), 0) AS duration_ms
-                    FROM events {where}
-                    GROUP BY status
-                    """,
-                    parameters,
-                ).fetchall()
-                reject_total = int(
-                    connection.execute("SELECT COUNT(*) FROM rejects").fetchone()[0]
-                )
-                reject_rows = connection.execute(
-                    "SELECT code, COUNT(*) AS count FROM rejects GROUP BY code"
-                ).fetchall()
+                connection.execute("BEGIN DEFERRED")
+                try:
+                    # SUM returns NULL for an empty match set; COALESCE keeps report
+                    # totals numeric and identical for filtered and empty databases.
+                    totals_row = connection.execute(
+                        f"""
+                        SELECT COUNT(*) AS events,
+                               COALESCE(SUM(duration_ms), 0) AS duration_ms
+                        FROM events {where}
+                        """,
+                        parameters,
+                    ).fetchone()
+                    category_rows = connection.execute(
+                        f"""
+                        SELECT category, COUNT(*) AS events,
+                               COALESCE(SUM(duration_ms), 0) AS duration_ms
+                        FROM events {where}
+                        GROUP BY category
+                        """,
+                        parameters,
+                    ).fetchall()
+                    status_rows = connection.execute(
+                        f"""
+                        SELECT status, COUNT(*) AS events,
+                               COALESCE(SUM(duration_ms), 0) AS duration_ms
+                        FROM events {where}
+                        GROUP BY status
+                        """,
+                        parameters,
+                    ).fetchall()
+                    reject_total = int(
+                        connection.execute("SELECT COUNT(*) FROM rejects").fetchone()[0]
+                    )
+                    reject_rows = connection.execute(
+                        "SELECT code, COUNT(*) AS count FROM rejects GROUP BY code"
+                    ).fetchall()
+                    connection.commit()
+                except BaseException:
+                    connection.rollback()
+                    raise
         except ApplicationError:
             raise
         except sqlite3.Error as error:
@@ -470,7 +490,7 @@ class SQLiteEventRepository:
             key=lambda item: item.code,
         )
         return Report(
-            filters=filters,
+            filters=canonical_filters,
             totals=ReportTotals(
                 int(totals_row["events"]),
                 int(totals_row["duration_ms"]),

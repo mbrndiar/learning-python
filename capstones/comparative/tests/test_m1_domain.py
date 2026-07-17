@@ -99,6 +99,36 @@ class DomainTests(unittest.TestCase):
             parse_json_value('{"ignored":2,"ignored":1.5,"after":3}')
         self.assertEqual(caught.exception.details, {"reason": "non_integral_number"})
 
+    def test_long_fraction_exponent_preserves_exact_decimal_scale(self):
+        accepted = "0." + ("0" * 65_524) + "5e65540"
+        self.assertEqual(parse_json_value(accepted), 5_000_000_000_000_000)
+
+        rejected = "0." + ("0" * 65_522) + "5e65540"
+        with self.assertRaises(KvError) as caught:
+            parse_json_value(rejected)
+        self.assertEqual(
+            (caught.exception.category, caught.exception.details),
+            ("invalid_value", {"reason": "number_out_of_range"}),
+        )
+
+    def test_json_syntax_precedes_depth_validation(self):
+        malformed = ("[" * 33) + "null" + ("]" * 32)
+        with self.assertRaises(KvError) as caught:
+            parse_json_value(malformed)
+        self.assertEqual(
+            (caught.exception.category, caught.exception.details),
+            ("invalid_json", {"reason": "syntax"}),
+        )
+
+    def test_valid_depth_33_is_rejected_when_entering_container(self):
+        valid = ("[" * 33) + "null" + ("]" * 33)
+        with self.assertRaises(KvError) as caught:
+            parse_json_value(valid)
+        self.assertEqual(
+            (caught.exception.category, caught.exception.details),
+            ("invalid_value", {"reason": "depth_limit"}),
+        )
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

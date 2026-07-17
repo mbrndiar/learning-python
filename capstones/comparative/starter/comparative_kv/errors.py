@@ -34,6 +34,7 @@ class KvError(Exception):
         convenience fields are part of the public contract.
         """
 
+        # TODO(m2): Return only the exact public error-envelope fields.
         incomplete("comparative error envelope")
 
 

@@ -18,9 +18,9 @@ class UrllibTransport:
 
     def send(self, request: TransportRequest) -> TransportResponse:
         # TODO(milestone 3): build the encoded URL, serialize strict UTF-8 JSON,
-        # set headers, open once with the configured timeout, read and close the
-        # response, and preserve an HTTPError as an ordinary HTTP response.
-        # Translate connection and timeout failures without retrying mutations.
+        # set headers, and build an opener with ``ProxyHandler({})`` plus a
+        # no-redirect handler. Read and close the response, preserve HTTPError as
+        # an ordinary response, and translate failures without retrying.
         incomplete(
             "milestone 3 urllib request "
             f"{request.method} {request.path}, "

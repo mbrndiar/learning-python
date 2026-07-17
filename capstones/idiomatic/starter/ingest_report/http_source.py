@@ -20,8 +20,10 @@ class URLPageFetcher:
     """Fetch one bounded page without redirects, cookies, or authentication.
 
     Validate the URL spelling before transport, then validate response status and
-    byte/JSON bounds before returning an untrusted mapping. The coordinator owns
-    page metadata and item validation.
+    byte/JSON bounds before returning an untrusted mapping. Textual loopback
+    validation does not itself prevent ambient proxy routing, so make direct
+    transport policy a separate invariant alongside redirect handling. The
+    coordinator owns page metadata and item validation.
     """
 
     def __init__(self, timeout: float = 10.0):
