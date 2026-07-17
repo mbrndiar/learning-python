@@ -1,4 +1,10 @@
-"""Exact command grammar, validation precedence, and JSON envelopes."""
+"""Expose argparse metadata while enforcing the process contract token by token.
+
+``argparse`` is useful to Python callers for discovering command shapes, but its
+general option handling is intentionally more permissive than the frozen CLI
+grammar.  The executable path therefore uses a manual parser with exact token
+positions and deterministic validation precedence.
+"""
 
 from __future__ import annotations
 
@@ -34,7 +40,11 @@ class _ArgumentParser(argparse.ArgumentParser):
 
 
 def build_parser() -> argparse.ArgumentParser:
-    """Build the four documented parser shapes for Python callers."""
+    """Build the four documented command shapes for Python callers.
+
+    This parser is a public description/convenience API, not the authoritative
+    grammar used by :func:`main`.
+    """
 
     parser = _ArgumentParser(
         prog="comparative-kv",
@@ -62,6 +72,8 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def _parse_exact(arguments: Sequence[str]) -> argparse.Namespace:
+    """Accept only the documented token sequences, with no argparse flexibility."""
+
     if len(arguments) < 3 or arguments[0] != "--db":
         raise KvError("usage", {"reason": "invalid_cli"}, 2)
     database = arguments[1]
@@ -109,6 +121,12 @@ def _parse_exact(arguments: Sequence[str]) -> argparse.Namespace:
 
 
 def _validate_database_path(path: str) -> None:
+    """Reject SQLite special forms while otherwise preserving the literal path.
+
+    Deliberately doing no expansion keeps ``~``, ``$VARS``, globs, and URI
+    escapes as ordinary filename characters for the operating system.
+    """
+
     if path == "":
         raise KvError(
             "invalid_argument",
@@ -124,7 +142,7 @@ def _validate_database_path(path: str) -> None:
 
 
 def run(arguments: argparse.Namespace) -> int:
-    """Validate and execute one parsed command."""
+    """Validate in contract order, execute once, and emit one success envelope."""
 
     _validate_database_path(cast(str, arguments.db))
     command = cast(str, arguments.command)
@@ -132,6 +150,8 @@ def run(arguments: argparse.Namespace) -> int:
     set_expectation: SetExpectation = "any"
     delete_expectation: DeleteExpectation = "any"
     value: JsonValue = None
+    # Complete argument/value validation before opening SQLite.  This keeps
+    # command errors deterministic even when the supplied path is unusable.
     if command in ("set", "get", "delete"):
         key = validate_key(cast(str, arguments.key))
     if command == "set":
@@ -157,7 +177,12 @@ def run(arguments: argparse.Namespace) -> int:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    """Always emit one compact JSON line and return its normative exit code."""
+    """Emit one compact envelope for each contract-covered outcome.
+
+    Contract failures become the same single-line wire shape; ordinary unexpected
+    provider/runtime exceptions are reduced to a non-leaking storage category
+    rather than exposing paths, exception text, or tracebacks.
+    """
 
     arguments = list(sys.argv[1:] if argv is None else argv)
     try:
@@ -176,6 +201,8 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 
 def _entry(entry: Entry) -> dict[str, object]:
+    """Format the frozen record explicitly instead of relying on dataclass shape."""
+
     return {
         "key": entry.key,
         "value": entry.value,
@@ -184,10 +211,14 @@ def _entry(entry: Entry) -> dict[str, object]:
 
 
 def _set_result(result: SetResult) -> dict[str, object]:
+    """Format a set result in the normative JSON field layout."""
+
     return {**_entry(result.entry), "created": result.created}
 
 
 def _delete_result(result: DeleteResult) -> dict[str, object]:
+    """Format a delete result in the normative JSON field layout."""
+
     return {
         "key": result.key,
         "deleted_revision": result.deleted_revision,
@@ -196,6 +227,8 @@ def _delete_result(result: DeleteResult) -> dict[str, object]:
 
 
 def _list_result(result: ListResult) -> dict[str, object]:
+    """Recursively format list models while retaining their established order."""
+
     return {
         "entries": [_entry(entry) for entry in result.entries],
         "global_revision": result.global_revision,
@@ -203,6 +236,8 @@ def _list_result(result: ListResult) -> dict[str, object]:
 
 
 def _write(envelope: dict[str, object]) -> None:
+    """Write exactly one compact ASCII-safe JSON object plus one line feed."""
+
     sys.stdout.write(
         json.dumps(envelope, ensure_ascii=True, separators=(",", ":")) + "\n"
     )

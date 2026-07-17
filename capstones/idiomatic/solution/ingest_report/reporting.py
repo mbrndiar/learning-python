@@ -1,4 +1,4 @@
-"""Deterministic JSON and text report rendering."""
+"""Deterministic JSON and text rendering from already ordered report models."""
 
 import json
 
@@ -19,7 +19,11 @@ def import_result_dict(result: ImportResult) -> dict[str, object]:
 
 
 def report_dict(report: Report) -> dict[str, object]:
-    """Convert a report to the documented semantic JSON shape."""
+    """Convert a report to the documented, insertion-stable JSON shape.
+
+    Aggregate sequence order is preserved rather than recomputed here; the
+    repository establishes that order once for every output format.
+    """
 
     return {
         "filters": {
@@ -56,13 +60,13 @@ def report_dict(report: Report) -> dict[str, object]:
 
 
 def render_json(value: object) -> str:
-    """Render compact UTF-8-friendly JSON with a trailing newline."""
+    """Render one compact UTF-8-friendly, line-delimited JSON value."""
 
     return json.dumps(value, ensure_ascii=False, separators=(",", ":")) + "\n"
 
 
 def render_text(report: Report) -> str:
-    """Render the documented human-readable report headings."""
+    """Render every report section in stable model order, including empties."""
 
     def shown(value: str | None) -> str:
         return value if value is not None else "all"

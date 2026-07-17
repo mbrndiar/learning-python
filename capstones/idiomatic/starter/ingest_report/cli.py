@@ -1,4 +1,12 @@
-"""Command parser and execution boundary for the idiomatic capstone."""
+"""Command parser and execution boundary for the idiomatic capstone.
+
+Milestone 2/5 guidance: validate command-specific combinations before opening
+adapters, then preserve the specification's error classes.  Expected
+``ApplicationError`` values map to their stable exit categories, cancellation
+maps separately, and unexpected failures reveal a traceback only in debug mode.
+Successful data belongs on stdout; diagnostics and JSON error envelopes belong
+on stderr.
+"""
 
 import argparse
 from collections.abc import Sequence
@@ -41,12 +49,22 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def run(arguments: argparse.Namespace) -> int:
-    """Execute parsed arguments once application behavior is implemented."""
+    """Dispatch one validated command through the public application boundary.
+
+    File imports remain streaming; HTTP imports additionally enforce loopback
+    pagination, worker bounds, and strict/partial policy.  Keep rendering outside
+    domain/repository code so each error class retains one CLI representation.
+    """
 
     incomplete(f"idiomatic command execution for {arguments.command!r}")
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    """Parse one command and return its eventual process exit code."""
+    """Parse one command and return its eventual process exit code.
+
+    Treat ``argparse`` failures, expected application failures, cancellation,
+    and unexpected exceptions as distinct observable boundaries; see the CLI
+    category and JSON-envelope tests rather than collapsing them together.
+    """
 
     return run(build_parser().parse_args(argv))

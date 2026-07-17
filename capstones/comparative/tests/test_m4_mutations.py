@@ -1,4 +1,9 @@
-"""Milestone 4: revisions, CAS, ordering, and complete mutations."""
+"""Milestone 4 contract for atomic mutations and compare-and-set revisions.
+
+Normal and boundary fixtures specify creation, replacement, deletion, ordering,
+and revision transitions as one mutation model.  Exact CAS outcomes matter
+because later process-contention tests rely on these operations being atomic.
+"""
 
 import unittest
 

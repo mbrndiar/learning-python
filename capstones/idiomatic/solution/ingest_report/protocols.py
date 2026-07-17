@@ -1,4 +1,4 @@
-"""Injectable boundaries for the idiomatic capstone."""
+"""Structural DI boundaries that keep orchestration independent of adapters."""
 
 from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from concurrent.futures import Executor
@@ -17,13 +17,22 @@ from .models import (
 
 
 class RecordSource(Protocol):
-    """Yield source records once in deterministic source order."""
+    """Create a single-pass iterator in deterministic source order.
+
+    Consumers must not count and then replay the returned iterator. The iterator
+    may also own a file or other resource until it is exhausted or closed.
+    """
 
     def records(self) -> Iterator[RawRecord]: ...
 
 
 class EventRepository(Protocol):
-    """Persist one streaming import and answer deterministic reports."""
+    """Persist one streaming import and answer deterministic reports.
+
+    Accepting ``Iterable`` avoids coupling storage to a concrete generator type,
+    but ``records`` may still be lazy and single-pass. Implementations consume it
+    synchronously inside the import operation rather than retaining or rewinding it.
+    """
 
     def import_records(
         self,
@@ -40,15 +49,22 @@ class EventRepository(Protocol):
 
 
 class Clock(Protocol):
-    """Supply timestamps without coupling tests to wall-clock time."""
+    """Inject import time so orchestration need not read ambient wall-clock state."""
 
     def now(self) -> datetime: ...
 
 
 class PageFetcher(Protocol):
-    """Fetch one HTTP page through an injectable transport boundary."""
+    """Fetch one untrusted page through an injectable transport boundary.
+
+    The seam substitutes transport in tests; callers still validate the returned
+    mapping because dependency injection is not a trust boundary.
+    """
 
     def fetch_page(self, base_url: str, page: int) -> Mapping[str, object]: ...
 
 
+# Injecting construction lets tests control or observe executor choice and
+# lifecycle; it does not make thread scheduling deterministic. The component
+# calling the factory owns shutdown of the returned executor.
 ExecutorFactory = Callable[[int], Executor]

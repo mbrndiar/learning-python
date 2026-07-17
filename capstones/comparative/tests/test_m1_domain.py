@@ -1,4 +1,9 @@
-"""Milestone 1: keys, expectations, restricted JSON, and normalization."""
+"""Milestone 1 contracts for the canonical, implementation-independent domain.
+
+Frozen fixtures define key syntax, safe integers, restricted JSON, normalization,
+and exact structured errors.  Testing these rules before storage or subprocesses
+keeps later milestones anchored to one canonical value model.
+"""
 
 import unittest
 from importlib import import_module

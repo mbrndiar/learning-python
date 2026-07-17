@@ -15,6 +15,8 @@ ingest_report_cli = import_module("ingest_report.cli")
 
 class IdiomaticHarnessSmokeTests(unittest.TestCase):
     def test_selected_target_imports_and_parses_documented_commands(self):
+        # The harness milestone verifies that the selected package is coherent
+        # enough to expose the documented CLI surface before feature tests run.
         parser = ingest_report_cli.build_parser()
         command_lines = (
             [
@@ -60,6 +62,8 @@ class IdiomaticHarnessSmokeTests(unittest.TestCase):
         )
 
     def test_selected_target_has_the_expected_learning_boundary(self):
+        # Starter intentionally stops at command execution, while solution must
+        # cross that boundary and run a minimal report against isolated storage.
         if IMPLEMENTATION == "starter":
             with self.assertRaisesRegex(
                 ingest_report.IncompleteImplementationError,

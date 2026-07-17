@@ -1,4 +1,4 @@
-"""Immutable public values for ingestion and reporting."""
+"""Read-oriented public values for ingestion and reporting."""
 
 from collections.abc import Mapping
 from dataclasses import dataclass
@@ -12,7 +12,7 @@ ImportState: TypeAlias = Literal["complete", "partial"]
 
 @dataclass(frozen=True, slots=True)
 class Event:
-    """One validated and normalized operational event."""
+    """One validated event whose scalar fields make it effectively immutable."""
 
     id: str
     occurred_at: str
@@ -24,7 +24,12 @@ class Event:
 
 @dataclass(frozen=True, slots=True)
 class RawRecord:
-    """One source record with its stable diagnostic position."""
+    """One source record with its stable diagnostic position.
+
+    ``frozen=True`` prevents rebinding attributes; it does not freeze the borrowed
+    mapping or values inside it. Sources therefore hand records downstream without
+    mutating those mappings afterward.
+    """
 
     source_name: str
     record_number: int
@@ -35,7 +40,11 @@ class RawRecord:
 
 @dataclass(frozen=True, slots=True)
 class RejectedRecord:
-    """One invalid record retained for deterministic reporting."""
+    """One invalid record retained for deterministic reporting.
+
+    Rejections outlive source iteration, so they take a shallow mapping snapshot.
+    Nested mutable values are not recursively copied or frozen.
+    """
 
     source_name: str
     record_number: int
@@ -45,6 +54,8 @@ class RejectedRecord:
     raw: Mapping[str, object]
 
     def __post_init__(self) -> None:
+        # The copy detaches top-level membership from a source buffer; the proxy
+        # prevents later key replacement through this model's public view.
         object.__setattr__(self, "raw", MappingProxyType(dict(self.raw)))
 
 
@@ -107,7 +118,11 @@ class RejectSummary:
 
 @dataclass(frozen=True, slots=True)
 class Report:
-    """Deterministically ordered report data before rendering."""
+    """Deterministically ordered report data before rendering.
+
+    Tuples preserve the repository's ordering and prevent collection reshaping;
+    this remains shallow immutability rather than a general object-graph guarantee.
+    """
 
     filters: ReportFilters
     totals: ReportTotals

@@ -1,4 +1,4 @@
-"""Typed error boundaries for the guided comparative starter."""
+"""Structured error boundaries shared by domain, CLI, and storage milestones."""
 
 from collections.abc import Mapping
 from typing import NoReturn
@@ -9,7 +9,12 @@ class IncompleteImplementationError(NotImplementedError):
 
 
 class KvError(Exception):
-    """TODO(m1): carry one category, details object, and exit code."""
+    """Carry only the contract category, details object, and process exit code.
+
+    Keep provider messages, paths, tracebacks, and platform error numbers out of
+    normative responses.  Exact category/detail combinations are exhaustive in
+    SPEC section 6 and are asserted semantically by the shared fixtures.
+    """
 
     def __init__(
         self,
@@ -23,7 +28,11 @@ class KvError(Exception):
         self.exit_code = exit_code
 
     def envelope(self) -> dict[str, object]:
-        """TODO(m2): return the exact failure envelope."""
+        """Return exactly ``{"ok": false, "error": ...}`` for this error.
+
+        The nested error has only ``category`` and ``details``; no prose or
+        convenience fields are part of the public contract.
+        """
 
         incomplete("comparative error envelope")
 

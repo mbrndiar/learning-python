@@ -1,4 +1,4 @@
-"""Loopback HTTP paging with bounded, deterministic concurrency."""
+"""HTTP paging restricted to loopback URL spellings with bounded concurrency."""
 
 import json
 from collections.abc import Mapping
@@ -27,6 +27,12 @@ MAX_PAGES = 100
 
 
 class _NoRedirects(HTTPRedirectHandler):
+    """Turn redirects into HTTP errors instead of following a new location.
+
+    This closes the otherwise separate security path where an allowed loopback
+    endpoint could redirect the client to a non-loopback destination.
+    """
+
     def redirect_request(
         self,
         req: Request,
@@ -66,7 +72,12 @@ def _has_duplicates(value: object) -> bool:
 
 
 def validate_loopback_url(base_url: str) -> None:
-    """Reject non-HTTP or non-loopback URLs before opening a connection."""
+    """Validate the target URL spelling before any request is opened.
+
+    Numeric literals avoid DNS, while ``localhost`` trusts resolver configuration.
+    urllib may still honor environment proxy settings. Arbitrary hostnames and
+    userinfo are rejected, and redirects are disabled separately.
+    """
 
     parsed = urlsplit(base_url)
     if (
@@ -121,6 +132,9 @@ class URLPageFetcher:
                 self._opener.open(request, timeout=self.timeout),
             )
             with response:
+                # Content-Length is only an early rejection hint because peers
+                # can omit or misstate it. The limited read is the actual bound;
+                # one complete page is then buffered for UTF-8/JSON validation.
                 content_length = response.headers.get("Content-Length")
                 if content_length is not None:
                     try:
@@ -283,7 +297,12 @@ def fetch_http_records(
     allow_partial: bool,
     executor_factory: ExecutorFactory = default_executor_factory,
 ) -> HTTPFetchResult:
-    """Fetch pages with bounded scheduling and deterministic page collection."""
+    """Fetch pages with bounded scheduling and deterministic page collection.
+
+    Page 1 is required even for partial mode because its validated page_count
+    defines the finite work set. Later pages may complete out of order, but
+    records and failure numbers are returned in page order.
+    """
 
     if not 1 <= workers <= 16:
         raise ApplicationError(
@@ -292,6 +311,8 @@ def fetch_http_records(
             2,
             {"field": "workers"},
         )
+    # Fetch metadata synchronously before creating workers: without trustworthy
+    # page-1 metadata there is no safe upper bound or page set to schedule.
     first = _validate_page(fetcher.fetch_page(base_url, 1), 1, None, base_url)
     pages: dict[int, _ValidatedPage] = {1: first}
     failures: list[int] = []
@@ -302,12 +323,17 @@ def fetch_http_records(
     pending: dict[Future[Mapping[str, object]], int] = {}
     next_page = 2
     try:
+        # Fill at most one future per worker, then wait for completion and refill
+        # freed capacity. The pending set therefore never exceeds `workers`.
         while next_page <= first.page_count and len(pending) < workers:
             future = executor.submit(fetcher.fetch_page, base_url, next_page)
             pending[future] = next_page
             next_page += 1
         while pending:
             completed, _ = wait(tuple(pending), return_when=FIRST_COMPLETED)
+            # Completion controls only when capacity becomes available. Sorting
+            # each completed batch and the final pages map keeps output order
+            # independent of thread timing.
             for future in sorted(completed, key=lambda item: pending[item]):
                 page_number = pending.pop(future)
                 try:
@@ -340,10 +366,18 @@ def fetch_http_records(
                 pending[future] = next_page
                 next_page += 1
     finally:
+        # cancel() only prevents queued work; Python cannot stop a running thread.
+        # wait=True joins running calls before return, so the owned pool cannot
+        # leak work, but shutdown can wait for them. URLPageFetcher has a socket
+        # timeout, not a hard whole-operation deadline; injected implementations
+        # must provide their own completion guarantees.
         for future in pending:
             future.cancel()
         executor.shutdown(wait=True, cancel_futures=True)
 
+    # Deterministic ordering requires buffering validated successful pages until
+    # all scheduled work finishes; per-response, page-count, and item limits cap
+    # that buffering rather than turning this into an unbounded stream.
     ordered_records = tuple(
         record for page_number in sorted(pages) for record in pages[page_number].items
     )

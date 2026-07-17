@@ -1,4 +1,9 @@
-"""Typed failures and normative process metadata."""
+"""Carry stable error categories separately from Python exception mechanics.
+
+Categories and detail objects are the machine-readable contract; exit codes
+classify the process outcome.  Keeping both on one exception lets deep domain
+and storage code fail without printing or depending on the CLI.
+"""
 
 from collections.abc import Mapping
 from typing import NoReturn
@@ -9,7 +14,7 @@ class IncompleteImplementationError(NotImplementedError):
 
 
 class KvError(Exception):
-    """One failure from the frozen comparative contract."""
+    """One categorized failure with its public details and process exit code."""
 
     def __init__(
         self,
@@ -23,7 +28,7 @@ class KvError(Exception):
         self.exit_code = exit_code
 
     def envelope(self) -> dict[str, object]:
-        """Return the exact failure envelope."""
+        """Return the exact JSON-ready failure envelope, without exception text."""
 
         return {
             "ok": False,
@@ -39,7 +44,7 @@ def fail(
     details: Mapping[str, object],
     exit_code: int,
 ) -> NoReturn:
-    """Raise one typed contract failure."""
+    """Raise a categorized contract failure from validation or persistence code."""
 
     raise KvError(category, details, exit_code)
 

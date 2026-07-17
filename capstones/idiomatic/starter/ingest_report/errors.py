@@ -1,11 +1,23 @@
-"""Stable application errors and intentional starter placeholders."""
+"""Stable application errors and intentional starter placeholders.
+
+Milestone guidance: callers classify failures by semantic code and exit
+category, not message text.  Keep user input, source content, source I/O or
+partial completion, database failures, and cancellation distinguishable at the
+CLI boundary.  A partial-import error also needs to carry the committed result
+for stdout while reporting failure on stderr; do not turn it into success.
+"""
 
 from collections.abc import Mapping
 from typing import NoReturn
 
 
 class ApplicationError(Exception):
-    """An expected failure safe to render without a traceback."""
+    """An expected failure safe to render without a traceback.
+
+    Preserve the structured details for ``--json-errors`` and let the boundary
+    decide text versus JSON rendering.  Stable English messages support people;
+    stable codes and exit categories support automation.
+    """
 
     def __init__(
         self,
@@ -33,7 +45,11 @@ class ApplicationError(Exception):
 
 
 class IncompleteImplementationError(NotImplementedError):
-    """Mark a milestone boundary that has not been implemented yet."""
+    """Mark a milestone boundary that has not been implemented yet.
+
+    This is the intentional starter failure.  Replace calls milestone by
+    milestone, but do not classify this placeholder as an expected user error.
+    """
 
 
 def incomplete(feature: str) -> NoReturn:

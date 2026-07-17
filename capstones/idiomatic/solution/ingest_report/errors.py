@@ -8,7 +8,11 @@ if TYPE_CHECKING:
 
 
 class ApplicationError(Exception):
-    """An expected failure safe to render without a traceback."""
+    """An expected failure safe to render without a traceback.
+
+    Codes and exit categories form the stable boundary; chained causes retain
+    diagnostics internally without exposing adapter-specific exception types.
+    """
 
     def __init__(
         self,
@@ -20,6 +24,8 @@ class ApplicationError(Exception):
         self.code = code
         self.message = message
         self.exit_code = exit_code
+        # Snapshot top-level membership so a caller cannot later add/remove detail
+        # keys through its original mapping. Nested values remain shared.
         self.details = dict(details or {})
         super().__init__(message)
 
@@ -36,7 +42,11 @@ class ApplicationError(Exception):
 
 
 class PartialImportError(ApplicationError):
-    """Report a committed partial import while preserving a non-zero exit."""
+    """Report a committed partial import while preserving a non-zero exit.
+
+    ``result`` is intentionally retained: callers can render committed counts even
+    though the command-level outcome indicates missing HTTP pages.
+    """
 
     def __init__(self, result: "ImportResult"):
         self.result = result

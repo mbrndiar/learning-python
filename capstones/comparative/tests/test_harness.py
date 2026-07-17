@@ -1,4 +1,9 @@
-"""Smoke tests for the comparative starter/solution harness."""
+"""Smoke-test implementation selection and the intended learning boundary.
+
+These tests verify that the selected tree exposes the complete command grammar,
+while allowing the starter to stop at its documented execution boundary.  The
+solution branch also proves the shared harness can execute a real CLI call.
+"""
 
 import io
 import unittest

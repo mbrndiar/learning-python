@@ -1,4 +1,4 @@
-"""Public boundary for the comparative Python capstone."""
+"""Curated public boundary; implementation-only normalization helpers stay private."""
 
 from .cli import build_parser, main
 from .domain import (

@@ -16,6 +16,10 @@ from support import FIXED_TIME, FIXTURES, test_directory
 
 class RepositoryTests(unittest.TestCase):
     def test_schema_creation_reopen_round_trip_and_duplicate_identity(self):
+        # Milestone 3 owns persistent identity and schema compatibility. Reopening
+        # the file must preserve data and markers; duplicate identity is the
+        # (source, event ID) pair, so later conflicting fields cannot replace the
+        # first stored event.
         self.assertIn(IMPLEMENTATION, ("starter", "solution"))
         with test_directory() as directory:
             database = directory / "events.db"
@@ -64,6 +68,9 @@ class RepositoryTests(unittest.TestCase):
                 )
 
     def test_reused_import_id_does_not_mutate_data(self):
+        # Import IDs are repository identities, not merely labels. Rejecting a
+        # reuse before consuming new data prevents a second import from leaking
+        # events into the first import's history.
         with test_directory() as directory:
             repository = SQLiteEventRepository(directory / "events.db")
             repository.import_records(
@@ -94,6 +101,9 @@ class RepositoryTests(unittest.TestCase):
             self.assertEqual(repository.report(ReportFilters()).totals.events, 0)
 
     def test_mid_import_failure_rolls_back_events_rejects_and_metadata(self):
+        # A failure after both accepted and rejected rows have been yielded must
+        # roll back the whole logical import, including its metadata. This proves
+        # transaction atomicity for this execution, not durability after a crash.
         with test_directory() as directory:
             database = directory / "events.db"
             repository = SQLiteEventRepository(database)
@@ -130,6 +140,8 @@ class RepositoryTests(unittest.TestCase):
                 )
 
     def test_newer_incomplete_and_corrupt_schemas_fail_closed(self):
+        # Existing files are never silently adopted or rewritten when their
+        # version, application shape, or SQLite contents are not recognized.
         with test_directory() as directory:
             newer = directory / "newer.db"
             with closing(sqlite3.connect(newer)) as connection:

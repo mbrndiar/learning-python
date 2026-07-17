@@ -86,7 +86,14 @@ class Store(Protocol):
 
 
 class SQLiteStore:
-    """One configured SQLite connection implementing schema version 1."""
+    """Own one configured SQLite connection implementing schema version 1.
+
+    Autocommit mode keeps transaction ownership explicit below: each compound
+    operation either commits as a unit or rolls back. Construction also closes
+    the connection if configuration, validation, or migration fails, so a
+    successfully constructed store is the only owner expected to call
+    :meth:`close`.
+    """
 
     def __init__(self, path: str | PathLike[str]):
         self.path = str(path)
@@ -94,12 +101,16 @@ class SQLiteStore:
             self.connection = sqlite3.connect(
                 self.path,
                 timeout=BUSY_TIMEOUT_MS / 1000,
+                # Multi-statement guarantees below use explicit BEGIN/commit.
                 isolation_level=None,
                 uri=False,
             )
         except sqlite3.Error as error:
             raise _map_sql(error, "open") from error
         try:
+            # The driver timeout and PRAGMA both ask SQLite to wait for ordinary
+            # lock contention. Changing journal mode needs its own bounded retry
+            # because competing openers can race while configuring the database.
             self.connection.execute(f"PRAGMA busy_timeout = {BUSY_TIMEOUT_MS}")
             _configure_journal_mode(self.connection)
             self.connection.execute("PRAGMA foreign_keys = ON")
@@ -117,7 +128,7 @@ class SQLiteStore:
             raise
 
     def close(self) -> None:
-        """Close all SQLite resources owned by this store."""
+        """Close the SQLite connection owned by this store."""
 
         self.connection.close()
 
@@ -127,8 +138,19 @@ class SQLiteStore:
         value: JsonValue,
         expectation: SetExpectation = "any",
     ) -> SetResult:
+        """Create or replace a value subject to a compare-and-set expectation.
+
+        ``"any"`` performs no revision comparison, ``"absent"`` requires no
+        current row, and an integer must exactly match the current revision.
+        The comparison, row mutation, and global revision update share one
+        transaction, so a losing comparison cannot partially write.
+        """
+
         operation = "write"
         try:
+            # Reserve the single SQLite writer before observing CAS state. This
+            # prevents another writer from changing the row or revision counter
+            # between the comparison and mutation; it does not promise fairness.
             self.connection.execute("BEGIN IMMEDIATE")
             row = self.connection.execute(
                 "SELECT revision FROM entries WHERE key = ? COLLATE BINARY",
@@ -201,8 +223,16 @@ class SQLiteStore:
         key: str,
         expectation: DeleteExpectation = "any",
     ) -> DeleteResult:
+        """Delete an existing value with optional exact-revision CAS.
+
+        ``"any"`` accepts whichever existing revision is read; an integer must
+        match it exactly. Unlike ``set(..., "absent")``, deletion always requires
+        a row, so a missing key is ``not_found`` rather than a CAS success.
+        """
+
         operation = "write"
         try:
+            # As in set(), acquire the writer before reading the compared value.
             self.connection.execute("BEGIN IMMEDIATE")
             row = self.connection.execute(
                 "SELECT revision FROM entries WHERE key = ? COLLATE BINARY",
@@ -235,6 +265,9 @@ class SQLiteStore:
 
     def list_entries(self) -> ListResult:
         try:
+            # One explicit read transaction keeps the metadata revision and entry
+            # rows on the same SQLite snapshot if another process commits between
+            # the two SELECT statements.
             self.connection.execute("BEGIN")
             metadata = self.connection.execute(
                 """
@@ -276,10 +309,22 @@ class SQLiteStore:
         return Entry(key, value, _positive_revision(row[2]))
 
     def _prepare_schema(self) -> None:
+        """Validate and prepare exactly one recognized on-disk schema.
+
+        The immediate transaction serializes initialization or migration with
+        other writers. A limited future-version probe precedes the integrity
+        check; integrity is checked before migration or acceptance of a supported
+        schema. Object definitions and reserved PRAGMAs then distinguish a
+        supported layout from a merely queryable but incompatible database.
+        """
+
         operation = "initialize"
         try:
             self.connection.execute("BEGIN IMMEDIATE")
             objects = self._application_objects()
+            # Probe a readable metadata table first so a future version gets the
+            # more precise unsupported_schema error. Strict shape validation
+            # still follows; a failed or ambiguous probe grants no compatibility.
             future = self._future_schema_version(objects)
             if future is not None and future > 1:
                 raise KvError(
@@ -310,6 +355,8 @@ class SQLiteStore:
             raise _map_sql(error, operation) from error
 
     def _application_objects(self) -> list[tuple[str, str, str | None]]:
+        """Return every non-internal object used for strict schema recognition."""
+
         rows = self.connection.execute(
             """
             SELECT type, name, sql
@@ -342,6 +389,8 @@ class SQLiteStore:
         return row[0]
 
     def _ensure_integrity(self) -> None:
+        """Require SQLite's full database integrity check to report only ``ok``."""
+
         rows = self.connection.execute("PRAGMA integrity_check").fetchall()
         if [str(row[0]) for row in rows] != ["ok"]:
             raise KvError(
@@ -351,6 +400,8 @@ class SQLiteStore:
             )
 
     def _validate_default_pragmas(self) -> None:
+        """Reject files using version/application markers outside this format."""
+
         user_version = self.connection.execute("PRAGMA user_version").fetchone()
         application_id = self.connection.execute("PRAGMA application_id").fetchone()
         if (
@@ -367,6 +418,19 @@ class SQLiteStore:
         self.connection.execute(INSERT_METADATA)
 
     def _migrate_v0(self) -> None:
+        """Atomically replace the recognized v0 table with the v1 schema.
+
+        Every legacy key/value is validated before DDL begins. Values are parsed
+        and serialized again into the current compact normalized JSON form, then
+        keys in binary order receive revisions ``1..N``. The sole metadata row
+        records schema version 1 and global revision ``N``.
+
+        All rename/create/copy/drop steps run inside the caller's SQLite
+        transaction, so an aborted transaction that rolls back does not expose
+        a half-migration. The guarantee covers this database only, not external
+        files or cross-filesystem work.
+        """
+
         rows = self.connection.execute(
             """
             SELECT key, value_json
@@ -418,6 +482,13 @@ class SQLiteStore:
         self.connection.execute("DROP TABLE entries_v0_migration")
 
     def _validate_v1(self) -> None:
+        """Check metadata cardinality and all persisted v1 value/revision rules.
+
+        The singleton metadata row is the database-wide revision authority.
+        Live entry revisions must be positive, unique, and no newer than that
+        counter; deleted revisions are intentionally absent from ``entries``.
+        """
+
         metadata_rows = self.connection.execute(
             """
             SELECT singleton, schema_version, global_revision
@@ -467,6 +538,20 @@ class SQLiteStore:
             seen_revisions.add(revision)
 
     def _next_revision(self) -> int:
+        """Return the next database-wide mutation revision.
+
+        Callers hold an IMMEDIATE write transaction, so SQLite serializes this
+        read with other writers. Successful mutations therefore publish a
+        strictly increasing order across sets and deletes in this database.
+        This database lock is not a general-purpose process synchronizer.
+
+        The safe-integer ceiling is checked before mutation, so conflicts and
+        exhaustion consume nothing. Later failures use best-effort rollback;
+        when SQLite rolls the transaction back, neither the row change nor its
+        revision is counted. No stronger accounting guarantee is possible if
+        SQLite cannot roll back or the commit outcome itself is indeterminate.
+        """
+
         row = self.connection.execute(
             """
             SELECT global_revision
@@ -486,6 +571,8 @@ class SQLiteStore:
         return current + 1
 
     def _update_global_revision(self, revision: int) -> None:
+        """Publish an allocated revision through the required singleton row."""
+
         cursor = self.connection.execute(
             """
             UPDATE store_metadata
@@ -498,6 +585,8 @@ class SQLiteStore:
             raise _malformed_schema()
 
     def _rollback(self) -> None:
+        """Best-effort rollback without replacing the operation's real error."""
+
         if self.connection.in_transaction:
             try:
                 self.connection.rollback()
@@ -512,6 +601,13 @@ def open_store(path: str | PathLike[str]) -> Store:
 
 
 def _schema_kind(objects: Sequence[tuple[str, str, str | None]]) -> str:
+    """Classify schemas after the limited ``_canonical_sql`` normalization.
+
+    Fresh means no application objects at all. Known v0/v1 definitions must
+    normalize to the expected templates; extra objects and other definitions are
+    malformed. This is not byte-exact or a full semantic DDL validation.
+    """
+
     if not objects:
         return "fresh"
     if len(objects) == 1:
@@ -541,6 +637,13 @@ def _schema_kind(objects: Sequence[tuple[str, str, str | None]]) -> str:
 
 
 def _canonical_sql(sql: str) -> str:
+    """Normalize superficial formatting for comparison with known schema SQL.
+
+    Case, whitespace, and SQLite identifier quoting are ignored. This is a
+    narrow comparison against fixed CREATE TABLE templates, not a general SQL
+    parser or a claim that arbitrary statements are semantically equivalent.
+    """
+
     return re.sub(r"""[\s"'`\[\]]+""", "", sql).lower()
 
 
@@ -580,6 +683,15 @@ def _revision_invariant() -> KvError:
 
 
 def _map_sql(error: sqlite3.Error, operation: str) -> KvError:
+    """Map stable SQLite codes, with messages as compatibility fallbacks.
+
+    BUSY/LOCKED contention becomes the public ``busy`` category. Ordinary BUSY
+    handling may wait via ``busy_timeout``; journal-mode setup additionally has
+    its explicit deadline. Recognized corruption/not-a-database failures become
+    ``invalid_storage``; all other SQLite failures retain only the coarse
+    operation name, avoiding dependence on unstable engine text.
+    """
+
     code = getattr(error, "sqlite_errorcode", None)
     corrupt_codes = {
         sqlite3.SQLITE_CORRUPT,
@@ -598,6 +710,14 @@ def _map_sql(error: sqlite3.Error, operation: str) -> KvError:
 
 
 def _configure_journal_mode(connection: sqlite3.Connection) -> None:
+    """Request WAL mode, retrying only recognized contention until the deadline.
+
+    WAL permits readers and a writer to overlap more often, but SQLite still has
+    one writer and offers no fairness guarantee. This verifies the mode SQLite
+    reports; it does not strengthen crash durability beyond the database's
+    synchronous setting and filesystem behavior.
+    """
+
     deadline = time.monotonic() + BUSY_TIMEOUT_MS / 1000
     while True:
         try:
@@ -612,6 +732,8 @@ def _configure_journal_mode(connection: sqlite3.Connection) -> None:
 
 
 def _is_busy(error: sqlite3.Error) -> bool:
+    """Recognize lock contention by SQLite code or legacy driver message."""
+
     code = getattr(error, "sqlite_errorcode", None)
     return code in {sqlite3.SQLITE_BUSY, sqlite3.SQLITE_LOCKED} or (
         "database is locked" in str(error).lower()

@@ -24,7 +24,11 @@ def ingest_source(
     source_name: str,
     clock: Clock,
 ) -> ImportResult:
-    """Normalize a streaming source directly into one repository transaction."""
+    """Normalize a single-pass source inside one repository import operation.
+
+    Validation stays lazy, so the repository is the terminal consumer and can
+    preserve streaming/backpressure rather than materializing the whole source.
+    """
 
     validate_import_id(import_id)
     return repository.import_records(
@@ -47,7 +51,14 @@ def ingest_http(
     allow_partial: bool,
     executor_factory: ExecutorFactory,
 ) -> ImportResult:
-    """Fetch HTTP pages, commit complete/partial data, then signal partial state."""
+    """Fetch pages, commit complete/partial data, then signal partial state.
+
+    In strict mode a page failure escapes before the repository is called. With
+    ``allow_partial``, successful pages and the failed-page manifest are committed
+    together; only after that commit succeeds does :class:`PartialImportError`
+    provide a non-zero process outcome. The injected fetcher, clock, and executor
+    factory keep transport, time, and scheduling outside this policy function.
+    """
 
     validate_import_id(import_id)
     fetched = fetch_http_records(
@@ -66,6 +77,7 @@ def ingest_http(
         failed_pages=fetched.failed_pages,
     )
     if fetched.failed_pages:
+        # This exception reports a committed result; it is not a rollback signal.
         raise PartialImportError(result)
     return result
 

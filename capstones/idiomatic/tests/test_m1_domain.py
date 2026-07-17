@@ -1,4 +1,4 @@
-"""Milestone 1: immutable values, validation, normalization, and deduplication."""
+"""Milestone 1: frozen values, validation, normalization, and deduplication."""
 
 import unittest
 from dataclasses import FrozenInstanceError
@@ -28,6 +28,8 @@ def normalized(**changes: object) -> Event | RejectedRecord:
 
 
 class _OneShot:
+    # Re-iteration fails loudly and makes multiple passes observable. This alone
+    # does not detect eager materialization performed during one pass.
     def __init__(self, records: list[RawRecord]):
         self.records = records
         self.iterations = 0
@@ -41,6 +43,8 @@ class _OneShot:
 
 class DomainTests(unittest.TestCase):
     def test_selected_implementation_and_immutable_normalized_event(self):
+        # Milestone 1 owns the domain boundary: raw scalar values become a
+        # canonical, frozen scalar-only Event or a diagnostic RejectedRecord.
         self.assertIn(IMPLEMENTATION, ("starter", "solution"))
         event = normalized(source=" checkout ", category=" request ")
         self.assertEqual(
@@ -140,6 +144,8 @@ class DomainTests(unittest.TestCase):
         )
 
     def test_shape_errors_have_stable_priority_and_diagnostics(self):
+        # Stable error precedence gives callers one reproducible diagnosis when
+        # a record violates more than one shape rule.
         missing = normalize_record(
             RawRecord("fixture", 4, {"id": "x", "unknown": "value"})
         )
@@ -158,6 +164,10 @@ class DomainTests(unittest.TestCase):
         )
 
     def test_normalization_and_deduplication_are_single_pass_and_stable(self):
+        # The one-shot input proves the pipeline consumes its source once.
+        # Output order also establishes first-seen identity: the first event is
+        # retained, a later matching ID is reported separately, and rejects stay
+        # in their original stream position.
         source = _OneShot(
             [
                 RawRecord("fixture", 1, VALID),

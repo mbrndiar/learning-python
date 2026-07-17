@@ -1,4 +1,9 @@
-"""Milestone 2: exact CLI grammar, envelopes, precedence, and exit codes."""
+"""Milestone 2 contract for the exact command-line interface.
+
+The fixture covers grammar, error precedence, compact JSON envelopes, stderr,
+and exit codes together because callers depend on the whole process boundary,
+not merely on equivalent command semantics.
+"""
 
 import unittest
 

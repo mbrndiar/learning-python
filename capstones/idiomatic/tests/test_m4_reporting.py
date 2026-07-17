@@ -15,6 +15,8 @@ from support import FIXED_TIME, FIXTURES, test_directory
 
 class ReportingTests(unittest.TestCase):
     def _populated_repository(self, database):
+        # A shared fixed corpus makes renderer, aggregate, and filter expectations
+        # describe one reporting contract rather than independent examples.
         repository = SQLiteEventRepository(database)
         repository.import_records(
             import_id="valid",
@@ -37,6 +39,9 @@ class ReportingTests(unittest.TestCase):
         return repository
 
     def test_json_and_text_match_golden_fixtures(self):
+        # Milestone 4 owns deterministic presentation. The JSON golden pins the
+        # semantic shape, values, and ordered arrays; the text golden additionally
+        # pins exact ordering, whitespace, markers, and the final newline.
         self.assertIn(IMPLEMENTATION, ("starter", "solution"))
         with test_directory() as directory:
             report = self._populated_repository(directory / "events.db").report(
@@ -54,6 +59,8 @@ class ReportingTests(unittest.TestCase):
             )
 
     def test_filters_combine_with_and_and_use_inclusive_time_bounds(self):
+        # The selected edge timestamps remain included while all supplied
+        # dimensions narrow the same event set; rejects remain import-level data.
         with test_directory() as directory:
             repository = self._populated_repository(directory / "events.db")
             report = repository.report(
@@ -105,6 +112,8 @@ class ReportingTests(unittest.TestCase):
             self.assertEqual(render_text(report).count("  (none)"), 3)
 
     def test_group_order_is_unicode_stable_regardless_of_insertion_order(self):
+        # Reversed insertion separates output ordering from database row order.
+        # Python's code-point sort is the expected locale-independent contract.
         with test_directory() as directory:
             repository = SQLiteEventRepository(directory / "events.db")
             categories = ["zebra", "Éclair", "alpha", "Ωmega"]

@@ -26,6 +26,8 @@ from support import FIXTURES, FixedClock, test_directory
 
 
 class _IncrementalRepository:
+    # The repository checks producer progress at each pull. If the application
+    # materializes the source first, progress jumps ahead and the fake fails.
     def __init__(self, progress: list[int]):
         self.progress = progress
         self.seen: list[Event | RejectedRecord] = []
@@ -56,6 +58,8 @@ class _IncrementalRepository:
 
 
 class _ProgressSource:
+    # Each yield records exactly how far the producer has advanced, allowing the
+    # repository fake to prove interleaved production and consumption.
     def __init__(self, progress: list[int]):
         self.progress = progress
 
@@ -78,6 +82,8 @@ class _ProgressSource:
 
 class SourceAndCLITests(unittest.TestCase):
     def test_csv_and_jsonl_fixtures_normalize_semantically_equivalent_events(self):
+        # Milestone 2 owns adapters and coordination: different source syntaxes
+        # must feed the same domain normalization contract.
         self.assertIn(IMPLEMENTATION, ("starter", "solution"))
         csv_events = list(
             normalize_records(CSVSource(FIXTURES / "events-valid.csv").records())
@@ -135,6 +141,8 @@ class SourceAndCLITests(unittest.TestCase):
             )
 
     def test_application_passes_records_incrementally(self):
+        # This proves streaming at the application/repository seam, not a memory
+        # bound for either adapter or the database implementation.
         progress: list[int] = []
         repository = _IncrementalRepository(progress)
         result = ingest_source(
@@ -148,6 +156,9 @@ class SourceAndCLITests(unittest.TestCase):
         self.assertEqual((result.accepted, len(repository.seen)), (3, 3))
 
     def test_source_iterator_closes_when_repository_fails_or_is_cancelled(self):
+        # Closing a partially consumed normalization generator must propagate to
+        # its source so file/network iterators can release resources. Both an
+        # ordinary failure and cancellation take the same cleanup path.
         for failure in (RuntimeError("stop"), KeyboardInterrupt()):
             closed = False
 

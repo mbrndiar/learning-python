@@ -21,7 +21,11 @@ from .validation import (
 
 
 class _ArgumentParser(argparse.ArgumentParser):
+    """Convert argparse usage failures into the application's error channel."""
+
     def error(self, message: str) -> NoReturn:
+        # argparse normally writes stderr and raises SystemExit immediately.
+        # Raising here lets main choose text/JSON formatting and the stable code.
         raise ApplicationError("invalid_argument", message, 2)
 
 
@@ -182,14 +186,19 @@ def _write_error(error: ApplicationError, json_errors: bool) -> None:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    """Return a stable exit code and suppress unexpected tracebacks by default."""
+    """Map parser, application, cancellation, and unexpected failures to exits."""
 
     arguments = list(sys.argv[1:] if argv is None else argv)
+    # Inspect these presentation flags before parsing so even parser failures use
+    # the requested error format, and unexpected failures can honor debug mode.
     json_errors = "--json-errors" in arguments
     debug = "--debug" in arguments
     try:
         parsed = build_parser().parse_args(arguments)
         return run(parsed)
+    # PartialImportError subclasses ApplicationError, so it must be handled first:
+    # its committed result belongs on stdout while the non-zero error stays on
+    # stderr. Scripts can consume the result without losing failure signalling.
     except PartialImportError as error:
         sys.stdout.write(render_json(import_result_dict(error.result)))
         _write_error(error, json_errors)
@@ -198,12 +207,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         _write_error(error, json_errors)
         return error.exit_code
     except KeyboardInterrupt:
+        # Shells conventionally recognize 128 + SIGINT (2) as cancellation.
         cancelled = ApplicationError("cancelled", "operation cancelled", 130)
         _write_error(cancelled, json_errors)
         return cancelled.exit_code
     except SystemExit as error:
         return int(error.code or 0)
     except Exception as error:
+        # Debug re-raises only unexpected Exceptions. Expected application
+        # failures and Ctrl-C retain their documented rendering and exit codes.
         if debug:
             raise
         unexpected = ApplicationError(

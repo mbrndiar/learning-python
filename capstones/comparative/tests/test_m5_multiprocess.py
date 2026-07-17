@@ -1,4 +1,10 @@
-"""Milestone 5: real child-process races, busy behavior, and cleanup."""
+"""Milestone 5 contract for independent-process contention and cleanup.
+
+The fixture runs real CLI children against one database and checks permitted
+aggregate outcomes, lock behavior, deadlines, and final state.  Repetition
+samples nondeterministic interleavings; it does not promise deterministic
+scheduling, fairness, or prove that unobserved races are absent.
+"""
 
 import unittest
 

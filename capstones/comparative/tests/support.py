@@ -1,4 +1,10 @@
-"""Fixture-driven subprocess support for the frozen comparative contract."""
+"""Fixture-driven conformance support for the frozen comparative contract.
+
+Sequential scenarios apply an ordered series of commands and database checks to
+one isolated store.  Multiprocess scenarios instead coordinate independently
+owned children and assert aggregate outcomes that remain valid across permitted
+nondeterministic interleavings.
+"""
 
 from __future__ import annotations
 
@@ -31,6 +37,12 @@ SAFE_INTEGER_MAXIMUM = 9_007_199_254_740_991
 
 @dataclass(frozen=True, slots=True)
 class ProcessResult:
+    """A completed process observation, including elapsed wall-clock time.
+
+    ``duration_ms`` includes launch, waiting, and teardown seen by the parent; it
+    is not child CPU time and is used only for explicit timing contracts.
+    """
+
     args: tuple[str, ...]
     stdout: bytes
     stderr: bytes
@@ -40,6 +52,12 @@ class ProcessResult:
 
 @dataclass(slots=True)
 class RunningProcess:
+    """A child process owned by the harness until awaited or terminated.
+
+    Keeping the arguments and start/release timestamp beside ``Popen`` lets every
+    completion path produce the same diagnostic and wall-clock result.
+    """
+
     args: tuple[str, ...]
     process: subprocess.Popen[bytes]
     started: float
@@ -56,7 +74,12 @@ def load_fixture(path: Path) -> dict[str, object]:
 
 @contextmanager
 def test_directory() -> Iterator[Path]:
-    """Create and fully clean repository-local process-test storage."""
+    """Give one scenario an isolated cwd-independent database location.
+
+    Repository-local storage keeps child-process paths predictable, while a new
+    directory per use prevents database, journal, or ready files leaking between
+    fixture cases.
+    """
 
     with TemporaryDirectory(prefix=".comparative-test-", dir=TEST_ROOT) as directory:
         yield Path(directory)
@@ -99,12 +122,18 @@ def generated_key(case: Mapping[str, object]) -> str:
 
 
 def run_cli(args: Sequence[str], timeout: float = 15.0) -> ProcessResult:
+    """Run one CLI with the suite's fixed working directory and environment."""
+
     command = [*_program(), *args]
     started = time.monotonic()
     try:
         process = subprocess.run(
             command,
+            # A stable cwd ensures behavior cannot depend on the test runner's
+            # launch directory; explicit database paths still isolate storage.
             cwd=REPOSITORY_ROOT,
+            # In particular, PYTHONPATH selects the same implementation root as
+            # the in-process imports and PYTHONIOENCODING fixes wire encoding.
             env=_environment(),
             check=False,
             capture_output=True,
@@ -138,6 +167,8 @@ def decode_stdout(
     case: unittest.TestCase,
     stdout: bytes,
 ) -> dict[str, object]:
+    """Decode the exact one-line, compact, restricted-JSON output contract."""
+
     case.assertFalse(stdout.startswith(b"\xef\xbb\xbf"))
     case.assertTrue(stdout.endswith(b"\n"), stdout)
     case.assertEqual(stdout.count(b"\n"), 1, stdout)
@@ -164,6 +195,8 @@ def decode_stdout(
 
 
 def _assert_compact_json(case: unittest.TestCase, text: str) -> None:
+    """Reject insignificant whitespace without rejecting whitespace in strings."""
+
     in_string = False
     escaped = False
     for character in text:
@@ -181,6 +214,12 @@ def _assert_compact_json(case: unittest.TestCase, text: str) -> None:
 
 
 def run_sequential_fixture(case: unittest.TestCase, name: str) -> None:
+    """Run fixture steps in order against a fresh store per scenario.
+
+    This path proves command-to-command conformance and persistent transitions;
+    process contention is intentionally delegated to the multiprocess runner.
+    """
+
     fixture = load_fixture(SCENARIO_ROOT / name)
     case.assertEqual(fixture["kind"], "sequential_scenarios")
     scenarios = fixture["scenarios"]
@@ -446,6 +485,13 @@ def run_rejected_value_fixtures(case: unittest.TestCase) -> None:
 
 
 def run_multiprocess_fixture(case: unittest.TestCase) -> None:
+    """Run and repeat contention scenarios without prescribing a winner.
+
+    Repeated cases broaden coverage of naturally variable interleavings.  Their
+    assertions describe allowed aggregates and final state rather than claiming
+    deterministic scheduling or fairness.
+    """
+
     fixture = load_fixture(SCENARIO_ROOT / "multiprocess.json")
     case.assertEqual(fixture["kind"], "multiprocess_scenarios")
     scenarios = fixture["scenarios"]
@@ -471,6 +517,8 @@ def _run_multiprocess_scenario(
         running: dict[str, RunningProcess] = {}
         helpers: dict[str, RunningProcess] = {}
         ready_files: list[Path] = []
+        # Named ownership maps make fixture start/release/await operations
+        # explicit and leave every still-owned child available to ``finally``.
         try:
             operations = scenario["operations"]
             assert isinstance(operations, list)
@@ -503,6 +551,8 @@ def _run_multiprocess_scenario(
                         time.monotonic(),
                     )
                     ready_files.append(ready)
+                    # The helper publishes readiness only after BEGIN IMMEDIATE,
+                    # so subsequent fixture operations really contend on a lock.
                     _wait_for_ready(helper, ready)
                 elif "start_cli" in operation:
                     item = operation["start_cli"]
@@ -545,6 +595,8 @@ def _run_multiprocess_scenario(
             case.assertFalse(helpers)
             _assert_integrity(case, database)
         finally:
+            # A failed assertion must not strand children or SQLite sidecars for
+            # later scenarios.  Killing here is cleanup, not a durability test.
             for owned in (*running.values(), *helpers.values()):
                 _terminate_owned(owned.process)
             for ready in ready_files:
@@ -558,12 +610,16 @@ def _run_parallel(
     database: Path,
     missing_parent: Path,
 ) -> None:
+    """Create indexed actors, release their start barriers, and assert totals."""
+
     generator = parallel["actors_generator"]
     assertion = parallel["assert"]
     assert isinstance(generator, dict) and isinstance(assertion, dict)
     case.assertEqual(generator["kind"], "indexed_commands")
     actors: list[RunningProcess] = []
     for index in range(int(generator["count"])):
+        # Index substitution gives each actor a distinct key/value while keeping
+        # the scenario compact enough to audit as fixture data.
         args = _indexed_args(
             generator["args"],
             database,
@@ -580,6 +636,8 @@ def _run_parallel(
             stderr=subprocess.PIPE,
         )
         actors.append(RunningProcess(tuple(args), process, 0.0))
+    # All actors now block on stdin.  Releasing them in this loop narrows their
+    # start window but does not make OS scheduling simultaneous or deterministic.
     released = time.monotonic()
     for actor in actors:
         assert actor.process.stdin is not None
@@ -588,11 +646,15 @@ def _run_parallel(
         actor.process.stdin = None
         actor.started = released
     results: list[ProcessResult] = []
+    # Use remaining time from one shared 30-second target rather than a fresh
+    # 30 seconds per actor; the 100 ms floor is a small per-actor grace.
     deadline = released + 30
     try:
         for actor in actors:
             results.append(_await_process(actor, max(0.1, deadline - time.monotonic())))
     finally:
+        # The harness retains ownership until every actor has been reaped, even
+        # when one completion or assertion path raises.
         for actor in actors:
             _terminate_owned(actor.process)
     _assert_parallel(case, results, assertion, database)
@@ -604,6 +666,12 @@ def _assert_parallel(
     assertion: Mapping[str, object],
     database: Path,
 ) -> None:
+    """Check cohort-wide invariants and the winning value, when applicable.
+
+    Aggregate counts and revision sets accept any permitted winner while still
+    detecting lost updates, duplicate revisions, or unexpected error classes.
+    """
+
     envelopes: list[dict[str, object]] = []
     for result in results:
         case.assertEqual(result.stderr, b"", result)
@@ -750,6 +818,12 @@ def _assert_duration(
     result: ProcessResult,
     assertion: Mapping[str, object],
 ) -> None:
+    """Apply fixture timing bounds to observed parent wall-clock duration.
+
+    These bounds check busy-timeout behavior; passing them does not establish
+    fairness or prove that no race exists outside the sampled executions.
+    """
+
     if "duration_less_than_ms" in assertion:
         case.assertLess(result.duration_ms, assertion["duration_less_than_ms"])
     if "duration_at_least_ms" in assertion:
@@ -791,6 +865,8 @@ def _assert_integrity(case: unittest.TestCase, database: Path) -> None:
 
 
 def _cleanup_database(database: Path) -> None:
+    """Remove the database and every SQLite sidecar after children are closed."""
+
     for suffix in ("", "-wal", "-shm", "-journal"):
         path = Path(str(database) + suffix)
         path.unlink(missing_ok=True)
@@ -829,6 +905,8 @@ def _indexed_args(
 
 
 def _wait_for_ready(process: subprocess.Popen[bytes], ready: Path) -> None:
+    """Wait until the lock helper confirms its immediate transaction is held."""
+
     deadline = time.monotonic() + 15
     while time.monotonic() < deadline:
         if ready.exists():
@@ -845,6 +923,8 @@ def _release_helper(
     case: unittest.TestCase,
     helper: RunningProcess,
 ) -> None:
+    """Release a held lock, then await and validate the owned helper."""
+
     process = helper.process
     assert process.stdin is not None
     process.stdin.write(b"x")
@@ -856,6 +936,8 @@ def _release_helper(
 
 
 def _await_process(owned: RunningProcess, timeout: float) -> ProcessResult:
+    """Reap an owned child or terminate it when its explicit deadline expires."""
+
     try:
         stdout, stderr = owned.process.communicate(timeout=timeout)
     except subprocess.TimeoutExpired as error:
@@ -871,6 +953,8 @@ def _await_process(owned: RunningProcess, timeout: float) -> ProcessResult:
 
 
 def _terminate_owned(process: subprocess.Popen[bytes]) -> None:
+    """Ensure a child owned by the harness is no longer running and is reaped."""
+
     if process.poll() is None:
         process.kill()
         process.communicate(timeout=30)
@@ -903,6 +987,8 @@ def _program() -> list[str]:
 
 
 def _environment() -> dict[str, str]:
+    """Build the isolated import and text-I/O environment inherited by children."""
+
     return {
         **os.environ,
         "PYTHONPATH": str(SOURCE_ROOT),

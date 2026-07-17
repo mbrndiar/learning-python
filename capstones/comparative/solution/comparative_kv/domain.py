@@ -1,4 +1,10 @@
-"""Keys, expectations, and restricted JSON normalization."""
+"""Validate keys/expectations and normalize restricted JSON without losing lexemes.
+
+The standard decoder builds useful Python values, but normalization also needs
+facts that ordinary decoding discards: number spelling, duplicate members, and
+insignificant whitespace.  This module therefore preserves lexical evidence
+first, then constructs the contract's semantic value.
+"""
 
 from __future__ import annotations
 
@@ -11,10 +17,14 @@ from typing import cast
 from .errors import fail
 from .models import DeleteExpectation, JsonValue, SetExpectation
 
+# Python integers are arbitrary precision; this is the conventional binary64
+# safe-integer maximum, within which integer values cannot alias another integer.
 MAX_SAFE_INTEGER = 9_007_199_254_740_991
 MAX_VALUE_BYTES = 65_536
 MAX_CONTAINER_DEPTH = 32
 KEY_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._/-]{0,127}\Z")
+# Encode the JSON number grammar directly: zero has no leading peers, and a
+# present fraction or exponent must contain at least one decimal digit.
 NUMBER_PATTERN = re.compile(
     r"(?P<sign>-?)(?P<integer>0|[1-9][0-9]*)"
     r"(?:\.(?P<fraction>[0-9]+))?"
@@ -24,16 +34,22 @@ NUMBER_PATTERN = re.compile(
 
 @dataclass(frozen=True, slots=True)
 class _RawNumber:
+    """Keep a JSON number token intact until exact-decimal validation."""
+
     token: str
 
 
 @dataclass(frozen=True, slots=True)
 class _RawObject:
+    """Keep source-order pairs because a dict would erase duplicate members."""
+
     pairs: list[tuple[str, object]]
 
 
 @dataclass(slots=True)
 class _Metadata:
+    """Lexical properties that normalized Python values cannot represent."""
+
     whitespace: bool = False
     duplicate: bool = False
     noncanonical_number: bool = False
@@ -88,7 +104,12 @@ def parse_stored_json(text: str) -> JsonValue:
 
 
 def normalized_json(value: JsonValue) -> str:
-    """Serialize a normalized value compactly for SQLite."""
+    """Serialize a normalized value compactly for SQLite.
+
+    The contract has no canonical object-member order, so keys are intentionally
+    not sorted.  Python's retained insertion order nevertheless keeps this
+    implementation's traversal deterministic.
+    """
 
     return json.dumps(
         value,
@@ -102,6 +123,9 @@ def _parse_json(text: str, *, require_normalized: bool) -> JsonValue:
     if len(text.encode("utf-8", errors="surrogatepass")) > MAX_VALUE_BYTES:
         fail("invalid_value", {"reason": "byte_limit"}, 2)
 
+    # A small lexical pass records formatting and bounds nesting independently
+    # of semantic normalization.  Decoder hooks then retain number tokens and
+    # object pairs instead of prematurely converting or deduplicating them.
     metadata = _Metadata(whitespace=_scan_json(text))
     try:
         raw = json.loads(
@@ -133,7 +157,12 @@ def _raw_object(pairs: list[tuple[str, object]]) -> _RawObject:
 
 
 def _scan_json(text: str) -> bool:
-    """Record outside-string whitespace and reject depth while scanning."""
+    """Record outside-string whitespace and reject excessive lexical nesting.
+
+    This is deliberately not a second JSON parser.  It only understands enough
+    string escaping to avoid counting brackets or whitespace inside strings;
+    ``json.loads`` remains responsible for the complete RFC 8259 grammar.
+    """
 
     depth = 0
     in_string = False
@@ -176,6 +205,9 @@ def _normalize(raw: object, depth: int, metadata: _Metadata) -> JsonValue:
         return [_normalize(item, next_depth, metadata) for item in raw]
     if isinstance(raw, _RawObject):
         next_depth = _next_depth(depth)
+        # Compare names as Unicode scalar sequences before collapsing them.
+        # Iterating again in source order leaves each last-winning member at its
+        # source position, which also defines deterministic validation order.
         scalar_names = [_scalar_key(name) for name, _ in raw.pairs]
         last_indices: dict[str, int] = {}
         for index, name in enumerate(scalar_names):
@@ -202,7 +234,13 @@ def _next_depth(depth: int) -> int:
 
 
 def _scalar_key(value: str) -> str:
-    """Combine valid surrogate pairs while retaining lone units for ordering."""
+    """Map UTF-16 surrogate pairs to their supplementary Unicode scalar.
+
+    Some runtimes can expose strings as surrogate code units.  Combining a
+    valid high/low pair makes duplicate-name comparison independent of that
+    representation; lone units remain visible so validation can reject them.
+    No Unicode normalization or case folding is performed.
+    """
 
     output: list[str] = []
     index = 0
@@ -228,6 +266,9 @@ def _normalize_string(value: str) -> str:
 
 
 def _normalize_number(token: str) -> int:
+    # Binary64 conversion is used only for the contract's finiteness check.
+    # Exact integrality and magnitude below are derived from decimal digits, so
+    # values near the safe-integer boundary never inherit float rounding.
     try:
         binary64 = float(token)
     except ValueError:
@@ -261,6 +302,9 @@ def _normalize_number(token: str) -> int:
         integer_digits = digits[:-scale]
 
     magnitude_text = integer_digits.lstrip("0") or "0"
+    # Compare decimal magnitude by length and then lexicographically.  Equal-
+    # length digit strings have numeric ordering, and rejecting first avoids
+    # constructing a huge Python integer (including its digit-limit concerns).
     if len(magnitude_text) > 16 or (
         len(magnitude_text) == 16 and magnitude_text > "9007199254740991"
     ):
@@ -270,6 +314,13 @@ def _normalize_number(token: str) -> int:
 
 
 def _saturating_exponent(text: str) -> int:
+    """Parse an exponent into a bounded magnitude for later scale arithmetic.
+
+    Saturation prevents an arbitrarily long exponent token from constructing an
+    equally large Python integer. Public byte and binary64-finiteness checks run
+    before this implementation guard.
+    """
+
     negative = text.startswith("-")
     digits = text[1:] if text[:1] in ("+", "-") else text
     value = 0

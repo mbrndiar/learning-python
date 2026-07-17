@@ -44,11 +44,20 @@ def _reject(
 
 
 def normalize_timestamp(value: object) -> str | None:
-    """Normalize one strict RFC 3339 timestamp, or return ``None``."""
+    """Canonicalize the capstone's RFC-3339-shaped subset to UTC milliseconds.
+
+    The regular-expression gate intentionally accepts less than
+    :meth:`datetime.fromisoformat`: uppercase ``T`` and an explicit ``Z`` or
+    numeric offset. The datetime parser then rejects invalid calendar/time
+    values, including leap seconds. Canonical UTC text makes equivalent instants
+    compare and sort consistently. Sub-millisecond precision is truncated.
+    """
 
     if not isinstance(value, str) or not TIMESTAMP_PATTERN.fullmatch(value):
         return None
     try:
+        # ``fromisoformat`` consumes an offset; spelling Z as +00:00 keeps that
+        # parser detail separate from the canonical output spelling below.
         parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
     except ValueError:
         return None
@@ -87,6 +96,9 @@ def validate_import_id(import_id: str) -> None:
 def _valid_text(value: object) -> str | None:
     if not isinstance(value, str):
         return None
+    # Python strings can contain lone UTF-16 surrogates even though they are not
+    # Unicode scalar values. C0, DEL/C1, and surrogates are rejected before
+    # trimming so invisible transport/control data cannot become accepted text.
     if any(
         ord(character) < 32
         or 127 <= ord(character) <= 159
@@ -101,6 +113,9 @@ def _valid_text(value: object) -> str | None:
 
 
 def _duration(record: RawRecord, value: object) -> int | None:
+    # bool is an int subclass, but accepting true/false as 1/0 would weaken the
+    # wire contract. Only CSV gets a decimal-string exception because CSV has no
+    # native numeric type; JSON and HTTP must supply an actual integer.
     if isinstance(value, bool):
         return None
     if isinstance(value, int):
@@ -215,7 +230,12 @@ def normalize_record(record: RawRecord) -> Event | RejectedRecord:
 
 
 def normalize_records(records: Iterable[RawRecord]) -> Iterator[Event | RejectedRecord]:
-    """Normalize a source lazily and close a closeable iterator on every exit."""
+    """Normalize a single-pass source and own its iterator while this wrapper runs.
+
+    The ``finally`` closes a closeable iterator on exhaustion, input/normalization
+    failure, or explicit closure of this generator. It cannot promise prompt
+    cleanup if a consumer merely abandons the generator without closing it.
+    """
 
     iterator = iter(records)
     try:
@@ -231,7 +251,11 @@ def deduplicate_events(
     records: Iterable[Event | RejectedRecord],
     on_duplicate: Callable[[Event], None] | None = None,
 ) -> Iterator[Event | RejectedRecord]:
-    """Yield first occurrences and rejects in stable, single-pass order."""
+    """Yield first occurrences and rejects in stable, single-pass order.
+
+    Stability costs memory proportional to distinct ``(source, id)`` identities;
+    rejects never participate in identity suppression.
+    """
 
     seen: set[tuple[str, str]] = set()
     for record in records:

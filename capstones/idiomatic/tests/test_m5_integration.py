@@ -77,6 +77,9 @@ def loopback_server(
 
 
 class _ControlledFetcher:
+    # Pages 2 and 3 rendezvous so at least two fetches must overlap. Page 2 waits
+    # for page 3, allowing completion to differ from page order without relying
+    # on the operating system to choose or prove one particular completion order.
     def __init__(self):
         self.lock = threading.Lock()
         self.active = 0
@@ -104,6 +107,8 @@ class _ControlledFetcher:
 
 
 class _CancellingFetcher:
+    # With one worker, the call log exposes which fetches begin execution. It does
+    # not observe Executor.submit calls or cancellation of queued futures.
     def __init__(self):
         self.calls: list[int] = []
 
@@ -116,6 +121,10 @@ class _CancellingFetcher:
 
 class IntegrationTests(unittest.TestCase):
     def test_bounded_fetch_is_deterministic_despite_completion_order(self):
+        # Milestone 5 owns bounded concurrent retrieval and ordered assembly.
+        # maximum_active measures in-flight fetch_page calls: it must reach two
+        # but never exceed workers. Records must still be emitted in page order.
+        # The rendezvous proves overlap, not deterministic thread scheduling.
         self.assertIn(IMPLEMENTATION, ("starter", "solution"))
         fetcher = _ControlledFetcher()
         fetched = fetch_http_records(
@@ -132,6 +141,9 @@ class IntegrationTests(unittest.TestCase):
         )
 
     def test_cancellation_stops_scheduling_and_owned_workers_join(self):
+        # KeyboardInterrupt must escape. With one worker, the call log proves pages
+        # 3-5 never begin execution; it does not independently prove submission,
+        # cancellation of queued futures, executor shutdown, or thread joining.
         fetcher = _CancellingFetcher()
         with self.assertRaises(KeyboardInterrupt):
             fetch_http_records(
@@ -143,6 +155,9 @@ class IntegrationTests(unittest.TestCase):
         self.assertEqual(fetcher.calls, [1, 2])
 
     def test_strict_failure_rolls_back_and_partial_failure_commits(self):
+        # Strict mode treats any page failure as an atomic import failure. Partial
+        # mode commits successful pages in one explicitly marked import and then
+        # raises a result-bearing error so the CLI can report incomplete success.
         failure = ApplicationError(
             "page_fetch_failed",
             "injected page failure",
@@ -197,6 +212,8 @@ class IntegrationTests(unittest.TestCase):
             )
 
     def test_loopback_adapter_covers_valid_malformed_and_body_bound_pages(self):
+        # A loopback server exercises the concrete URL fetcher while keeping all
+        # responses controlled: valid JSON, malformed JSON, and the byte ceiling.
         pages = {
             page: (FIXTURES / "http" / f"page-{page}.json").read_bytes()
             for page in range(1, 4)
@@ -219,6 +236,9 @@ class IntegrationTests(unittest.TestCase):
             validate_loopback_url("https://example.com/events")
 
     def test_page_protocol_validation_and_partial_collection(self):
+        # Cross-page metadata is part of the protocol, not trusted payload data.
+        # Strict mode aborts on mismatch; partial mode records that page as failed
+        # and preserves successful records in ascending page order.
         class MismatchedFetcher(FixturePageFetcher):
             def fetch_page(self, base_url: str, page: int) -> Mapping[str, object]:
                 payload = dict(super().fetch_page(base_url, page))

@@ -1,4 +1,9 @@
-"""Milestone 3: exact schema, initialization, migration, and reopen behavior."""
+"""Milestone 3 contract for schema identity, initialization, and migration.
+
+Scenario fixtures exercise persistence and reopen behavior, while direct SQLite
+inspection prevents an implementation from passing with an approximately
+equivalent schema or with undeclared application objects and metadata.
+"""
 
 import sqlite3
 import unittest

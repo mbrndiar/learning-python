@@ -17,16 +17,21 @@ FIXED_TIME = datetime(2026, 7, 16, 12, 0, tzinfo=UTC)
 def test_directory() -> Iterator[Path]:
     """Create cleaned test storage below the repository, never in system temp."""
 
+    # Keeping transient databases inside the test tree constrains their location
+    # while TemporaryDirectory still provides unique paths and per-test cleanup.
     with TemporaryDirectory(prefix=".idiomatic-test-", dir=TEST_ROOT) as directory:
         yield Path(directory)
 
 
 class FixedClock:
+    # Ingestion metadata must be reproducible without coupling tests to wall time.
     def now(self) -> datetime:
         return FIXED_TIME
 
 
 class FixturePageFetcher:
+    # This fake controls page payloads and failures without exercising networking;
+    # the loopback tests cover the concrete HTTP adapter separately.
     def __init__(self, failures: Mapping[int, Exception] | None = None):
         self.failures = dict(failures or {})
         self.calls: list[int] = []

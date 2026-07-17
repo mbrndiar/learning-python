@@ -1,4 +1,11 @@
-"""Immutable public values for the comparative key/value store."""
+"""Frozen domain result records, independent of SQLite rows and JSON envelopes.
+
+The aliases describe the semantic value tree; validation separately narrows
+``int`` values to the safe-integer contract.  CLI formatters explicitly map
+these models to wire objects so persistence and output representations do not
+silently become part of the dataclass API. Freezing is shallow: nested
+``JsonValue`` lists and dictionaries remain mutable.
+"""
 
 from dataclasses import dataclass
 from typing import Literal, TypeAlias
@@ -11,7 +18,7 @@ DeleteExpectation: TypeAlias = Literal["any"] | int
 
 @dataclass(frozen=True, slots=True)
 class Entry:
-    """One normalized live entry."""
+    """One normalized live entry returned by the storage boundary."""
 
     key: str
     value: JsonValue
@@ -20,7 +27,7 @@ class Entry:
 
 @dataclass(frozen=True, slots=True)
 class SetResult:
-    """Result returned after a committed set operation."""
+    """Committed set outcome, including whether it inserted or replaced."""
 
     entry: Entry
     created: bool
@@ -28,7 +35,7 @@ class SetResult:
 
 @dataclass(frozen=True, slots=True)
 class DeleteResult:
-    """Result returned after a committed delete operation."""
+    """Committed deletion and the global revision consumed by that mutation."""
 
     key: str
     deleted_revision: int
@@ -37,7 +44,7 @@ class DeleteResult:
 
 @dataclass(frozen=True, slots=True)
 class ListResult:
-    """Ordered entries and the current global revision."""
+    """Deterministically ordered entries plus the current global revision."""
 
     entries: tuple[Entry, ...]
     global_revision: int

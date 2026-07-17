@@ -1,4 +1,4 @@
-"""Versioned SQLite persistence for events, rejects, imports, and reports."""
+"""Versioned SQLite persistence with fail-closed compatibility checks."""
 
 import json
 import sqlite3
@@ -63,7 +63,12 @@ EXPECTED_COLUMNS = {
 
 
 class SQLiteEventRepository:
-    """Own short SQLite connections and atomic streaming imports."""
+    """Own short-lived connections and make each import one transaction.
+
+    Existing databases are accepted only when their application identity,
+    schema version, user-table set, and column-name sets match this adapter.
+    The check deliberately does not guess at migrations or repair near-matches.
+    """
 
     def __init__(self, database_path: str | Path):
         self.database_path = Path(database_path)
@@ -76,6 +81,8 @@ class SQLiteEventRepository:
             raise self._database_error(error) from error
 
     def _connect(self) -> sqlite3.Connection:
+        """Return a configured connection whose caller owns closing it."""
+
         connection = sqlite3.connect(self.database_path)
         connection.row_factory = sqlite3.Row
         connection.execute("PRAGMA foreign_keys = ON")
@@ -106,6 +113,8 @@ class SQLiteEventRepository:
             raise self._database_error("SQLite integrity check failed")
         version = int(connection.execute("PRAGMA user_version").fetchone()[0])
         tables = self._table_names(connection)
+        # Only a truly empty, unversioned database is initialized. Any existing
+        # structure must prove compatibility instead of being modified in place.
         if version == 0 and not tables:
             self._create_schema(connection)
             return
@@ -116,9 +125,14 @@ class SQLiteEventRepository:
                 5,
                 {"found": version, "supported": SCHEMA_VERSION},
             )
+        # user_version selects the layout; application_id prevents an unrelated
+        # SQLite file that happens to use the same version number being accepted.
         application_id = int(connection.execute("PRAGMA application_id").fetchone()[0])
         if application_id != APPLICATION_ID:
             raise self._database_error("database application identifier is invalid")
+        # This compatibility surface is intentionally exact for user-table and
+        # column names after the identity/version checks. It does not reconstruct
+        # full DDL or attempt to repair a merely similar database.
         if tables != set(EXPECTED_COLUMNS):
             raise self._database_error("database schema tables are malformed")
         for table, expected in EXPECTED_COLUMNS.items():
@@ -182,6 +196,8 @@ class SQLiteEventRepository:
             )
 
     def _checked_connection(self) -> sqlite3.Connection:
+        """Return a validated connection, closing it if validation fails."""
+
         connection = self._connect()
         try:
             self._initialize_or_validate(connection)
@@ -214,15 +230,24 @@ class SQLiteEventRepository:
         records: Iterable[Event | RejectedRecord],
         failed_pages: Sequence[int] = (),
     ) -> ImportResult:
-        """Atomically store one import while preserving first event identity."""
+        """Store import metadata, records, issues, and counters atomically.
+
+        Event identity is the ``(source, event_id)`` key: the first stored event
+        keeps both its payload and originating import when later imports repeat
+        that identity.
+        """
 
         validate_import_id(import_id)
         pages = tuple(sorted(set(failed_pages)))
         state: ImportState = "partial" if pages else "complete"
         try:
             with closing(self._checked_connection()) as connection:
+                # Acquire the write reservation before checking import_id, so
+                # competing writers cannot both pass the conflict check.
                 connection.execute("BEGIN IMMEDIATE")
                 try:
+                    # An import ID names one immutable import attempt. Refuse
+                    # reuse instead of silently resuming or replacing its rows.
                     exists = connection.execute(
                         "SELECT 1 FROM imports WHERE import_id = ?",
                         (import_id,),
@@ -253,6 +278,9 @@ class SQLiteEventRepository:
                     accepted = duplicates = rejected = 0
                     for record in records:
                         if isinstance(record, Event):
+                            # Under this schema, the expected ignored conflict is
+                            # the event primary key. IGNORE, unlike an upsert,
+                            # leaves the first event and its import_id untouched.
                             cursor = connection.execute(
                                 """
                                 INSERT OR IGNORE INTO events (
@@ -322,6 +350,9 @@ class SQLiteEventRepository:
                     )
                     connection.commit()
                 except BaseException:
+                    # The iterable and SQLite calls execute inside this boundary.
+                    # Roll back even for cancellation/SystemExit, not only normal
+                    # Exceptions, so a partially consumed import is not committed.
                     connection.rollback()
                     raise
         except ApplicationError:
@@ -364,10 +395,14 @@ class SQLiteEventRepository:
         if filters.status is not None:
             clauses.append("status = ?")
             parameters.append(filters.status)
+        # Only fixed SQL fragments are composed; every user value is bound.
+        # Joining clauses with AND gives intersection semantics to all filters.
         where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
 
         try:
             with closing(self._checked_connection()) as connection:
+                # SUM returns NULL for an empty match set; COALESCE keeps report
+                # totals numeric and identical for filtered and empty databases.
                 totals_row = connection.execute(
                     f"""
                     SELECT COUNT(*) AS events,
@@ -406,6 +441,8 @@ class SQLiteEventRepository:
             raise self._database_error(error) from error
 
         assert totals_row is not None
+        # GROUP BY row order is unspecified without ORDER BY. Sorting the typed
+        # summaries here gives both renderers the same stable semantic order.
         categories = sorted(
             (
                 CategorySummary(
