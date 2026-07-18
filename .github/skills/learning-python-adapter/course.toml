@@ -1,0 +1,878 @@
+manifest_version = 1
+schema_version = "1.0.0"
+schema_document = ".github/skills/learning-python-adapter/references/course-schema.md"
+
+[course]
+id = "learning-python"
+version = "1.0.0"
+title = "Learning Python"
+description = "A hands-on introduction to Python with lessons, exercises, one applied project, and two required capstones."
+language = "python"
+requires_python = ">=3.11,<3.15"
+minimum_python = "3.11"
+maximum_python = "3.14"
+learner_entry_point = "README.md"
+setup_guide = "docs/SETUP.md"
+command_working_directory = "."
+final_destinations = [
+  { id = "capstone.comparative-kv", path = "capstones/comparative/README.md", required = true },
+  { id = "capstone.idiomatic-ingest-report", path = "capstones/idiomatic/README.md", required = true },
+]
+
+[[modules]]
+id = "module.basics"
+ordinal = 1
+title = "Basics"
+prerequisites = []
+lesson_readme = "lessons/01_basics/README.md"
+review_questions = { path = "lessons/01_basics/README.md", heading = "❓ Review questions" }
+exercise_starter = "exercises/01_basics/exercises.py"
+exercise_solution = "exercises/01_basics/solutions.py"
+validation_commands = ["python exercises/01_basics/exercises.py"]
+solution_lock_group = "solutions.module.basics"
+required_outcomes = [
+  "Run a Python script and bind values to names.",
+  "Recognize core scalar types and convert input explicitly.",
+  "Choose suitable numeric representations and perform calculations.",
+  "Compare values and cross between Unicode text and encoded bytes.",
+]
+
+[[modules.concepts]]
+id = "concept.basics.hello-world"
+title = "Running scripts and printing"
+prerequisites = []
+lesson_file = "lessons/01_basics/01_hello_world.py"
+run_command = "python lessons/01_basics/01_hello_world.py"
+
+[[modules.concepts]]
+id = "concept.basics.variables-and-types"
+title = "Variables and core scalar types"
+prerequisites = ["concept.basics.hello-world"]
+lesson_file = "lessons/01_basics/02_variables_and_types.py"
+run_command = "python lessons/01_basics/02_variables_and_types.py"
+
+[[modules.concepts]]
+id = "concept.basics.operators"
+title = "Arithmetic, comparison, and logical operators"
+prerequisites = ["concept.basics.variables-and-types"]
+lesson_file = "lessons/01_basics/03_operators.py"
+run_command = "python lessons/01_basics/03_operators.py"
+
+[[modules.concepts]]
+id = "concept.basics.strings"
+title = "String operations"
+prerequisites = ["concept.basics.operators"]
+lesson_file = "lessons/01_basics/04_strings.py"
+run_command = "python lessons/01_basics/04_strings.py"
+
+[[modules.concepts]]
+id = "concept.basics.text-and-binary-data"
+title = "Unicode text and binary data"
+prerequisites = ["concept.basics.strings"]
+lesson_file = "lessons/01_basics/05_text_and_binary_data.py"
+run_command = "python lessons/01_basics/05_text_and_binary_data.py"
+
+[[modules.concepts]]
+id = "concept.basics.numeric-types-and-conversions"
+title = "Numeric representations and explicit conversions"
+prerequisites = ["concept.basics.text-and-binary-data"]
+lesson_file = "lessons/01_basics/06_numeric_types_and_conversions.py"
+run_command = "python lessons/01_basics/06_numeric_types_and_conversions.py"
+
+[[modules]]
+id = "module.control-flow"
+ordinal = 2
+title = "Control Flow"
+prerequisites = ["module.basics"]
+lesson_readme = "lessons/02_control_flow/README.md"
+review_questions = { path = "lessons/02_control_flow/README.md", heading = "❓ Review questions" }
+exercise_starter = "exercises/02_control_flow/exercises.py"
+exercise_solution = "exercises/02_control_flow/solutions.py"
+validation_commands = ["python exercises/02_control_flow/exercises.py"]
+solution_lock_group = "solutions.module.control-flow"
+required_outcomes = [
+  "Express decisions with conditional branches and truthiness.",
+  "Repeat work over iterables with for and while loops.",
+  "Stop or skip iterations and identify loops that cannot terminate.",
+]
+
+[[modules.concepts]]
+id = "concept.control-flow.conditionals"
+title = "Conditionals and truthiness"
+prerequisites = []
+lesson_file = "lessons/02_control_flow/01_conditionals.py"
+run_command = "python lessons/02_control_flow/01_conditionals.py"
+
+[[modules.concepts]]
+id = "concept.control-flow.loops"
+title = "Iteration and loop control"
+prerequisites = ["concept.control-flow.conditionals"]
+lesson_file = "lessons/02_control_flow/02_loops.py"
+run_command = "python lessons/02_control_flow/02_loops.py"
+
+[[modules]]
+id = "module.functions"
+ordinal = 3
+title = "Functions"
+prerequisites = ["module.control-flow"]
+lesson_readme = "lessons/03_functions/README.md"
+review_questions = { path = "lessons/03_functions/README.md", heading = "❓ Review questions" }
+exercise_starter = "exercises/03_functions/exercises.py"
+exercise_solution = "exercises/03_functions/solutions.py"
+validation_commands = ["python exercises/03_functions/exercises.py"]
+solution_lock_group = "solutions.module.functions"
+required_outcomes = [
+  "Define focused functions with explicit call contracts.",
+  "Pass arguments, return results, and explain mutation versus rebinding.",
+  "Reason about scope, closures, lambdas, and terminating recursion.",
+]
+
+[[modules.concepts]]
+id = "concept.functions.call-contracts"
+title = "Function definitions, calls, binding, and returns"
+prerequisites = []
+lesson_file = "lessons/03_functions/01_functions.py"
+run_command = "python lessons/03_functions/01_functions.py"
+
+[[modules.concepts]]
+id = "concept.functions.lambdas-closures-recursion"
+title = "Lambdas, closures, and recursion"
+prerequisites = ["concept.functions.call-contracts"]
+lesson_file = "lessons/03_functions/02_lambdas_closures_and_recursion.py"
+run_command = "python lessons/03_functions/02_lambdas_closures_and_recursion.py"
+
+[[modules]]
+id = "module.data-structures"
+ordinal = 4
+title = "Data Structures"
+prerequisites = ["module.functions"]
+lesson_readme = "lessons/04_data_structures/README.md"
+review_questions = { path = "lessons/04_data_structures/README.md", heading = "❓ Review questions" }
+exercise_starter = "exercises/04_data_structures/exercises.py"
+exercise_solution = "exercises/04_data_structures/solutions.py"
+validation_commands = ["python exercises/04_data_structures/exercises.py"]
+solution_lock_group = "solutions.module.data-structures"
+required_outcomes = [
+  "Select a collection by its semantics.",
+  "Copy and mutate collections intentionally.",
+  "Iterate through mappings and write readable comprehensions.",
+  "Use specialized collections when they clarify intent.",
+]
+
+[[modules.concepts]]
+id = "concept.data-structures.lists-and-tuples"
+title = "Lists and tuples"
+prerequisites = []
+lesson_file = "lessons/04_data_structures/01_lists_and_tuples.py"
+run_command = "python lessons/04_data_structures/01_lists_and_tuples.py"
+
+[[modules.concepts]]
+id = "concept.data-structures.dictionaries-and-sets"
+title = "Dictionaries and sets"
+prerequisites = ["concept.data-structures.lists-and-tuples"]
+lesson_file = "lessons/04_data_structures/02_dictionaries_and_sets.py"
+run_command = "python lessons/04_data_structures/02_dictionaries_and_sets.py"
+
+[[modules.concepts]]
+id = "concept.data-structures.comprehensions-and-collections"
+title = "Comprehensions and specialized collections"
+prerequisites = ["concept.data-structures.dictionaries-and-sets"]
+lesson_file = "lessons/04_data_structures/03_comprehensions_and_collections.py"
+run_command = "python lessons/04_data_structures/03_comprehensions_and_collections.py"
+
+[[modules]]
+id = "module.modules-and-files"
+ordinal = 5
+title = "Modules and Files"
+prerequisites = ["module.data-structures"]
+lesson_readme = "lessons/05_modules_and_files/README.md"
+review_questions = { path = "lessons/05_modules_and_files/README.md", heading = "❓ Review questions" }
+exercise_starter = "exercises/05_modules_and_files/exercises.py"
+exercise_solution = "exercises/05_modules_and_files/solutions.py"
+validation_commands = ["python exercises/05_modules_and_files/exercises.py"]
+solution_lock_group = "solutions.module.modules-and-files"
+required_outcomes = [
+  "Import modules and packages without accidental side effects.",
+  "Distinguish import packages from installable distributions.",
+  "Work safely with paths, directories, text files, and binary files.",
+  "Represent instants and elapsed time deliberately.",
+  "Exchange and validate structured JSON data.",
+  "Handle expected errors and implement deterministic cleanup.",
+]
+
+[[modules.concepts]]
+id = "concept.modules-and-files.modules"
+title = "Modules and standard-library imports"
+prerequisites = []
+lesson_file = "lessons/05_modules_and_files/01_modules.py"
+run_command = "python lessons/05_modules_and_files/01_modules.py"
+
+[[modules.concepts]]
+id = "concept.modules-and-files.packages"
+title = "Packages, imports, and public APIs"
+prerequisites = ["concept.modules-and-files.modules"]
+lesson_file = "lessons/05_modules_and_files/02_packages.py"
+run_command = "python lessons/05_modules_and_files/02_packages.py"
+
+[[modules.concepts]]
+id = "concept.modules-and-files.files-and-exceptions"
+title = "Text and binary files with expected failures"
+prerequisites = ["concept.modules-and-files.packages"]
+lesson_file = "lessons/05_modules_and_files/03_files_and_exceptions.py"
+run_command = "python lessons/05_modules_and_files/03_files_and_exceptions.py"
+
+[[modules.concepts]]
+id = "concept.modules-and-files.custom-exceptions-and-context-managers"
+title = "Custom exceptions and context managers"
+prerequisites = ["concept.modules-and-files.files-and-exceptions"]
+lesson_file = "lessons/05_modules_and_files/04_custom_exceptions_and_context_managers.py"
+run_command = "python lessons/05_modules_and_files/04_custom_exceptions_and_context_managers.py"
+
+[[modules.concepts]]
+id = "concept.modules-and-files.json-and-structured-data"
+title = "JSON serialization and validation"
+prerequisites = ["concept.modules-and-files.custom-exceptions-and-context-managers"]
+lesson_file = "lessons/05_modules_and_files/05_json_and_structured_data.py"
+run_command = "python lessons/05_modules_and_files/05_json_and_structured_data.py"
+
+[[modules.concepts]]
+id = "concept.modules-and-files.directories-and-paths"
+title = "Directory and path operations"
+prerequisites = ["concept.modules-and-files.json-and-structured-data"]
+lesson_file = "lessons/05_modules_and_files/06_directories_and_paths.py"
+run_command = "python lessons/05_modules_and_files/06_directories_and_paths.py"
+
+[[modules.concepts]]
+id = "concept.modules-and-files.dates-and-times"
+title = "Dates, times, zones, and clocks"
+prerequisites = ["concept.modules-and-files.directories-and-paths"]
+lesson_file = "lessons/05_modules_and_files/07_dates_and_times.py"
+run_command = "python lessons/05_modules_and_files/07_dates_and_times.py"
+
+[[modules]]
+id = "module.object-oriented-programming"
+ordinal = 6
+title = "Object-Oriented Programming"
+prerequisites = ["module.modules-and-files"]
+lesson_readme = "lessons/06_object_oriented_programming/README.md"
+review_questions = { path = "lessons/06_object_oriented_programming/README.md", heading = "❓ Review questions" }
+exercise_starter = "exercises/06_object_oriented_programming/exercises.py"
+exercise_solution = "exercises/06_object_oriented_programming/solutions.py"
+validation_commands = ["python exercises/06_object_oriented_programming/exercises.py"]
+solution_lock_group = "solutions.module.object-oriented-programming"
+required_outcomes = [
+  "Model related state and behavior with classes.",
+  "Distinguish class data, instance data, and method kinds.",
+  "Choose composition or inheritance deliberately.",
+  "Define useful object protocols and reduce data-class boilerplate.",
+]
+
+[[modules.concepts]]
+id = "concept.object-oriented-programming.classes-and-objects"
+title = "Classes, objects, methods, and properties"
+prerequisites = []
+lesson_file = "lessons/06_object_oriented_programming/01_classes_and_objects.py"
+run_command = "python lessons/06_object_oriented_programming/01_classes_and_objects.py"
+
+[[modules.concepts]]
+id = "concept.object-oriented-programming.inheritance-and-polymorphism"
+title = "Inheritance and polymorphism"
+prerequisites = ["concept.object-oriented-programming.classes-and-objects"]
+lesson_file = "lessons/06_object_oriented_programming/02_inheritance_and_polymorphism.py"
+run_command = "python lessons/06_object_oriented_programming/02_inheritance_and_polymorphism.py"
+
+[[modules.concepts]]
+id = "concept.object-oriented-programming.encapsulation-and-dunder-methods"
+title = "Encapsulation and dunder methods"
+prerequisites = ["concept.object-oriented-programming.inheritance-and-polymorphism"]
+lesson_file = "lessons/06_object_oriented_programming/03_encapsulation_and_magic_methods.py"
+run_command = "python lessons/06_object_oriented_programming/03_encapsulation_and_magic_methods.py"
+
+[[modules.concepts]]
+id = "concept.object-oriented-programming.abstract-classes-dataclasses-enums"
+title = "Abstract classes, dataclasses, and enums"
+prerequisites = ["concept.object-oriented-programming.encapsulation-and-dunder-methods"]
+lesson_file = "lessons/06_object_oriented_programming/04_abstract_classes_and_dataclasses.py"
+run_command = "python lessons/06_object_oriented_programming/04_abstract_classes_and_dataclasses.py"
+
+[[modules]]
+id = "module.advanced-python"
+ordinal = 7
+title = "Advanced Python"
+prerequisites = ["module.object-oriented-programming"]
+lesson_readme = "lessons/07_advanced_python/README.md"
+review_questions = { path = "lessons/07_advanced_python/README.md", heading = "❓ Review questions" }
+exercise_starter = "exercises/07_advanced_python/exercises.py"
+exercise_solution = "exercises/07_advanced_python/solutions.py"
+validation_commands = ["python exercises/07_advanced_python/exercises.py"]
+solution_lock_group = "solutions.module.advanced-python"
+required_outcomes = [
+  "Wrap behavior with decorators while preserving metadata.",
+  "Distinguish iterables, iterators, and generators.",
+  "Evaluate the trade-offs of lazy processing.",
+  "Write useful modern type annotations.",
+  "Describe collaborators with protocols and inject them into business logic.",
+]
+
+[[modules.concepts]]
+id = "concept.advanced-python.decorators"
+title = "Decorators and decorator factories"
+prerequisites = []
+lesson_file = "lessons/07_advanced_python/01_decorators.py"
+run_command = "python lessons/07_advanced_python/01_decorators.py"
+
+[[modules.concepts]]
+id = "concept.advanced-python.generators-and-iterators"
+title = "Generators and the iterator protocol"
+prerequisites = ["concept.advanced-python.decorators"]
+lesson_file = "lessons/07_advanced_python/02_generators_and_iterators.py"
+run_command = "python lessons/07_advanced_python/02_generators_and_iterators.py"
+
+[[modules.concepts]]
+id = "concept.advanced-python.type-hints"
+title = "Modern type hints"
+prerequisites = ["concept.advanced-python.generators-and-iterators"]
+lesson_file = "lessons/07_advanced_python/03_type_hints.py"
+run_command = "python lessons/07_advanced_python/03_type_hints.py"
+
+[[modules.concepts]]
+id = "concept.advanced-python.protocols-and-dependency-injection"
+title = "Protocols, dependency injection, and adapters"
+prerequisites = ["concept.advanced-python.type-hints"]
+lesson_file = "lessons/07_advanced_python/04_protocols_and_dependency_injection.py"
+run_command = "python lessons/07_advanced_python/04_protocols_and_dependency_injection.py"
+
+[[modules]]
+id = "module.testing"
+ordinal = 8
+title = "Testing"
+prerequisites = ["module.advanced-python"]
+lesson_readme = "lessons/08_testing/README.md"
+review_questions = { path = "lessons/08_testing/README.md", heading = "❓ Review questions" }
+exercise_starter = "exercises/08_testing/exercises.py"
+exercise_solution = "exercises/08_testing/solutions.py"
+validation_commands = ["python exercises/08_testing/exercises.py"]
+solution_lock_group = "solutions.module.testing"
+required_outcomes = [
+  "Define unittest test cases with independent fixtures.",
+  "Choose precise assertions and test expected failures.",
+  "Use mocks at meaningful collaborator boundaries.",
+  "Explain what makes a test suite trustworthy and what coverage omits.",
+]
+
+[[modules.concepts]]
+id = "concept.testing.unittest-basics"
+title = "Test cases, fixtures, assertions, and mocks"
+prerequisites = []
+lesson_file = "lessons/08_testing/01_unittest_basics.py"
+run_command = "python lessons/08_testing/01_unittest_basics.py"
+
+[[modules]]
+id = "module.tooling-and-debugging"
+ordinal = 9
+title = "Tooling and Debugging"
+prerequisites = ["module.testing"]
+lesson_readme = "lessons/09_tooling_and_debugging/README.md"
+review_questions = { path = "lessons/09_tooling_and_debugging/README.md", heading = "❓ Review questions" }
+exercise_starter = "exercises/09_tooling_and_debugging/exercises.py"
+exercise_solution = "exercises/09_tooling_and_debugging/solutions.py"
+validation_commands = ["python exercises/09_tooling_and_debugging/exercises.py"]
+solution_lock_group = "solutions.module.tooling-and-debugging"
+required_outcomes = [
+  "Isolate dependencies and invoke pip through the intended interpreter.",
+  "Read tracebacks and inspect state with pdb.",
+  "Keep command-line parsing at the application boundary.",
+  "Write concise pytest tests and use logging deliberately.",
+  "Cross environment, process, and standard-stream boundaries safely.",
+  "Build and document a distribution with an intentional public API.",
+  "Explain formatting, linting, typing, testing, coverage, and CI feedback.",
+]
+
+[[modules.concepts]]
+id = "concept.tooling-and-debugging.virtual-environments-and-pip"
+title = "Virtual environments, pip, and dependency declarations"
+prerequisites = []
+lesson_file = "lessons/09_tooling_and_debugging/01_virtual_environments_and_pip.py"
+run_command = "python lessons/09_tooling_and_debugging/01_virtual_environments_and_pip.py"
+
+[[modules.concepts]]
+id = "concept.tooling-and-debugging.tracebacks-and-pdb"
+title = "Tracebacks and interactive debugging"
+prerequisites = ["concept.tooling-and-debugging.virtual-environments-and-pip"]
+lesson_file = "lessons/09_tooling_and_debugging/02_debugging_and_tracebacks.py"
+run_command = "python lessons/09_tooling_and_debugging/02_debugging_and_tracebacks.py"
+
+[[modules.concepts]]
+id = "concept.tooling-and-debugging.command-line-arguments"
+title = "Command-line argument parsing"
+prerequisites = ["concept.tooling-and-debugging.tracebacks-and-pdb"]
+lesson_file = "lessons/09_tooling_and_debugging/03_command_line_arguments.py"
+run_command = "python lessons/09_tooling_and_debugging/03_command_line_arguments.py"
+
+[[modules.concepts]]
+id = "concept.tooling-and-debugging.pytest-basics"
+title = "Pytest assertions, parameterization, failures, and fixtures"
+prerequisites = ["concept.tooling-and-debugging.command-line-arguments"]
+lesson_file = "lessons/09_tooling_and_debugging/04_pytest_basics.py"
+run_command = "python -m pytest lessons/09_tooling_and_debugging/04_pytest_basics.py -v"
+
+[[modules.concepts]]
+id = "concept.tooling-and-debugging.logging-and-quality-tools"
+title = "Logging and automated quality tools"
+prerequisites = ["concept.tooling-and-debugging.pytest-basics"]
+lesson_file = "lessons/09_tooling_and_debugging/05_logging_and_quality_tools.py"
+run_command = "python lessons/09_tooling_and_debugging/05_logging_and_quality_tools.py"
+
+[[modules.concepts]]
+id = "concept.tooling-and-debugging.processes-and-streams"
+title = "Environment, process, and standard-stream boundaries"
+prerequisites = ["concept.tooling-and-debugging.logging-and-quality-tools"]
+lesson_file = "lessons/09_tooling_and_debugging/06_os_processes_and_streams.py"
+run_command = "python lessons/09_tooling_and_debugging/06_os_processes_and_streams.py"
+
+[[modules.concepts]]
+id = "concept.tooling-and-debugging.packaging-and-public-apis"
+title = "Distributions, builds, and public API documentation"
+prerequisites = ["concept.tooling-and-debugging.processes-and-streams"]
+lesson_file = "lessons/09_tooling_and_debugging/07_packaging_and_public_apis.py"
+run_command = "python lessons/09_tooling_and_debugging/07_packaging_and_public_apis.py"
+
+[[modules]]
+id = "module.sql-and-sqlite"
+ordinal = 10
+title = "SQL and SQLite"
+prerequisites = ["module.tooling-and-debugging"]
+lesson_readme = "lessons/10_sql_and_sqlite/README.md"
+review_questions = { path = "lessons/10_sql_and_sqlite/README.md", heading = "❓ Review questions" }
+exercise_starter = "exercises/10_sql_and_sqlite/exercises.py"
+exercise_solution = "exercises/10_sql_and_sqlite/solutions.py"
+validation_commands = ["python exercises/10_sql_and_sqlite/exercises.py"]
+solution_lock_group = "solutions.module.sql-and-sqlite"
+required_outcomes = [
+  "Model related data with tables, keys, foreign keys, and constraints.",
+  "Use parameterized CRUD, filtering, ordering, joins, grouping, and aggregates.",
+  "Convert database rows into validated domain values.",
+  "Treat transactions as atomic units and distinguish commit from rollback.",
+  "Explain SQLite generated IDs, affinity, pragmas, and AUTOINCREMENT.",
+  "Use indexes and inspect query plans without assuming optimizer choices.",
+  "Place SQL behind a small repository boundary when it earns its cost.",
+]
+
+[[modules.concepts]]
+id = "concept.sql-and-sqlite.relational-model-and-sql"
+title = "Relational schemas and parameterized CRUD"
+prerequisites = []
+lesson_file = "lessons/10_sql_and_sqlite/01_relational_model_and_sql.py"
+run_command = "python lessons/10_sql_and_sqlite/01_relational_model_and_sql.py"
+
+[[modules.concepts]]
+id = "concept.sql-and-sqlite.joins-aggregates-indexes"
+title = "Joins, aggregates, indexes, and query plans"
+prerequisites = ["concept.sql-and-sqlite.relational-model-and-sql"]
+lesson_file = "lessons/10_sql_and_sqlite/02_joins_aggregates_and_indexes.py"
+run_command = "python lessons/10_sql_and_sqlite/02_joins_aggregates_and_indexes.py"
+
+[[modules.concepts]]
+id = "concept.sql-and-sqlite.transactions-and-sqlite"
+title = "Transactions and SQLite-specific behavior"
+prerequisites = ["concept.sql-and-sqlite.joins-aggregates-indexes"]
+lesson_file = "lessons/10_sql_and_sqlite/03_transactions_and_sqlite.py"
+run_command = "python lessons/10_sql_and_sqlite/03_transactions_and_sqlite.py"
+
+[[modules.concepts]]
+id = "concept.sql-and-sqlite.repository-pattern"
+title = "Repository boundaries and contract checks"
+prerequisites = ["concept.sql-and-sqlite.transactions-and-sqlite"]
+lesson_file = "lessons/10_sql_and_sqlite/04_repository_pattern.py"
+run_command = "python lessons/10_sql_and_sqlite/04_repository_pattern.py"
+
+[[modules]]
+id = "module.rest-apis-and-clients"
+ordinal = 11
+title = "REST APIs and HTTP Clients"
+prerequisites = ["module.sql-and-sqlite"]
+lesson_readme = "lessons/11_rest_apis_and_clients/README.md"
+review_questions = { path = "lessons/11_rest_apis_and_clients/README.md", heading = "❓ Review questions" }
+exercise_starter = "exercises/11_rest_apis_and_clients/exercises.py"
+exercise_solution = "exercises/11_rest_apis_and_clients/solutions.py"
+validation_commands = ["python exercises/11_rest_apis_and_clients/exercises.py"]
+solution_lock_group = "solutions.module.rest-apis-and-clients"
+required_outcomes = [
+  "Distinguish HTTP methods, routes, values, headers, statuses, bytes, text, and JSON.",
+  "Keep HTTP and framework objects outside domain and repository code.",
+  "Build testable Flask and FastAPI boundaries with injected dependencies.",
+  "Map validation, not-found, protocol, malformed-response, and connection failures.",
+  "Set positive finite timeouts and validate status before response bodies.",
+  "Compare generated OpenAPI with a checked-in behavioral contract.",
+]
+
+[[modules.concepts]]
+id = "concept.rest-apis-and-clients.http-fundamentals"
+title = "HTTP and JSON boundary fundamentals"
+prerequisites = []
+lesson_file = "lessons/11_rest_apis_and_clients/01_http_fundamentals.py"
+run_command = "python lessons/11_rest_apis_and_clients/01_http_fundamentals.py"
+
+[[modules.concepts]]
+id = "concept.rest-apis-and-clients.flask-api"
+title = "Flask application boundaries"
+prerequisites = ["concept.rest-apis-and-clients.http-fundamentals"]
+lesson_file = "lessons/11_rest_apis_and_clients/02_flask_api.py"
+run_command = "python lessons/11_rest_apis_and_clients/02_flask_api.py"
+
+[[modules.concepts]]
+id = "concept.rest-apis-and-clients.fastapi-api"
+title = "FastAPI application boundaries"
+prerequisites = ["concept.rest-apis-and-clients.flask-api"]
+lesson_file = "lessons/11_rest_apis_and_clients/03_fastapi_api.py"
+run_command = "python lessons/11_rest_apis_and_clients/03_fastapi_api.py"
+
+[[modules.concepts]]
+id = "concept.rest-apis-and-clients.http-clients"
+title = "Urllib, requests, and httpx transports"
+prerequisites = ["concept.rest-apis-and-clients.fastapi-api"]
+lesson_file = "lessons/11_rest_apis_and_clients/04_http_clients.py"
+run_command = "python lessons/11_rest_apis_and_clients/04_http_clients.py"
+
+[[modules]]
+id = "module.concurrency"
+ordinal = 12
+title = "Concurrency"
+prerequisites = ["project.tasks-rest-api-clients"]
+lesson_readme = "lessons/12_concurrency/README.md"
+review_questions = { path = "lessons/12_concurrency/README.md", heading = "❓ Review questions" }
+exercise_starter = "exercises/12_concurrency/exercises.py"
+exercise_solution = "exercises/12_concurrency/solutions.py"
+validation_commands = ["python exercises/12_concurrency/exercises.py"]
+solution_lock_group = "solutions.module.concurrency"
+required_outcomes = [
+  "Distinguish concurrency from parallelism.",
+  "Identify I/O-bound and CPU-bound workloads.",
+  "Select threads, processes, asyncio, or no concurrency deliberately.",
+  "Recognize shared-state, cancellation, cleanup, and blocking hazards.",
+]
+
+[[modules.concepts]]
+id = "concept.concurrency.threads-and-processes"
+title = "Threading and multiprocessing"
+prerequisites = []
+lesson_file = "lessons/12_concurrency/01_threading_and_multiprocessing.py"
+run_command = "python lessons/12_concurrency/01_threading_and_multiprocessing.py"
+
+[[modules.concepts]]
+id = "concept.concurrency.asyncio"
+title = "Asyncio and cooperative concurrency"
+prerequisites = ["concept.concurrency.threads-and-processes"]
+lesson_file = "lessons/12_concurrency/02_asyncio_basics.py"
+run_command = "python lessons/12_concurrency/02_asyncio_basics.py"
+
+[[projects]]
+id = "project.tasks-rest-api-clients"
+title = "Task REST API and clients"
+required = true
+prerequisites = ["module.sql-and-sqlite", "module.rest-apis-and-clients"]
+guide_path = "projects/tasks/README.md"
+specification_paths = [
+  "projects/tasks/docs/SPEC.md",
+  "projects/tasks/docs/openapi.yaml",
+  "projects/tasks/docs/PLAN.md",
+]
+starter_root = "projects/tasks/starter"
+solution_root = "projects/tasks/solution"
+tests_root = "projects/tasks/tests"
+validation_commands = [
+  "PROJECT_IMPLEMENTATION=starter python -m pytest projects/tasks/tests -q",
+  "python -m compileall -q projects/tasks/starter projects/tasks/solution projects/tasks/tests",
+  "python -m ruff format --check projects/tasks",
+  "python -m ruff check projects/tasks",
+  "python -m mypy --strict --no-incremental projects/tasks/starter",
+]
+solution_lock_group = "solutions.project.tasks-rest-api-clients"
+required_outcomes = [
+  "Keep one validated Task domain and service contract across every adapter.",
+  "Implement SQLite and versioned Markdown repositories behind one protocol.",
+  "Implement the standard-library, Flask, and FastAPI server adapters.",
+  "Implement urllib, requests, and httpx client transports.",
+  "Preserve the HTTP contract and cross-server/client interoperability matrix.",
+]
+
+[projects.implementation_selector]
+environment = "PROJECT_IMPLEMENTATION"
+learner_value = "starter"
+reference_value = "solution"
+default_value = "solution"
+
+[[projects.milestones]]
+id = "milestone.tasks.domain-and-contracts"
+ordinal = 1
+title = "Domain and contracts"
+prerequisites = []
+required_outcome = "Implement Task validation, errors, service/repository contracts, and the client transport protocol."
+test_command = "PROJECT_IMPLEMENTATION=starter python -m pytest projects/tasks/tests/test_m1_domain.py -q"
+
+[[projects.milestones]]
+id = "milestone.tasks.persistence"
+ordinal = 2
+title = "Persistence"
+prerequisites = ["milestone.tasks.domain-and-contracts"]
+required_outcome = "Implement SQLite and versioned Markdown repositories against the shared repository contract."
+test_command = "PROJECT_IMPLEMENTATION=starter python -m pytest projects/tasks/tests/test_m2_persistence.py -q"
+
+[[projects.milestones]]
+id = "milestone.tasks.stdlib-http"
+ordinal = 3
+title = "Standard-library HTTP"
+prerequisites = ["milestone.tasks.persistence"]
+required_outcome = "Implement the http.server API and urllib client while making bytes, statuses, timeouts, and cleanup explicit."
+test_command = "PROJECT_IMPLEMENTATION=starter python -m pytest projects/tasks/tests/test_m3_stdlib.py -q"
+
+[[projects.milestones]]
+id = "milestone.tasks.flask"
+ordinal = 4
+title = "Flask"
+prerequisites = ["milestone.tasks.stdlib-http"]
+required_outcome = "Implement a Flask application factory, centralized errors, and the requests transport."
+test_command = "PROJECT_IMPLEMENTATION=starter python -m pytest projects/tasks/tests/test_m4_flask.py -q"
+
+[[projects.milestones]]
+id = "milestone.tasks.fastapi-and-parity"
+ordinal = 5
+title = "FastAPI and comparison"
+prerequisites = ["milestone.tasks.flask"]
+required_outcome = "Implement FastAPI and httpx boundaries, verify OpenAPI behavior, and complete cross-stack parity."
+test_command = "PROJECT_IMPLEMENTATION=starter python -m pytest projects/tasks/tests/test_m5_fastapi_and_parity.py -q"
+
+[[capstones]]
+id = "capstone.comparative-kv"
+title = "Comparative versioned configuration store"
+required = true
+prerequisites = ["module.concurrency", "project.tasks-rest-api-clients"]
+guide_path = "capstones/comparative/README.md"
+specification_paths = [
+  "capstones/comparative/spec/SPEC.md",
+  "capstones/comparative/spec/SCENARIOS.md",
+  "capstones/comparative/spec/MANIFEST.sha256",
+]
+starter_root = "capstones/comparative/starter"
+solution_root = "capstones/comparative/solution"
+tests_root = "capstones/comparative/tests"
+validation_commands = [
+  "(cd capstones/comparative/spec && sha256sum -c MANIFEST.sha256)",
+  "python -m compileall -q capstones/comparative/starter capstones/comparative/solution",
+  "mypy --strict capstones/comparative/starter/comparative_kv",
+  "CAPSTONE_IMPLEMENTATION=starter python -m unittest discover -s capstones/comparative/tests -p 'test_harness.py' -v",
+]
+solution_lock_group = "solutions.capstone.comparative-kv"
+required_outcomes = [
+  "Validate keys, expectations, revisions, and restricted JSON exactly.",
+  "Implement the exact CLI grammar, envelopes, error channels, and exit codes.",
+  "Initialize, validate, and migrate the versioned SQLite store atomically.",
+  "Implement global revisions and compare-and-set mutations under transactions.",
+  "Remain correct under independent-process races, contention, timeouts, and cleanup.",
+]
+
+[capstones.implementation_selector]
+environment = "CAPSTONE_IMPLEMENTATION"
+learner_value = "starter"
+reference_value = "solution"
+default_value = "solution"
+
+[[capstones.milestones]]
+id = "milestone.comparative-kv.domain"
+ordinal = 1
+title = "Domain"
+prerequisites = []
+required_outcome = "Implement keys, expectations, safe revisions, and restricted JSON validation."
+test_command = "CAPSTONE_IMPLEMENTATION=starter python -m unittest discover -s capstones/comparative/tests -p 'test_m1_*.py' -v"
+
+[[capstones.milestones]]
+id = "milestone.comparative-kv.cli"
+ordinal = 2
+title = "CLI"
+prerequisites = ["milestone.comparative-kv.domain"]
+required_outcome = "Implement exact grammar, validation precedence, envelopes, stderr discipline, and exit mapping."
+test_command = "CAPSTONE_IMPLEMENTATION=starter python -m unittest discover -s capstones/comparative/tests -p 'test_m2_*.py' -v"
+
+[[capstones.milestones]]
+id = "milestone.comparative-kv.sqlite"
+ordinal = 3
+title = "SQLite"
+prerequisites = ["milestone.comparative-kv.cli"]
+required_outcome = "Implement literal paths, WAL setup, schema initialization, invariant checks, and atomic migration."
+test_command = "CAPSTONE_IMPLEMENTATION=starter python -m unittest discover -s capstones/comparative/tests -p 'test_m3_*.py' -v"
+
+[[capstones.milestones]]
+id = "milestone.comparative-kv.mutations"
+ordinal = 4
+title = "Mutations"
+prerequisites = ["milestone.comparative-kv.sqlite"]
+required_outcome = "Implement global revisions, compare-and-set mutations, ordering, exhaustion, and failure accounting."
+test_command = "CAPSTONE_IMPLEMENTATION=starter python -m unittest discover -s capstones/comparative/tests -p 'test_m4_*.py' -v"
+
+[[capstones.milestones]]
+id = "milestone.comparative-kv.processes"
+ordinal = 5
+title = "Processes"
+prerequisites = ["milestone.comparative-kv.mutations"]
+required_outcome = "Remain correct through initialization, migration, mutation, and lock races across independent processes."
+test_command = "CAPSTONE_IMPLEMENTATION=starter python -m unittest discover -s capstones/comparative/tests -p 'test_m5_*.py' -v"
+
+[[capstones]]
+id = "capstone.idiomatic-ingest-report"
+title = "Idiomatic ingestion and reporting pipeline"
+required = true
+prerequisites = ["module.concurrency", "project.tasks-rest-api-clients"]
+guide_path = "capstones/idiomatic/README.md"
+specification_paths = ["capstones/idiomatic/SPEC.md"]
+starter_root = "capstones/idiomatic/starter"
+solution_root = "capstones/idiomatic/solution"
+tests_root = "capstones/idiomatic/tests"
+validation_commands = [
+  "python -m compileall -q capstones/idiomatic/starter capstones/idiomatic/solution",
+  "mypy --strict capstones/idiomatic/starter/ingest_report",
+  "CAPSTONE_IMPLEMENTATION=starter python -m unittest discover -s capstones/idiomatic/tests -p 'test_harness.py' -v",
+]
+solution_lock_group = "solutions.capstone.idiomatic-ingest-report"
+required_outcomes = [
+  "Validate and normalize immutable events and stable single-pass deduplication.",
+  "Stream CSV and JSONL sources behind injected application boundaries.",
+  "Implement atomic SQLite imports with schema and identity guarantees.",
+  "Filter, aggregate, and render deterministic JSON and text reports.",
+  "Implement bounded paginated HTTP ingestion with strict cancellation and partial-failure semantics.",
+]
+
+[capstones.implementation_selector]
+environment = "CAPSTONE_IMPLEMENTATION"
+learner_value = "starter"
+reference_value = "solution"
+default_value = "solution"
+
+[[capstones.milestones]]
+id = "milestone.idiomatic-ingest-report.domain"
+ordinal = 1
+title = "Domain"
+prerequisites = []
+required_outcome = "Implement validation, UTC normalization, immutable values, and stable single-pass deduplication."
+test_command = "CAPSTONE_IMPLEMENTATION=starter python -m unittest discover -s capstones/idiomatic/tests -p 'test_m1_*.py' -v"
+
+[[capstones.milestones]]
+id = "milestone.idiomatic-ingest-report.sources-and-application"
+ordinal = 2
+title = "Sources and application boundary"
+prerequisites = ["milestone.idiomatic-ingest-report.domain"]
+required_outcome = "Stream exact CSV and JSONL inputs, close iterators, inject collaborators, and classify CLI errors."
+test_command = "CAPSTONE_IMPLEMENTATION=starter python -m unittest discover -s capstones/idiomatic/tests -p 'test_m2_*.py' -v"
+
+[[capstones.milestones]]
+id = "milestone.idiomatic-ingest-report.sqlite"
+ordinal = 3
+title = "SQLite"
+prerequisites = ["milestone.idiomatic-ingest-report.sources-and-application"]
+required_outcome = "Initialize and validate schema version 1 while preserving identities and atomic imports."
+test_command = "CAPSTONE_IMPLEMENTATION=starter python -m unittest discover -s capstones/idiomatic/tests -p 'test_m3_*.py' -v"
+
+[[capstones.milestones]]
+id = "milestone.idiomatic-ingest-report.reporting"
+ordinal = 4
+title = "Reporting"
+prerequisites = ["milestone.idiomatic-ingest-report.sqlite"]
+required_outcome = "Combine filters, aggregate stable results, and render documented JSON and text reports."
+test_command = "CAPSTONE_IMPLEMENTATION=starter python -m unittest discover -s capstones/idiomatic/tests -p 'test_m4_*.py' -v"
+
+[[capstones.milestones]]
+id = "milestone.idiomatic-ingest-report.http-and-integration"
+ordinal = 5
+title = "HTTP and integration"
+prerequisites = ["milestone.idiomatic-ingest-report.reporting"]
+required_outcome = "Implement bounded page fetching, ordered collection, cancellation cleanup, and strict or partial semantics."
+test_command = "CAPSTONE_IMPLEMENTATION=starter python -m unittest discover -s capstones/idiomatic/tests -p 'test_m5_*.py' -v"
+
+[[solution_lock_groups]]
+id = "solutions.module.basics"
+paths = ["exercises/01_basics/solutions.py"]
+unlock_policy = "after-unit-validation"
+solution_unlock_after = 1
+
+[[solution_lock_groups]]
+id = "solutions.module.control-flow"
+paths = ["exercises/02_control_flow/solutions.py"]
+unlock_policy = "after-unit-validation"
+solution_unlock_after = 1
+
+[[solution_lock_groups]]
+id = "solutions.module.functions"
+paths = ["exercises/03_functions/solutions.py"]
+unlock_policy = "after-unit-validation"
+solution_unlock_after = 1
+
+[[solution_lock_groups]]
+id = "solutions.module.data-structures"
+paths = ["exercises/04_data_structures/solutions.py"]
+unlock_policy = "after-unit-validation"
+solution_unlock_after = 1
+
+[[solution_lock_groups]]
+id = "solutions.module.modules-and-files"
+paths = ["exercises/05_modules_and_files/solutions.py"]
+unlock_policy = "after-unit-validation"
+solution_unlock_after = 1
+
+[[solution_lock_groups]]
+id = "solutions.module.object-oriented-programming"
+paths = ["exercises/06_object_oriented_programming/solutions.py"]
+unlock_policy = "after-unit-validation"
+solution_unlock_after = 1
+
+[[solution_lock_groups]]
+id = "solutions.module.advanced-python"
+paths = ["exercises/07_advanced_python/solutions.py"]
+unlock_policy = "after-unit-validation"
+solution_unlock_after = 1
+
+[[solution_lock_groups]]
+id = "solutions.module.testing"
+paths = ["exercises/08_testing/solutions.py"]
+unlock_policy = "after-unit-validation"
+solution_unlock_after = 1
+
+[[solution_lock_groups]]
+id = "solutions.module.tooling-and-debugging"
+paths = ["exercises/09_tooling_and_debugging/solutions.py"]
+unlock_policy = "after-unit-validation"
+solution_unlock_after = 1
+
+[[solution_lock_groups]]
+id = "solutions.module.sql-and-sqlite"
+paths = ["exercises/10_sql_and_sqlite/solutions.py"]
+unlock_policy = "after-unit-validation"
+solution_unlock_after = 1
+
+[[solution_lock_groups]]
+id = "solutions.module.rest-apis-and-clients"
+paths = ["exercises/11_rest_apis_and_clients/solutions.py"]
+unlock_policy = "after-unit-validation"
+solution_unlock_after = 1
+
+[[solution_lock_groups]]
+id = "solutions.module.concurrency"
+paths = ["exercises/12_concurrency/solutions.py"]
+unlock_policy = "after-unit-validation"
+solution_unlock_after = 1
+
+[[solution_lock_groups]]
+id = "solutions.project.tasks-rest-api-clients"
+paths = ["projects/tasks/solution"]
+unlock_policy = "after-matching-milestone-validation"
+solution_unlock_after = 1
+
+[[solution_lock_groups]]
+id = "solutions.capstone.comparative-kv"
+paths = ["capstones/comparative/solution"]
+unlock_policy = "after-matching-milestone-validation"
+solution_unlock_after = 1
+
+[[solution_lock_groups]]
+id = "solutions.capstone.idiomatic-ingest-report"
+paths = ["capstones/idiomatic/solution"]
+unlock_policy = "after-matching-milestone-validation"
+solution_unlock_after = 1

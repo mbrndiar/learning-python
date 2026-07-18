@@ -27,6 +27,30 @@ jobs:
       - name: Install development dependencies
         run: python -m pip install -r requirements-dev.txt
 
+      - name: Validate tutor tooling
+        run: |
+          echo "::group::Tutor state-engine tests"
+          python -m unittest discover \
+            -s .github/skills/learning-tutor-core/tests \
+            -p 'test_*.py' -v
+          echo "::endgroup::"
+          echo "::group::Course manifest validation"
+          python .github/skills/learning-python-adapter/scripts/course_adapter.py \
+            validate
+          echo "::endgroup::"
+          echo "::group::Course adapter tests"
+          python -m unittest discover \
+            -s .github/skills/learning-python-adapter/tests \
+            -p 'test_course_manifest.py' -v
+          echo "::endgroup::"
+          echo "::group::Compile tutor Python"
+          python -m py_compile \
+            .github/skills/learning-tutor-core/scripts/learning_state.py \
+            .github/skills/learning-tutor-core/tests/test_learning_state.py \
+            .github/skills/learning-python-adapter/scripts/course_adapter.py \
+            .github/skills/learning-python-adapter/tests/test_course_manifest.py
+          echo "::endgroup::"
+
       - name: Check documentation links
         if: matrix.python-version == '3.14'
         run: python scripts/check_markdown_links.py
@@ -35,7 +59,17 @@ jobs:
         if: matrix.python-version == '3.14'
         run: |
           ruff format --check .
+          ruff format --check \
+            .github/skills/learning-tutor-core/scripts/learning_state.py \
+            .github/skills/learning-tutor-core/tests/test_learning_state.py \
+            .github/skills/learning-python-adapter/scripts/course_adapter.py \
+            .github/skills/learning-python-adapter/tests/test_course_manifest.py
           ruff check .
+          ruff check \
+            .github/skills/learning-tutor-core/scripts/learning_state.py \
+            .github/skills/learning-tutor-core/tests/test_learning_state.py \
+            .github/skills/learning-python-adapter/scripts/course_adapter.py \
+            .github/skills/learning-python-adapter/tests/test_course_manifest.py
           mypy
           mypy --strict \
             capstones/comparative/starter/comparative_kv \

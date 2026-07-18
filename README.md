@@ -271,6 +271,13 @@ Solutions are examples, not the only correct answers. Compare behavior,
 readability, handling of edge cases, and tests rather than requiring identical
 code.
 
+## 🤖 Optional AI learning tutor
+
+This repository includes a Socratic GitHub Copilot CLI tutor that follows course
+prerequisites, uses deterministic checks, protects locked solutions, and asks
+before editing learner work. See the [AI tutor guide](docs/AI_TUTOR.md) for
+setup, start/resume commands, state privacy, and milestone coaching.
+
 ## 🧭 Course boundaries
 
 This course aims to make a beginner independently productive with core Python.
