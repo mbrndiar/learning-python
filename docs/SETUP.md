@@ -32,11 +32,11 @@ cd learning-python
 ## 3. Create a virtual environment
 
 A virtual environment keeps this project's Python packages isolated from
-the rest of your system. Modules 1–10, Module 11's HTTP fundamentals lesson,
-Module 12, and both capstones use only the standard library. Module 11's
-framework/client comparisons and the required Task project use project-local
-runtime dependencies. A virtual environment keeps those and the development
-tools isolated.
+the rest of your system. The core lesson scripts in Modules 1–10, Module 11's
+HTTP fundamentals lesson, Module 12, and both capstones use only the standard
+library. Module 9's pytest and packaging labs, Module 11's framework/client
+comparisons, and the required Task project use project-local tools or runtime
+dependencies. A virtual environment keeps them isolated.
 
 ```bash
 # Create the environment (creates a .venv/ folder)
@@ -56,10 +56,12 @@ leave the virtual environment, run `deactivate`.
 The development requirements install the Task project's runtime and
 executable-contract libraries plus
 [pytest](https://docs.pytest.org/en/stable/),
+[build](https://build.pypa.io/en/stable/),
 [Ruff](https://docs.astral.sh/ruff/),
 [mypy](https://mypy.readthedocs.io/en/stable/), and
 [Coverage.py](https://coverage.readthedocs.io/en/stable/) so you can practice
-testing, formatting, linting, static type checking, and coverage measurement:
+testing, building a distribution, formatting, linting, static type checking,
+and coverage measurement:
 
 ```bash
 python -m pip install -r requirements-dev.txt
@@ -151,6 +153,19 @@ Ruff's formatter command changes files. Continuous integration uses
 `ruff check --fix .` can apply supported lint fixes, but review those changes
 instead of treating automatic repair as proof that behavior is correct.
 
+When changing the example distribution or packaging lesson, build the declared
+artifacts and inspect its public documentation:
+
+```bash
+python -m build lessons/09_tooling_and_debugging/example_distribution
+python -m pydoc packaging_public_api_example
+```
+
+Run the `pydoc` command after the editable install from Module 9. Remove generated
+`dist/`, `build/`, and `*.egg-info` directories after inspection; Git ignores
+them, but a clean source tree makes accidental reliance on stale artifacts less
+likely.
+
 Compile and test both Task project source roots:
 
 ```bash
@@ -200,7 +215,8 @@ coverage report
 
 After uv creates and populates `.venv`, the activated daily commands are
 deliberately identical. The tool has changed how Python and packages reached the
-environment, not what Ruff, mypy, pytest, or Coverage.py are responsible for.
+environment, not what build, Ruff, mypy, pytest, or Coverage.py are responsible
+for.
 
 The repository's
 [GitHub Actions workflow](https://docs.github.com/en/actions) runs these checks

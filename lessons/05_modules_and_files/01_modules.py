@@ -19,4 +19,6 @@ print("Value of pi:", math.pi)
 print("Random number between 1 and 10:", random.randint(1, 10))
 
 # Because date was imported directly, this call does not need datetime.date.
+# Lesson 5.7 covers datetime, time zones, timestamps, and clock semantics; this
+# call only demonstrates importing one standard-library name.
 print("Today's date:", date.today())

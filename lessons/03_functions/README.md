@@ -6,8 +6,9 @@ function-related tools.
 ## 🎯 Learning objectives
 
 After this module, you should be able to define focused functions, pass
-arguments correctly, return results, reason about scope, and recognize
-closures, lambdas, and recursion.
+arguments according to an explicit call contract, explain mutation versus
+rebinding, return results, reason about scope, and recognize closures, lambdas,
+and recursion.
 
 ## 🛠️ Defining a function
 
@@ -36,6 +37,22 @@ def append_item(item, items=None):
     return items
 ```
 
+### Make the call contract visible
+
+A parameter before `/` is positional-only. A parameter after a bare `*` is
+keyword-only. Parameters between them accept either form:
+
+```python
+def connect(host, /, port=443, *, timeout=5.0):
+    return host, port, timeout
+
+connect("example.com", 8443, timeout=2.0)
+```
+
+This is useful when a parameter name is an implementation detail or when a
+keyword makes an option clearer at the call site. It is separate from `*args`
+and `**kwargs`, which collect an arbitrary number of arguments.
+
 ## 🔭 Scope and the LEGB rule
 
 Name lookup proceeds through Local, Enclosing, Global, and Built-in scopes.
@@ -50,10 +67,10 @@ functions with the same code but different remembered `factor` values.
 
 `*args` collects extra positional arguments into a tuple; `**kwargs` collects
 extra keyword arguments into a dictionary. The same `*` and `**` syntax
-unpacks iterables and mappings at a call site. Functions can be assigned,
-stored, passed to other functions, and returned. A `lambda` is a single
-expression that creates an anonymous function; use `def` when logic or
-documentation is nontrivial.
+unpacks iterables and mappings at a call site, where Python then applies the
+ordinary signature rules. Functions can be assigned, stored, passed to other
+functions, and returned. A `lambda` is a single expression that creates an
+anonymous function; use `def` when logic or documentation is nontrivial.
 
 Recursion solves a problem through smaller instances of itself. It requires a
 base case and progress toward that case. Python does not optimize tail calls,
@@ -76,9 +93,9 @@ implementation for large inputs.
 
 ## 📚 Concepts covered
 
-- **`01_functions.py`** - defining and calling functions, default and
-  keyword arguments, and variable-length arguments with `*args` and
-  `**kwargs`.
+- **`01_functions.py`** - defining and calling functions, positional-only and
+  keyword-only parameters, defaults, argument unpacking, variable-length
+  arguments, binding by assignment, and explicit or implicit return values.
 - **`02_lambdas_closures_and_recursion.py`** - lambda expressions
   (small anonymous functions, often used with `sorted()`, `map()` and
   `filter()`), closures (including the `nonlocal` keyword) and recursive
@@ -97,8 +114,11 @@ Once you've read through both files, practice what you learned in
 ## ⚠️ Common mistakes
 
 - Printing a value when the caller needs the function to return it.
+- Calling a positional-only parameter by name, or omitting the name of a
+  keyword-only argument.
 - Calling a function in a default argument and expecting it to run per call.
 - Using a list or dictionary as a default parameter.
+- Expecting rebinding a parameter to replace the caller's object.
 - Forgetting the base case in recursion.
 - Giving a function multiple unrelated responsibilities.
 
@@ -108,4 +128,7 @@ Once you've read through both files, practice what you learned in
 2. In what order does Python resolve an unqualified name?
 3. Why can a mutable default argument retain data between calls?
 4. How do `*args` and `**kwargs` differ?
-5. What two properties must a terminating recursive function have?
+5. How do `/` and a bare `*` constrain a call?
+6. Why can mutating a passed list affect the caller while rebinding the
+   parameter cannot?
+7. What two properties must a terminating recursive function have?

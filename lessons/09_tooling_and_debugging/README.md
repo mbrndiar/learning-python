@@ -10,7 +10,9 @@ After this module, you should be able to isolate dependencies, invoke `pip`
 through the intended interpreter, read a traceback, inspect state with `pdb`,
 keep command-line parsing at the application boundary, write concise
 [pytest](https://docs.pytest.org/en/stable/) tests, use logging deliberately,
-and explain what each automated quality tool contributes.
+cross environment/process/stream boundaries safely, distinguish an import
+package from a distribution, document a public API, and explain what each
+automated quality tool contributes.
 
 ## 🧭 One change, several kinds of feedback
 
@@ -31,6 +33,7 @@ Each tool answers a different question:
 | [mypy](https://mypy.readthedocs.io/en/stable/) | Are annotated values used consistently? | `mypy` |
 | [pytest](https://docs.pytest.org/en/stable/) | Does observed behavior match test expectations? | `python -m pytest ...` |
 | [Coverage.py](https://coverage.readthedocs.io/en/stable/) | Which configured code paths did the tests execute? | `coverage run ...` then `coverage report` |
+| [build](https://build.pypa.io/en/stable/) | Can the example distribution produce an sdist and wheel through its declared backend? | `python -m build path/to/project` |
 | [GitHub Actions](https://docs.github.com/en/actions) | Do the repository checks pass in a clean remote environment? | runs from `.github/workflows/lessons.yml` |
 
 Passing one row does not imply the others pass. Formatting cannot prove
@@ -72,6 +75,71 @@ The built-in workflow is the portable baseline. The optional
 [uv](https://docs.astral.sh/uv/) workflow in the
 [setup guide](../../docs/SETUP.md#optional-modern-setup-with-uv) performs the
 same responsibilities with a single Python-focused tool.
+
+## 🖥️ Treat the process boundary as an interface
+
+Environment variables are text configuration inherited by a process. Read and
+validate only the names the application owns; do not log secrets merely because
+they are available in `os.environ`. Standard input supplies data, standard
+output carries normal results, standard error carries diagnostics, and the
+integer exit status tells a caller whether the request succeeded.
+
+When Python launches another program, pass an argument list to
+`subprocess.run()` and use a finite timeout. `sys.executable` selects the same
+Python interpreter that is running the parent. Capture output when the parent
+must inspect it, use `check=True` when nonzero status is exceptional, and pass a
+deliberately copied environment. Do not interpolate untrusted values into a
+shell command; `shell=True` is not the default.
+
+See the official [`subprocess`](https://docs.python.org/3/library/subprocess.html),
+[`os`](https://docs.python.org/3/library/os.html), and
+[`sys`](https://docs.python.org/3/library/sys.html) documentation.
+
+## 📦 Build and document an installable distribution
+
+An import package is a namespace loaded by Python. A distribution package is a
+project installed by a packaging frontend and can provide one or more import
+packages. The example in
+[`example_distribution/`](example_distribution/README.md) uses the
+recommended `src/` layout:
+
+```text
+example_distribution/
+├── pyproject.toml
+└── src/
+    └── packaging_public_api_example/
+        ├── __init__.py
+        └── _greetings.py
+```
+
+`[build-system]` declares the build backend and its isolated requirements.
+`[project]` contains backend-independent metadata such as the distribution name,
+version, and supported Python versions. Install a local development checkout in
+editable mode, then build both standard distribution artifacts:
+
+```bash
+python -m pip install -e lessons/09_tooling_and_debugging/example_distribution
+python -m build lessons/09_tooling_and_debugging/example_distribution
+```
+
+Editable installation points the environment at working source; it is not the
+release artifact. A wheel is built for installation, while an sdist contains
+source from which a wheel can be built. Generated `dist/`, `build/`, and
+metadata directories are outputs, not source files.
+
+Docstrings describe public contracts. `help()` displays them interactively and
+[`python -m pydoc`](https://docs.python.org/3/library/pydoc.html) renders them
+from a terminal. Because `pydoc` imports a module, import-time side effects still
+matter. Keep implementation rationale in selective comments rather than
+promising it as public API.
+
+Authoritative packaging references:
+
+- [Python Packaging User Guide](https://packaging.python.org/)
+- [packaging projects tutorial](https://packaging.python.org/en/latest/tutorials/packaging-projects/)
+- [pip local project installs](https://pip.pypa.io/en/stable/topics/local-project-installs/)
+- [build](https://build.pypa.io/en/stable/)
+- [setuptools `pyproject.toml` configuration](https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html)
 
 ## 🐞 Follow the failure, not a guess
 
@@ -209,6 +277,12 @@ of assuming it describes the entire repository.
   dependencies with `python -m pip install -r requirements-dev.txt`.
 - **`05_logging_and_quality_tools.py`** - logging levels and the repository's
   Ruff, mypy, test, coverage, and CI workflow.
+- **`06_os_processes_and_streams.py`** - environment validation, stdin/stdout/
+  stderr, exit statuses, and safe portable child processes with
+  `subprocess.run()`.
+- **`07_packaging_and_public_apis.py`** - import packages versus distributions,
+  `pyproject.toml`, `src/` layout, editable installs, wheels, sdists, docstrings,
+  `help()`, and `pydoc`, using the adjacent example distribution.
 
 ## ▶️ Running
 
@@ -218,9 +292,11 @@ python lessons/09_tooling_and_debugging/02_debugging_and_tracebacks.py
 python lessons/09_tooling_and_debugging/03_command_line_arguments.py
 python -m pytest lessons/09_tooling_and_debugging/04_pytest_basics.py -v
 python lessons/09_tooling_and_debugging/05_logging_and_quality_tools.py
+python lessons/09_tooling_and_debugging/06_os_processes_and_streams.py
+python lessons/09_tooling_and_debugging/07_packaging_and_public_apis.py
 ```
 
-Once you've read through all five files, practice the complete flow in
+Once you've read through all seven files, practice the complete flow in
 [`exercises/09_tooling_and_debugging/`](../../exercises/09_tooling_and_debugging/README.md).
 
 ## ⚠️ Common mistakes
@@ -230,6 +306,11 @@ Once you've read through all five files, practice the complete flow in
 - Reading only the first traceback line rather than the final exception.
 - Changing several things before rerunning the smallest failing case.
 - Putting business logic directly inside argument-parsing branches.
+- Logging environment values that may contain secrets.
+- Building a shell command by interpolating untrusted text.
+- Treating an editable install as the artifact that should be published.
+- Confusing a distribution name with the import package it provides.
+- Running substantial work when a module is imported for `help()` or `pydoc`.
 - Giving tests shared access to real user files or network services.
 - Logging secrets or using the root logger as an unstructured print substitute.
 - Treating a clean linter, type checker, or high coverage number as proof of
@@ -243,5 +324,10 @@ Once you've read through all five files, practice the complete flow in
 4. What belongs in CLI parsing versus core application logic?
 5. How do parameterization and fixtures reduce duplication and shared state?
 6. When would you choose `print()`, `pdb`, or `logging`?
-7. How do formatting, linting, type checking, testing, coverage, and CI provide
+7. What information belongs on stdout, stderr, and the process exit status?
+8. Why should subprocess arguments normally be passed as a list?
+9. How do an import package, distribution package, editable install, wheel, and
+   sdist differ?
+10. Why can generating documentation expose import-time side effects?
+11. How do formatting, linting, type checking, testing, coverage, and CI provide
    different feedback?

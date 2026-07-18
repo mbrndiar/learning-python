@@ -34,6 +34,16 @@ mutable class attributes for per-instance state. A property exposes method
 logic through attribute syntax and is useful for a computed value or a stable
 interface—not merely to imitate getters and setters from another language.
 
+Accessing an instance method through an instance creates a **bound method**:
+the instance is remembered and will be supplied as `self` when the method is
+called. Therefore `account.deposit(10)` is equivalent in effect to
+`BankAccount.deposit(account, 10)`, although normal code uses the bound form.
+
+Use `@classmethod` for behavior that receives the class as `cls`, such as an
+alternative constructor that should also construct subclasses. Use
+`@staticmethod` only for closely related behavior that genuinely needs neither
+an instance nor the class; a module-level function is often clearer otherwise.
+
 ## 🧩 Composition and inheritance
 
 Composition gives one object another object to delegate work to ("has a").
@@ -71,8 +81,9 @@ combined, but none is a general replacement for thoughtful class design.
 
 ## 📚 Concepts covered
 
-- **`01_classes_and_objects.py`** - defining classes, `__init__`,
-  instance vs. class attributes, methods and properties.
+- **`01_classes_and_objects.py`** - defining classes, `__init__`, instance vs.
+  class attributes, bound instance methods, class and static methods, and
+  properties.
 - **`02_inheritance_and_polymorphism.py`** - inheritance (a class reusing
   and extending another's behavior), `super()`, and polymorphism
   (different classes responding to the same method call in their own
@@ -103,6 +114,8 @@ Once you've read through all four files, practice what you learned in
 - Storing per-instance mutable state as a class attribute.
 - Using inheritance only to share implementation.
 - Calling methods on the class when an instance is required.
+- Using a static method for an alternative constructor that should respect
+  subclasses.
 - Expecting a leading underscore to enforce privacy.
 - Giving a data class a mutable default without `default_factory`.
 
@@ -112,4 +125,6 @@ Once you've read through all four files, practice what you learned in
 2. How do composition and inheritance express different relationships?
 3. What does `super()` resolve?
 4. When is a property useful?
-5. Why should unsupported binary operations return `NotImplemented`?
+5. What does a bound method remember?
+6. When should an alternative constructor be a class method?
+7. Why should unsupported binary operations return `NotImplemented`?

@@ -1,8 +1,8 @@
 # 🛠️ Exercises: Module 9 - Tooling and Debugging
 
 Practice problems for [`lessons/09_tooling_and_debugging/`](../../lessons/09_tooling_and_debugging/README.md):
-virtual environments, debugging, CLI arguments, logging, and
-[pytest](https://docs.pytest.org/en/stable/).
+virtual environments, debugging, CLI and process boundaries, packaging,
+documentation, logging, and [pytest](https://docs.pytest.org/en/stable/).
 
 ## 🧩 Tasks in `exercises.py`
 
@@ -12,6 +12,11 @@ virtual environments, debugging, CLI arguments, logging, and
 - `positive_int(text)` - implement a reusable argparse validator.
 - `safe_int(text)` - catch only the conversion error you can handle.
 - `configure_logger(verbose)` - select an appropriate logging level.
+- `parse_process_timeout(environment)` - validate text configuration from a
+  supplied environment mapping without mutating ambient process state.
+- `build_child_command(message)` / `run_child_process(...)` - keep untrusted
+  text as one subprocess argument and invoke the current Python interpreter
+  without a shell.
 
 ## ▶️ How to work through it
 
@@ -92,3 +97,20 @@ match each local command to the corresponding
 [GitHub Actions](https://docs.github.com/en/actions) step. The goal is to find
 problems before pushing, not to discover a different workflow after opening a
 pull request.
+
+### 6. Build and inspect the example distribution
+
+The development requirements include
+[build](https://build.pypa.io/en/stable/). Exercise the same isolated packaging
+boundary that CI verifies:
+
+```bash
+python -m pip install -e lessons/09_tooling_and_debugging/example_distribution
+python -m pydoc packaging_public_api_example
+python -m build lessons/09_tooling_and_debugging/example_distribution
+```
+
+The editable install is for development. Inspect the generated wheel and sdist
+under `dist/`, then remove generated `dist/`, `build/`, and `*.egg-info`
+directories rather than committing them. The source of truth remains
+`pyproject.toml` plus the package under `src/`.

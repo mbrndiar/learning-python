@@ -7,6 +7,10 @@ your work.
 
 import argparse
 import logging
+import os
+import subprocess
+import sys
+from collections.abc import Mapping
 
 
 def build_arg_parser():
@@ -42,6 +46,30 @@ def configure_logger(verbose):
     raise NotImplementedError
 
 
+def parse_process_timeout(environment: Mapping[str, str]) -> int:
+    """Return PROCESS_TIMEOUT as an integer from 1 through 30, defaulting to 5.
+
+    Read only from the supplied mapping so callers can test configuration
+    without changing the real process environment.
+    """
+    # TODO: validate PROCESS_TIMEOUT without mutating environment
+    raise NotImplementedError
+
+
+def build_child_command(message: str) -> list[str]:
+    """Return an argument-list command that prints message with this Python."""
+    # TODO: use sys.executable and pass message as one argument, not shell code
+    raise NotImplementedError
+
+
+def run_child_process(
+    message: str, environment: Mapping[str, str]
+) -> subprocess.CompletedProcess[str]:
+    """Run build_child_command safely with a copied explicit environment."""
+    # TODO: use check=True, captured text output, and a finite timeout
+    raise NotImplementedError
+
+
 if __name__ == "__main__":
     parser = build_arg_parser()
     parsed = parser.parse_args(["myfile.txt", "--verbose"])
@@ -73,5 +101,26 @@ if __name__ == "__main__":
     assert configure_logger(False).level == logging.INFO
     assert configure_logger(True).level == logging.DEBUG
     print("configure_logger: OK")
+
+    sample_environment = {"PROCESS_TIMEOUT": "7"}
+    assert parse_process_timeout(sample_environment) == 7
+    assert parse_process_timeout({}) == 5
+    assert sample_environment == {"PROCESS_TIMEOUT": "7"}
+    try:
+        parse_process_timeout({"PROCESS_TIMEOUT": "0"})
+        raise AssertionError("expected ValueError")
+    except ValueError:
+        pass
+    print("parse_process_timeout: OK")
+
+    message = "hello; this is one argument"
+    command = build_child_command(message)
+    assert command[0] == sys.executable
+    assert command[-1] == message
+    child = run_child_process(message, os.environ)
+    assert child.stdout == "hello; this is one argument\n"
+    assert child.stderr == ""
+    assert child.returncode == 0
+    print("run_child_process: OK")
 
     print("\nAll checks passed!")

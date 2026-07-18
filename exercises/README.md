@@ -3,7 +3,7 @@
 Each lesson module in `lessons/` has a matching folder here with practice
 problems that reinforce what you just learned.
 
-Every module folder contains:
+Every module folder contains a primary pair:
 
 - `exercises.py` - function/class stubs or tests to implement yourself. TODO
   comments describe the missing behavior, and most unfinished functions raise
@@ -19,6 +19,11 @@ Every module folder contains:
 
 - `solutions.py` - a reference implementation, in case you get stuck or
   want to compare approaches. Try to solve each exercise yourself first!
+
+A module may also contain a focused companion subdirectory with another
+`exercises.py` / `solutions.py` pair when new material should remain separate
+from an existing learner starter. The module README lists the intended order
+and exact commands; CI discovers every reference file named `solutions.py`.
 
 ## 🧭 Modules 10–12 and the applied project
 

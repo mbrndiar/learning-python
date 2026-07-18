@@ -18,6 +18,14 @@ def describe(**kwargs):
     return ", ".join(f"{key}={value}" for key, value in kwargs.items())
 
 
+def format_label(name, /, *, category):
+    return f"{category}: {name}"
+
+
+def record_topic(topics, topic):
+    topics.append(topic)
+
+
 def factorial(n):
     if n == 0:
         return 1
@@ -37,6 +45,15 @@ if __name__ == "__main__":
 
     assert describe(name="Ada", age=36) == "name=Ada, age=36"
     print("describe: OK")
+
+    assert format_label("Functions", category="Lesson") == "Lesson: Functions"
+    print("format_label: OK")
+
+    topics = ["parameters"]
+    result = record_topic(topics, "return values")
+    assert topics == ["parameters", "return values"]
+    assert result is None
+    print("record_topic: OK")
 
     assert factorial(0) == 1
     assert factorial(5) == 120

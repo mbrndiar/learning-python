@@ -60,6 +60,20 @@ jobs:
             echo "::endgroup::"
           done < <(find exercises -name "solutions.py" -print0 | sort -z)
 
+      - name: Validate packaging example
+        run: |
+          example="lessons/09_tooling_and_debugging/example_distribution"
+          output="$RUNNER_TEMP/example-dist"
+          target="$RUNNER_TEMP/example-install"
+          python -m build --outdir "$output" "$example"
+          wheel="$(find "$output" -maxdepth 1 -name '*.whl' -print -quit)"
+          test -n "$wheel"
+          python -m pip install --no-deps --target "$target" "$wheel"
+          PYTHONPATH="$target" python -c \
+            "from packaging_public_api_example import greet; assert greet('Ada') == 'Hello, Ada.'"
+          PYTHONPATH="$target" python -m pydoc packaging_public_api_example \
+            | grep -F "A small, documented public API"
+
       - name: Compile exercise starters
         run: python -m compileall -q exercises
 

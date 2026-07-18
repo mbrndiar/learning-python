@@ -36,7 +36,7 @@ class Dog:
 
 
 class Circle:
-    """Demonstrate properties, a common way to compute derived values."""
+    """Demonstrate properties and class-related method types."""
 
     def __init__(self, radius):
         self.radius = radius
@@ -48,25 +48,51 @@ class Circle:
         # changes after construction.
         return math.pi * self.radius**2
 
+    @classmethod
+    def unit_circle(cls):
+        """Return a radius-one instance of the class used for the call."""
+        # Using cls instead of Circle means an inherited call constructs the
+        # subclass, making this an inheritance-respecting alternative constructor.
+        return cls(1)
+
     @staticmethod
-    def unit_circle():
-        """Construct a circle without needing an existing instance."""
-        # A static method receives neither self nor cls. It belongs on the class
-        # only because it is a closely related construction helper.
-        return Circle(1)
+    def is_valid_radius(radius):
+        """Return whether a value is a valid circle radius."""
+        # This validation rule belongs with Circle but needs neither an existing
+        # instance (`self`) nor the class used for the call (`cls`).
+        return radius >= 0
+
+
+class Wheel(Circle):
+    """A Circle subclass used to demonstrate class-method inheritance."""
 
 
 if __name__ == "__main__":
     dog1 = Dog("Rex", 3)
     dog2 = Dog("Fido", 5)
 
+    # Accessing a method through an instance creates a bound method that
+    # remembers that instance, so it can be stored and called later.
+    saved_bark = dog1.bark
+
     print(dog1.bark())
     print(dog2.describe())
+    bound_result = saved_bark()
+    class_result = Dog.bark(dog1)
+    print("Stored bound method:", bound_result)
+    print("Dog.bark(dog1):", class_result)
+    print("The two calls are equivalent:", bound_result == class_result)
     print("Species:", dog1.species)
     print("Printed object:", dog1)
 
     circle = Circle(2)
     print("Circle area:", circle.area)
+    print("Is 2 a valid radius?", Circle.is_valid_radius(2))
 
     unit = Circle.unit_circle()
     print("Unit circle area:", unit.area)
+
+    # Wheel inherits unit_circle(). Because the class method constructs `cls`,
+    # calling it through Wheel returns a Wheel rather than a Circle.
+    unit_wheel = Wheel.unit_circle()
+    print("Inherited constructor made a Wheel:", isinstance(unit_wheel, Wheel))

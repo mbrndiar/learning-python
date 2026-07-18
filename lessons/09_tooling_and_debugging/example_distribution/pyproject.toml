@@ -1,0 +1,12 @@
+# Build frontends read this table before loading any project code.
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+# PEP 621 defines this backend-independent project metadata.
+[project]
+name = "learning-python-public-api-example-2026"
+version = "0.1.0"
+description = "A minimal distribution for learning Python packaging and public APIs"
+readme = "README.md"
+requires-python = ">=3.11"

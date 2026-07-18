@@ -7,7 +7,9 @@ your work.
 
 import json
 import sys
+import tempfile
 from contextlib import contextmanager
+from datetime import UTC, datetime
 from pathlib import Path
 
 # Make example_package importable from this exercise file.
@@ -77,6 +79,26 @@ def describe_greeting(name: str) -> str:
     raise NotImplementedError
 
 
+def directory_inventory(root):
+    """Return deterministic metadata for file and directory descendants.
+
+    Return ``(relative_path, kind, size)`` tuples sorted by POSIX-style relative
+    path. Use ``"directory"`` with size ``None`` and ``"file"`` with its byte
+    size. Do not include *root* itself.
+    """
+    # TODO: recursively inspect root with pathlib and return sorted results
+    raise NotImplementedError
+
+
+def parse_timestamp_to_utc(text):
+    """Parse an ISO 8601 timestamp and return an aware datetime in UTC.
+
+    Raise ValueError when the parsed timestamp has no UTC offset or time zone.
+    """
+    # TODO: use datetime.fromisoformat(), reject naive input, and normalize to UTC
+    raise NotImplementedError
+
+
 if __name__ == "__main__":
     sample_path = Path(__file__).with_name("sample_exercise.txt")
 
@@ -116,5 +138,34 @@ if __name__ == "__main__":
     assert describe_greeting("Ada") == "Hello, Ada!"
     assert describe_greeting("grace hopper") == "Hello, Grace Hopper!"
     print("describe_greeting: OK")
+
+    with tempfile.TemporaryDirectory(prefix="inventory_exercise_") as directory:
+        root = Path(directory)
+        (root / "empty").mkdir()
+        archive = root / "notes" / "archive"
+        archive.mkdir(parents=True)
+        (root / "notes" / "todo.txt").write_text("learn\n", encoding="utf-8")
+        (archive / "done.txt").write_text("done\n", encoding="utf-8")
+        assert directory_inventory(root) == [
+            ("empty", "directory", None),
+            ("notes", "directory", None),
+            ("notes/archive", "directory", None),
+            ("notes/archive/done.txt", "file", 5),
+            ("notes/todo.txt", "file", 6),
+        ]
+    print("directory_inventory: OK")
+
+    assert parse_timestamp_to_utc("2024-07-18T10:30:00+02:00") == datetime(
+        2024, 7, 18, 8, 30, tzinfo=UTC
+    )
+    assert parse_timestamp_to_utc("2024-07-18T08:30:00Z") == datetime(
+        2024, 7, 18, 8, 30, tzinfo=UTC
+    )
+    try:
+        parse_timestamp_to_utc("2024-07-18T10:30:00")
+        raise AssertionError("expected ValueError for a naive timestamp")
+    except ValueError:
+        pass
+    print("parse_timestamp_to_utc: OK")
 
     print("\nAll checks passed!")

@@ -4,6 +4,10 @@ Solutions: 09 Tooling and Debugging
 
 import argparse
 import logging
+import os
+import subprocess
+import sys
+from collections.abc import Mapping
 
 
 def build_arg_parser():
@@ -46,6 +50,38 @@ def configure_logger(verbose):
     return logger
 
 
+def parse_process_timeout(environment: Mapping[str, str]) -> int:
+    """Return a validated timeout without reading or changing os.environ."""
+    raw_timeout = environment.get("PROCESS_TIMEOUT", "5")
+    try:
+        timeout = int(raw_timeout)
+    except ValueError as error:
+        raise ValueError("PROCESS_TIMEOUT must be an integer") from error
+    if not 1 <= timeout <= 30:
+        raise ValueError("PROCESS_TIMEOUT must be between 1 and 30")
+    return timeout
+
+
+def build_child_command(message: str) -> list[str]:
+    """Build a command whose message remains one literal argument."""
+    child_code = "import sys; print(sys.argv[1])"
+    return [sys.executable, "-c", child_code, message]
+
+
+def run_child_process(
+    message: str, environment: Mapping[str, str]
+) -> subprocess.CompletedProcess[str]:
+    """Run a portable child process without invoking a command shell."""
+    return subprocess.run(
+        build_child_command(message),
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=5,
+        env=dict(environment),
+    )
+
+
 if __name__ == "__main__":
     parser = build_arg_parser()
     parsed = parser.parse_args(["myfile.txt", "--verbose"])
@@ -77,5 +113,26 @@ if __name__ == "__main__":
     assert configure_logger(False).level == logging.INFO
     assert configure_logger(True).level == logging.DEBUG
     print("configure_logger: OK")
+
+    sample_environment = {"PROCESS_TIMEOUT": "7"}
+    assert parse_process_timeout(sample_environment) == 7
+    assert parse_process_timeout({}) == 5
+    assert sample_environment == {"PROCESS_TIMEOUT": "7"}
+    try:
+        parse_process_timeout({"PROCESS_TIMEOUT": "0"})
+        raise AssertionError("expected ValueError")
+    except ValueError:
+        pass
+    print("parse_process_timeout: OK")
+
+    message = "hello; this is one argument"
+    command = build_child_command(message)
+    assert command[0] == sys.executable
+    assert command[-1] == message
+    child = run_child_process(message, os.environ)
+    assert child.stdout == "hello; this is one argument\n"
+    assert child.stderr == ""
+    assert child.returncode == 0
+    print("run_child_process: OK")
 
     print("\nAll checks passed!")

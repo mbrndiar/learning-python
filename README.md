@@ -12,13 +12,18 @@ By the end of the course, you will be able to:
 - read, write, run, and debug Python programs;
 - choose suitable data types and control program flow;
 - decompose problems into functions, modules, and classes;
-- read and write files and handle failures safely;
+- distinguish text from binary data and choose suitable numeric representations;
+- navigate files and directories, represent time explicitly, and handle failures
+  safely;
 - exchange structured data with JSON and persist records in SQLite;
 - use Python's iterator, generator, decorator, and type-hinting features;
-- create isolated environments and install third-party packages;
+- create isolated environments, install third-party packages, and build a small
+  documented distribution;
 - test programs with `unittest` and
   [pytest](https://docs.pytest.org/en/stable/);
 - build command-line programs and small HTTP/JSON integrations;
+- cross environment, standard-stream, exit-status, and subprocess boundaries
+  safely;
 - complete a required Task project with SQLite and Markdown repositories, three
   server adapters, and three client transports;
 - select an appropriate concurrency model for I/O- or CPU-bound work;
@@ -30,13 +35,16 @@ By the end of the course, you will be able to:
 ## ✅ Requirements
 
 - Python 3.11+
-- Modules 1–10, Module 11's HTTP fundamentals lesson, Module 12, and both
-  capstones use only the standard library. Module 11's Flask, FastAPI,
-  `requests`, and `httpx` comparisons and the Task project use the runtime
-  dependencies in
+- The core lesson scripts in Modules 1–10, Module 11's HTTP fundamentals
+  lesson, Module 12, and both capstones use only the standard library. Module
+  9's pytest and packaging labs, Module 11's Flask, FastAPI, `requests`, and
+  `httpx` comparisons, and the Task project use development or runtime
+  dependencies from this repository.
+  Task runtime dependencies are declared in
   [`projects/tasks/requirements.txt`](projects/tasks/requirements.txt).
 - Install those dependencies and the development tools
   ([pytest](https://docs.pytest.org/en/stable/),
+  [build](https://build.pypa.io/en/stable/),
   [Ruff](https://docs.astral.sh/ruff/),
   [mypy](https://mypy.readthedocs.io/en/stable/), and
   [Coverage.py](https://coverage.readthedocs.io/en/stable/)) with
@@ -167,12 +175,14 @@ reference to jog your memory after finishing the course.
    - [`02_variables_and_types.py`](lessons/01_basics/02_variables_and_types.py) – variables and basic data types
    - [`03_operators.py`](lessons/01_basics/03_operators.py) – arithmetic, comparison and logical operators
    - [`04_strings.py`](lessons/01_basics/04_strings.py) – working with strings
+   - [`05_text_and_binary_data.py`](lessons/01_basics/05_text_and_binary_data.py) – Unicode text, UTF-8, `bytes`, `bytearray`, and `memoryview`
+   - [`06_numeric_types_and_conversions.py`](lessons/01_basics/06_numeric_types_and_conversions.py) – explicit conversions, float precision, `Decimal`, `Fraction`, and `complex`
 2. **[Control Flow](lessons/02_control_flow/)**
    - [`01_conditionals.py`](lessons/02_control_flow/01_conditionals.py) – `if` / `elif` / `else`
    - [`02_loops.py`](lessons/02_control_flow/02_loops.py) – `for` and `while` loops
 3. **[Functions](lessons/03_functions/)**
-   - [`01_functions.py`](lessons/03_functions/01_functions.py) – defining and calling functions, default/keyword
-     arguments, `*args` and `**kwargs`
+   - [`01_functions.py`](lessons/03_functions/01_functions.py) – defining and calling functions, positional-only/keyword-only
+     parameters, defaults, argument unpacking, binding, `*args`, `**kwargs`, and return values
    - [`02_lambdas_closures_and_recursion.py`](lessons/03_functions/02_lambdas_closures_and_recursion.py) – lambda expressions, closures
      (including `nonlocal`) and recursive functions
 4. **[Data Structures](lessons/04_data_structures/)**
@@ -189,8 +199,10 @@ reference to jog your memory after finishing the course.
    - [`04_custom_exceptions_and_context_managers.py`](lessons/05_modules_and_files/04_custom_exceptions_and_context_managers.py) – defining custom
      exception classes and writing your own context managers
    - [`05_json_and_structured_data.py`](lessons/05_modules_and_files/05_json_and_structured_data.py) – serializing structured data with JSON
+   - [`06_directories_and_paths.py`](lessons/05_modules_and_files/06_directories_and_paths.py) – directory creation/traversal, metadata, deterministic globbing, copy/move, and path boundaries
+   - [`07_dates_and_times.py`](lessons/05_modules_and_files/07_dates_and_times.py) – dates, times, durations, aware/naive datetimes, UTC, IANA zones, timestamps, DST, and monotonic clocks
 6. **[Object-Oriented Programming](lessons/06_object_oriented_programming/)**
-   - [`01_classes_and_objects.py`](lessons/06_object_oriented_programming/01_classes_and_objects.py) – classes, attributes, methods and properties
+   - [`01_classes_and_objects.py`](lessons/06_object_oriented_programming/01_classes_and_objects.py) – classes, attributes, bound/class/static methods, and properties
    - [`02_inheritance_and_polymorphism.py`](lessons/06_object_oriented_programming/02_inheritance_and_polymorphism.py) – inheritance, `super()` and
      polymorphism
    - [`03_encapsulation_and_magic_methods.py`](lessons/06_object_oriented_programming/03_encapsulation_and_magic_methods.py) – protected/private attributes
@@ -223,6 +235,8 @@ reference to jog your memory after finishing the course.
      [Ruff](https://docs.astral.sh/ruff/),
      [mypy](https://mypy.readthedocs.io/en/stable/), and
      [Coverage.py](https://coverage.readthedocs.io/en/stable/)
+   - [`06_os_processes_and_streams.py`](lessons/09_tooling_and_debugging/06_os_processes_and_streams.py) – environment validation, standard streams, exit statuses, and safe subprocess execution
+   - [`07_packaging_and_public_apis.py`](lessons/09_tooling_and_debugging/07_packaging_and_public_apis.py) – import packages versus distributions, `pyproject.toml`, `src/` layout, editable installs, builds, and public API documentation
 10. **[SQL and SQLite](lessons/10_sql_and_sqlite/)**
     - [`01_relational_model_and_sql.py`](lessons/10_sql_and_sqlite/01_relational_model_and_sql.py) – schemas, constraints, parameterized CRUD, filtering, ordering, limits, and row mapping
     - [`02_joins_aggregates_and_indexes.py`](lessons/10_sql_and_sqlite/02_joins_aggregates_and_indexes.py) – related tables, joins, grouped aggregates, indexes, and query plans

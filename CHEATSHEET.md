@@ -11,6 +11,7 @@ after finishing the course, or while working through the exercises.
 | Function | A reusable block of code, defined with `def` |
 | Argument / Parameter | Values passed into a function |
 | `*args` / `**kwargs` | Collect extra positional/keyword arguments |
+| Bound method | A method value that remembers the instance supplied as `self` |
 | Closure | A function that remembers variables from its enclosing scope |
 | List / Tuple | Ordered collections; lists are mutable, tuples are not |
 | Dict | A mapping of keys to values (`{"a": 1}`) |
@@ -29,6 +30,7 @@ after finishing the course, or while working through the exercises.
 | Dependency injection | Giving an object its collaborator instead of constructing it internally |
 | Module | A single `.py` file that can be imported |
 | Package | A namespace grouping importable modules; regular packages commonly contain `__init__.py` |
+| Distribution package | An installable archive described by project metadata; it may provide one or more import packages |
 | Virtual environment | An isolated Python installation for a single project (`venv`) |
 | `pip` | Python's package installer |
 | Unit test | An automated test that checks a small piece of code in isolation |
@@ -45,6 +47,7 @@ after finishing the course, or while working through the exercises.
 | Finite timeout | A positive upper bound on how long an outbound operation may wait |
 | Thread | A concurrent execution path sharing process memory |
 | Process | An isolated interpreter and memory space that can run CPU work in parallel |
+| Aware datetime | A date and time with enough time-zone information to identify an instant |
 
 ## Quick syntax reference
 
@@ -71,7 +74,9 @@ while x > 0:
     x -= 1
 
 # Functions
-def greet(name, greeting="Hello"):
+def greet(name, /, greeting="Hello", *, uppercase=False):
+    if uppercase:
+        greeting = greeting.upper()
     return f"{greeting}, {name}!"
 
 # Lists, dicts, sets, comprehensions
@@ -107,6 +112,10 @@ from pathlib import Path
 path = Path("file.txt")
 with path.open("w", encoding="utf-8") as file:
     file.write("hello")
+
+folder = Path("output")
+folder.mkdir(parents=True, exist_ok=True)
+python_files = sorted(folder.rglob("*.py"))
 
 # JSON
 import json
@@ -169,7 +178,7 @@ def find_name(user_id: int, names: dict[int, str]) -> str | None:
 | Goal | Example |
 | --- | --- |
 | inspect a type | `type(value)`, `isinstance(value, str)` |
-| convert a value | `int("42")`, `str(42)`, `list(items)` |
+| convert a value | `int("42")`, `float("2.5")`, `str(42)`, `bool(value)` |
 | length | `len(items)` |
 | membership | `item in items`, `key in mapping` |
 | index and slice | `items[0]`, `items[-1]`, `items[1:4]` |
@@ -198,6 +207,45 @@ left - right                   # difference
 
 Most methods that mutate a collection return `None`. `list.sort()` mutates;
 `sorted(iterable)` returns a new list.
+
+## Numbers, text, and bytes
+
+```python
+import math
+from decimal import Decimal
+from fractions import Fraction
+
+price = Decimal("19.99")          # construct exact decimal input from text
+ratio = Fraction(3, 4)            # exact rational value
+close_enough = math.isclose(0.1 + 0.2, 0.3)
+
+text = "café"
+payload = text.encode("utf-8")    # str -> bytes
+decoded = payload.decode("utf-8") # bytes -> str
+mutable = bytearray(payload)
+view = memoryview(mutable)        # view without copying the buffer
+```
+
+Binary `float` is appropriate for measurements and approximate computation.
+Use `Decimal` when a decimal rounding contract matters and `Fraction` for exact
+rational arithmetic. Do not construct a `Decimal` from an already approximated
+float when the original decimal text is available.
+
+## Function call contracts
+
+```python
+def connect(host, /, port=443, *, timeout=5.0):
+    return host, port, timeout
+
+positionals = ("example.com", 8443)
+options = {"timeout": 2.0}
+connect(*positionals, **options)
+```
+
+Parameters before `/` are positional-only; parameters after a bare `*` are
+keyword-only. Arguments are bound to local names by assignment. Mutating a
+shared mutable object can be visible to the caller; rebinding the local
+parameter cannot replace the caller's reference.
 
 ## Scope, copying, and identity
 
@@ -247,6 +295,46 @@ if __name__ == "__main__":
 Top-level module code executes on first import. Protect application startup so
 the module can also be imported safely by tests or other modules.
 
+## Dates, times, and clocks
+
+```python
+from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
+
+instant = datetime.fromisoformat("2026-07-17T21:00:00+00:00")
+prague = instant.astimezone(ZoneInfo("Europe/Prague"))
+later = instant + timedelta(minutes=30)
+unix_seconds = instant.timestamp()
+restored = datetime.fromtimestamp(unix_seconds, tz=timezone.utc)
+```
+
+Prefer aware datetimes for real instants and normalize storage or interchange
+deliberately, commonly to UTC. State timestamp units. Use `time.monotonic()` for
+elapsed duration because wall-clock time can be adjusted.
+
+## Environment, processes, and streams
+
+```python
+import os
+import subprocess
+import sys
+
+mode = os.environ.get("APP_MODE", "development")
+result = subprocess.run(
+    [sys.executable, "-c", "print('child')"],
+    check=True,
+    capture_output=True,
+    text=True,
+    timeout=5,
+    env=os.environ.copy(),
+)
+print(result.stdout, end="")
+```
+
+Pass subprocess arguments as a sequence. Do not interpolate untrusted values
+into a shell command. Write diagnostics to `sys.stderr` and return a nonzero
+exit status when a CLI cannot complete its request.
+
 ## Testing reminders
 
 ```python
@@ -273,6 +361,8 @@ source .venv/bin/activate         # activate it (Linux/macOS)
 python -m pip install -r requirements-dev.txt  # tools + Task project libraries
 python -m pip list                # inspect installed packages
 python -m pip freeze              # snapshot this environment
+python -m pip install -e path/to/project  # editable local distribution
+python -m build path/to/project   # build wheel + source distribution
 python script.py arg1 --flag      # run a script with arguments
 python -m unittest discover       # run all unittest tests
 python -m pytest lessons/09_tooling_and_debugging/04_pytest_basics.py
@@ -327,6 +417,10 @@ mypy
 - [mypy documentation](https://mypy.readthedocs.io/en/stable/)
 - [Coverage.py documentation](https://coverage.readthedocs.io/en/stable/)
 - [GitHub Actions documentation](https://docs.github.com/en/actions)
+- [Python Packaging User Guide](https://packaging.python.org/)
+- [build documentation](https://build.pypa.io/en/stable/)
+- [pip local project installs](https://pip.pypa.io/en/stable/topics/local-project-installs/)
+- [`pydoc` documentation](https://docs.python.org/3/library/pydoc.html)
 - [Real Python](https://realpython.com/) - in-depth tutorials
 - [PEP 8](https://peps.python.org/pep-0008/) - the official style guide
 

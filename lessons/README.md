@@ -12,22 +12,25 @@ python lessons/01_basics/01_hello_world.py
 
 ## 🗂️ Modules
 
-1. [`01_basics/`](01_basics/README.md) - printing, variables, types,
-   operators and strings
+1. [`01_basics/`](01_basics/README.md) - printing, variables, conversions,
+   numbers, text, and binary data
 2. [`02_control_flow/`](02_control_flow/README.md) - conditionals and loops
-3. [`03_functions/`](03_functions/README.md) - functions, lambdas, closures
-   and recursion
+3. [`03_functions/`](03_functions/README.md) - function call contracts,
+   binding, lambdas, closures, and recursion
 4. [`04_data_structures/`](04_data_structures/README.md) - lists, tuples,
    dictionaries, sets, comprehensions and `collections`
 5. [`05_modules_and_files/`](05_modules_and_files/README.md) - modules,
-   file I/O, JSON, exceptions, custom exceptions and context managers
+   packages, files and directories, date/time, JSON, exceptions, and context
+   managers
 6. [`06_object_oriented_programming/`](06_object_oriented_programming/README.md) -
-   classes, inheritance, encapsulation, abstract classes and dataclasses
+   classes, method kinds, inheritance, encapsulation, abstract classes, and
+   dataclasses
 7. [`07_advanced_python/`](07_advanced_python/README.md) - decorators,
    generators/iterators, type hints, protocols and dependency injection
 8. [`08_testing/`](08_testing/README.md) - testing with `unittest`
 9. [`09_tooling_and_debugging/`](09_tooling_and_debugging/README.md) -
-   virtual environments, debugging, CLI arguments, logging and quality tools
+   environments, debugging, CLI and process boundaries, packaging,
+   documentation, logging, and quality tools
 10. [`10_sql_and_sqlite/`](10_sql_and_sqlite/README.md) - relational modeling,
    portable SQL fundamentals, SQLite behavior, and repository boundaries
 11. [`11_rest_apis_and_clients/`](11_rest_apis_and_clients/README.md) - HTTP,

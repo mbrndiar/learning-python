@@ -1,7 +1,8 @@
 # 📦 Exercises: Module 5 - Modules and Files
 
 Practice problems for [`lessons/05_modules_and_files/`](../../lessons/05_modules_and_files/README.md):
-modules, file I/O, exceptions, custom exceptions and context managers.
+modules and packages, paths and directories, file I/O, date/time, JSON,
+exceptions, custom exceptions, and context managers.
 
 ## 🧩 Tasks in `exercises.py`
 
@@ -17,6 +18,10 @@ modules, file I/O, exceptions, custom exceptions and context managers.
   with `@contextmanager`.
 - `describe_greeting(name)` - practice absolute imports by importing `hello`
   from `example_package.greetings` and returning the result.
+- `directory_inventory(root)` - recursively classify descendants and return
+  deterministic relative paths plus file sizes.
+- `parse_timestamp_to_utc(text)` - parse an aware ISO 8601 value, reject a
+  naive timestamp, and normalize the represented instant to UTC.
 
 ## ▶️ How to work through it
 
