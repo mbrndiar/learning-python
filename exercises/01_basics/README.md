@@ -11,25 +11,14 @@ variables, conversions, numeric types, operators, text, and binary data.
   backwards, using string methods and slicing.
 - `count_vowels(text)` - count vowels in a string by iterating over its
   characters.
-
-## 🔢 Companion numeric and binary exercises
-
-The existing beginner starter remains focused on its original three tasks.
-After lessons 1.5 and 1.6, continue with
-[`numeric_and_binary_types/exercises.py`](numeric_and_binary_types/exercises.py):
-
-- explicit `int`, `float`, `str`, and `bool` conversions;
-- a UTF-8 encode/decode round trip;
-- mutation through `bytearray` while preserving the original `bytes`;
-- exact decimal multiplication from text;
-- exact rational addition with `Fraction`.
-
-Run the companion starter and compare it with its separate solution:
-
-```bash
-python exercises/01_basics/numeric_and_binary_types/exercises.py
-python exercises/01_basics/numeric_and_binary_types/solutions.py
-```
+- `convert_values(integer_text, decimal_text, value)` - perform explicit `int`,
+  `float`, `str`, and `bool` conversions.
+- `utf8_round_trip(text)` - encode Unicode text as UTF-8 and decode it back.
+- `mutate_byte(data, index, replacement)` - use `bytearray` for controlled
+  mutation while preserving the original `bytes`.
+- `decimal_total(unit_price, quantity)` - construct and multiply an exact
+  `Decimal` value from text.
+- `add_fractions(left, right)` - parse and exactly add two `Fraction` values.
 
 ## ▶️ How to work through it
 

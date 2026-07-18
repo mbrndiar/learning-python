@@ -113,6 +113,12 @@ path = Path("file.txt")
 with path.open("w", encoding="utf-8") as file:
     file.write("hello")
 
+binary_path = Path("payload.bin")
+with binary_path.open("wb") as file:
+    file.write(b"\x00\xff")
+with binary_path.open("rb") as file:
+    payload = file.read()
+
 folder = Path("output")
 folder.mkdir(parents=True, exist_ok=True)
 python_files = sorted(folder.rglob("*.py"))

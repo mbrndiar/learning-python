@@ -132,6 +132,18 @@ Text mode decodes bytes into strings; binary mode (`"rb"`/`"wb"`) leaves bytes
 unchanged. State an encoding for persistent text. File modes include read
 `"r"`, overwrite `"w"`, append `"a"`, and exclusive create `"x"`.
 
+```python
+payload = b"\x00\xff"
+with Path("payload.bin").open("wb") as file:
+    file.write(payload)
+with Path("payload.bin").open("rb") as file:
+    restored = file.read()
+```
+
+Text mode crosses an encoding boundary and therefore accepts or returns `str`.
+Binary mode preserves the stored bytes and accepts or returns `bytes`; do not
+silently decode an unknown binary format as text.
+
 `Path.mkdir(parents=True)` creates a directory tree. `iterdir()` visits direct
 children, while `glob()` and `rglob()` match patterns. Filesystems do not promise
 the order needed by most user-facing contracts, so explicitly sort paths when
@@ -235,9 +247,9 @@ treating transport data as domain data.
   `__all__`, import caching, and why package modules are run with
   `python -m package.module`.
   Uses `example_package/` (next to this file) as a concrete, runnable example.
-- **`03_files_and_exceptions.py`** - reading from and writing to files
-  with `open()` and the `with` statement, and handling errors gracefully
-  with `try`/`except`.
+- **`03_files_and_exceptions.py`** - reading and writing UTF-8 text and raw
+  binary data with `open()` and the `with` statement, and handling errors
+  gracefully with `try`/`except`.
 - **`04_custom_exceptions_and_context_managers.py`** - defining your own
   exception classes (subclassing `Exception`) and writing your own
   context managers (the objects that power the `with` statement), using
@@ -274,6 +286,8 @@ Once you've read through all seven files, practice what you learned in
 - Depending on filesystem iteration order without sorting.
 - Treating `resolve()` as proof that an untrusted path is authorized.
 - Omitting an encoding for persistent text.
+- Passing `str` to a binary file or `bytes` to a text file instead of crossing
+  the encoding boundary explicitly.
 - Mixing naive and aware datetimes or omitting timestamp units.
 - Measuring elapsed duration with an adjustable wall clock.
 - Catching `Exception` and silently continuing.

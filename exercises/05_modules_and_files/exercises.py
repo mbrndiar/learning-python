@@ -29,6 +29,18 @@ def read_lines(path):
     raise NotImplementedError
 
 
+def write_bytes(path, data):
+    """Write `data` to `path` unchanged using binary mode."""
+    # TODO: open path with "wb" and write the bytes
+    raise NotImplementedError
+
+
+def read_bytes(path):
+    """Return the exact bytes stored at `path` using binary mode."""
+    # TODO: open path with "rb" and return its bytes
+    raise NotImplementedError
+
+
 def safe_divide(a, b):
     """Return a / b, or None if `b` is zero (catch the exception instead
     of checking `b == 0` directly)."""
@@ -100,12 +112,18 @@ def parse_timestamp_to_utc(text):
 
 
 if __name__ == "__main__":
-    sample_path = Path(__file__).with_name("sample_exercise.txt")
+    with tempfile.TemporaryDirectory(prefix="files_exercise_") as directory:
+        root = Path(directory)
+        text_path = root / "lines.txt"
+        write_lines(text_path, ["alpha", "beta", "gamma"])
+        assert read_lines(text_path) == ["alpha", "beta", "gamma"]
+        print("write_lines/read_lines: OK")
 
-    write_lines(sample_path, ["alpha", "beta", "gamma"])
-    assert read_lines(sample_path) == ["alpha", "beta", "gamma"]
-    sample_path.unlink()
-    print("write_lines/read_lines: OK")
+        binary_path = root / "payload.bin"
+        binary_payload = b"\x00Python\xff"
+        write_bytes(binary_path, binary_payload)
+        assert read_bytes(binary_path) == binary_payload
+        print("write_bytes/read_bytes: OK")
 
     assert safe_divide(10, 2) == 5
     assert safe_divide(10, 0) is None
@@ -119,12 +137,12 @@ if __name__ == "__main__":
         pass
     print("withdraw: OK")
 
-    json_path = Path(__file__).with_name("sample_exercise.json")
-    save_json(json_path, {"name": "Ada", "active": True})
-    assert load_json(json_path) == {"name": "Ada", "active": True}
-    assert json_path.read_text(encoding="utf-8").endswith("\n")
-    json_path.unlink()
-    print("save_json/load_json: OK")
+    with tempfile.TemporaryDirectory(prefix="json_exercise_") as directory:
+        json_path = Path(directory) / "data.json"
+        save_json(json_path, {"name": "Ada", "active": True})
+        assert load_json(json_path) == {"name": "Ada", "active": True}
+        assert json_path.read_text(encoding="utf-8").endswith("\n")
+        print("save_json/load_json: OK")
 
     settings = {"mode": "normal"}
     with temporary_value(settings, "mode", "debug"):

@@ -9,6 +9,8 @@ exceptions, custom exceptions, and context managers.
 - `write_lines(path, lines)` / `read_lines(path)` - write a list of
   strings to a file and read them back, using `open()` and the `with`
   statement.
+- `write_bytes(path, data)` / `read_bytes(path)` - preserve exact byte content
+  with binary `wb`/`rb` modes and no text encoding.
 - `safe_divide(a, b)` - divide two numbers, handling `ZeroDivisionError`
   with `try`/`except`.
 - `withdraw(balance, amount)` - raise a custom exception when a

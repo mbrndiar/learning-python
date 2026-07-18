@@ -197,7 +197,7 @@ reference to jog your memory after finishing the course.
    - [`01_modules.py`](lessons/05_modules_and_files/01_modules.py) – using the standard library (`math`, `random`, `datetime`)
    - [`02_packages.py`](lessons/05_modules_and_files/02_packages.py) – modules vs. packages, absolute/relative imports,
      `__init__.py` re-exports and `__all__`
-   - [`03_files_and_exceptions.py`](lessons/05_modules_and_files/03_files_and_exceptions.py) – reading/writing files and handling errors
+   - [`03_files_and_exceptions.py`](lessons/05_modules_and_files/03_files_and_exceptions.py) – reading/writing UTF-8 text and raw bytes, plus handling errors
    - [`04_custom_exceptions_and_context_managers.py`](lessons/05_modules_and_files/04_custom_exceptions_and_context_managers.py) – defining custom
      exception classes and writing your own context managers
    - [`05_json_and_structured_data.py`](lessons/05_modules_and_files/05_json_and_structured_data.py) – serializing structured data with JSON
