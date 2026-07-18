@@ -130,7 +130,7 @@ Measure the solution separately so coverage from the capstones cannot hide
 project gaps:
 
 ```bash
-coverage erase
+python scripts/erase_coverage_data.py
 PROJECT_IMPLEMENTATION=solution \
   coverage run -m pytest projects/tasks/tests -q
 coverage report --include="projects/tasks/solution/**/*.py"

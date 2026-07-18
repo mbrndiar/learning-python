@@ -111,12 +111,14 @@ jobs:
       - name: Measure capstone branch coverage
         if: matrix.python-version == '3.14'
         run: |
-          coverage erase
+          python scripts/erase_coverage_data.py
           CAPSTONE_IMPLEMENTATION=solution \
             CAPSTONE_SUBPROCESS_COVERAGE=1 \
             coverage run --parallel-mode -m unittest \
               discover -s capstones/comparative/tests -p 'test_*.py'
-          CAPSTONE_IMPLEMENTATION=solution coverage run --parallel-mode -m unittest \
+          CAPSTONE_IMPLEMENTATION=solution \
+            CAPSTONE_SUBPROCESS_COVERAGE=1 \
+            coverage run --parallel-mode -m unittest \
             discover -s capstones/idiomatic/tests -p 'test_*.py'
           coverage combine
           coverage report
@@ -124,7 +126,7 @@ jobs:
       - name: Measure Task project branch coverage
         if: matrix.python-version == '3.14'
         run: |
-          coverage erase
+          python scripts/erase_coverage_data.py
           PROJECT_IMPLEMENTATION=solution \
             coverage run -m pytest projects/tasks/tests -q
           coverage report --include="projects/tasks/solution/**/*.py"

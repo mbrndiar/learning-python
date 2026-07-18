@@ -21,6 +21,7 @@ warn_unused_configs = true
 
 [tool.coverage.run]
 branch = true
+data_file = ".coverage-data/coverage"
 include = [
     "capstones/comparative/solution/comparative_kv/*.py",
     "capstones/idiomatic/solution/ingest_report/*.py",

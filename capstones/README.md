@@ -71,11 +71,12 @@ python scripts/check_markdown_links.py
 Measure the two reference implementations together:
 
 ```bash
-coverage erase
+python scripts/erase_coverage_data.py
 CAPSTONE_IMPLEMENTATION=solution CAPSTONE_SUBPROCESS_COVERAGE=1 \
   coverage run --parallel-mode -m unittest \
     discover -s capstones/comparative/tests -p 'test_*.py'
-CAPSTONE_IMPLEMENTATION=solution coverage run --parallel-mode -m unittest \
+CAPSTONE_IMPLEMENTATION=solution CAPSTONE_SUBPROCESS_COVERAGE=1 \
+  coverage run --parallel-mode -m unittest \
   discover -s capstones/idiomatic/tests -p 'test_*.py'
 coverage combine
 coverage report

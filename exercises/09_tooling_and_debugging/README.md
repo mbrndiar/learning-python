@@ -76,11 +76,12 @@ exercise. CI separately checks both starter packages with `mypy --strict`.
 ### 4. Measure the configured capstone coverage
 
 ```bash
-coverage erase
+python scripts/erase_coverage_data.py
 CAPSTONE_IMPLEMENTATION=solution CAPSTONE_SUBPROCESS_COVERAGE=1 \
   coverage run --parallel-mode -m unittest \
     discover -s capstones/comparative/tests -p 'test_*.py'
-CAPSTONE_IMPLEMENTATION=solution coverage run --parallel-mode -m unittest \
+CAPSTONE_IMPLEMENTATION=solution CAPSTONE_SUBPROCESS_COVERAGE=1 \
+  coverage run --parallel-mode -m unittest \
   discover -s capstones/idiomatic/tests -p 'test_*.py'
 coverage combine
 coverage report
@@ -88,7 +89,8 @@ coverage report
 
 [Coverage.py](https://coverage.readthedocs.io/en/stable/) can reveal unexecuted
 configured code, but you must still judge whether tests contain useful
-assertions and cover the right requirements.
+assertions and cover the right requirements. The cleanup script also removes
+parallel subprocess data left by an interrupted earlier run.
 
 ### 5. Compare local checks with CI
 

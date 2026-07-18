@@ -247,15 +247,22 @@ ruff check .
 mypy
 
 # Run both required capstone suites under configured coverage.
-coverage erase
+python scripts/erase_coverage_data.py
 CAPSTONE_IMPLEMENTATION=solution CAPSTONE_SUBPROCESS_COVERAGE=1 \
   coverage run --parallel-mode -m unittest \
     discover -s capstones/comparative/tests -p 'test_*.py'
-CAPSTONE_IMPLEMENTATION=solution coverage run --parallel-mode -m unittest \
+CAPSTONE_IMPLEMENTATION=solution CAPSTONE_SUBPROCESS_COVERAGE=1 \
+  coverage run --parallel-mode -m unittest \
   discover -s capstones/idiomatic/tests -p 'test_*.py'
 coverage combine
 coverage report
 ```
+
+The repository cleanup script is restricted to the generated `.coverage-data/`
+directory and removes both the primary database and parallel subprocess files.
+The process-level capstone contracts cannot be measured correctly from the
+parent test runner alone. Cleaning both forms prevents an interrupted earlier
+run from contaminating the next `coverage combine`.
 
 `ruff format .` changes files; CI uses `ruff format --check .` to verify that
 formatting was already applied. The current mypy configuration checks the typed

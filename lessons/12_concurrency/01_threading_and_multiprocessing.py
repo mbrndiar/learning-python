@@ -56,7 +56,6 @@ def run_with_processes():
 
 if __name__ == "__main__":
     run_with_threads()
-    # multiprocessing.Pool requires the module-level guard below on some
-    # platforms (notably Windows), which is why this call sits inside
-    # `if __name__ == "__main__":`.
+    # Process start methods may import the main module in fresh interpreters.
+    # Keeping pool startup behind this guard prevents recursive worker creation.
     run_with_processes()

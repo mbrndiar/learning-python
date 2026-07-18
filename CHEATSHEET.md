@@ -153,7 +153,11 @@ with urlopen(request, timeout=5.0) as response:
     task = json.loads(response.read().decode("utf-8"))
 
 # Decorators
+from functools import wraps
+
+
 def logged(func):
+    @wraps(func)
     def wrapper(*args, **kwargs):
         print(f"Calling {func.__name__}")
         return func(*args, **kwargs)
@@ -370,6 +374,7 @@ ruff format .                     # format files
 ruff check .                      # lint
 ruff format --check .             # verify formatting
 mypy                              # statically check project annotations
+python scripts/erase_coverage_data.py  # clear normal + parallel coverage data
 coverage run -m unittest ...      # execute tests while measuring
 coverage report                   # show measured test coverage
 ```
@@ -381,7 +386,7 @@ root:
 PROJECT_IMPLEMENTATION=starter python -m pytest projects/tasks/tests -q
 PROJECT_IMPLEMENTATION=solution python -m pytest projects/tasks/tests -q
 
-coverage erase
+python scripts/erase_coverage_data.py
 PROJECT_IMPLEMENTATION=solution \
   coverage run -m pytest projects/tasks/tests -q
 coverage report --include="projects/tasks/solution/**/*.py"

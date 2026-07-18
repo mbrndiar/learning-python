@@ -34,7 +34,9 @@ By the end of the course, you will be able to:
 
 ## ✅ Requirements
 
-- Python 3.11+
+- Python 3.11 through 3.14. CI validates the oldest and newest supported
+ versions; newer Python releases may work but are outside the current verified
+ course range.
 - The core lesson scripts in Modules 1–10, Module 11's HTTP fundamentals
   lesson, Module 12, and both capstones use only the standard library. Module
   9's pytest and packaging labs, Module 11's Flask, FastAPI, `requests`, and
@@ -112,7 +114,7 @@ The project and capstones have independent branch-coverage gates. Measure the
 project solution without allowing the mature capstones to hide gaps:
 
 ```bash
-coverage erase
+python scripts/erase_coverage_data.py
 PROJECT_IMPLEMENTATION=solution \
   coverage run -m pytest projects/tasks/tests -q
 coverage report --include="projects/tasks/solution/**/*.py"

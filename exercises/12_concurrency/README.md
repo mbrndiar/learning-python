@@ -28,7 +28,8 @@ The thread exercise must also propagate worker exceptions to the caller.
    correctly.
 4. Compare with `solutions.py` if you get stuck or want a second opinion.
 
-This is the final optional exercise module. These exercises prepare you to
+This is the final exercise module. Complete it before the required capstones:
+these exercises prepare you to
 evaluate process contention in the comparative capstone and bounded threads in
 the idiomatic capstone:
 

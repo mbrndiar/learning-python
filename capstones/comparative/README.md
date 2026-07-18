@@ -17,7 +17,8 @@ Both roots expose the same public package:
   strictly typed guide. Search for `TODO(m1)` through `TODO(m5)` and implement
   one boundary at a time.
 - [`solution/comparative_kv/`](solution/comparative_kv/) is the complete Python
-  3.11+ reference implementation using `argparse`, `json`, and `sqlite3`.
+  3.11 through 3.14 reference implementation using `argparse`, `json`, and
+  `sqlite3`.
 
 Run either launcher from the repository root:
 

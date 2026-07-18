@@ -75,11 +75,12 @@ CAPSTONE_IMPLEMENTATION=solution python -m unittest \
 Combined branch coverage also requires both suites:
 
 ```bash
-coverage erase
+python scripts/erase_coverage_data.py
 CAPSTONE_IMPLEMENTATION=solution CAPSTONE_SUBPROCESS_COVERAGE=1 \
   coverage run --parallel-mode -m unittest \
     discover -s capstones/comparative/tests -p 'test_*.py'
-CAPSTONE_IMPLEMENTATION=solution coverage run --parallel-mode -m unittest \
+CAPSTONE_IMPLEMENTATION=solution CAPSTONE_SUBPROCESS_COVERAGE=1 \
+  coverage run --parallel-mode -m unittest \
   discover -s capstones/idiomatic/tests -p 'test_*.py'
 coverage combine
 coverage report
@@ -90,7 +91,7 @@ The current Task project is tested and measured independently:
 ```bash
 PROJECT_IMPLEMENTATION=starter python -m pytest projects/tasks/tests -q
 PROJECT_IMPLEMENTATION=solution python -m pytest projects/tasks/tests -q
-coverage erase
+python scripts/erase_coverage_data.py
 PROJECT_IMPLEMENTATION=solution \
   coverage run -m pytest projects/tasks/tests -q
 coverage report --include="projects/tasks/solution/**/*.py"

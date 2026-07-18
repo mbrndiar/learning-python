@@ -8,7 +8,10 @@ for stdout while reporting failure on stderr; do not turn it into success.
 """
 
 from collections.abc import Mapping
-from typing import NoReturn
+from typing import TYPE_CHECKING, NoReturn
+
+if TYPE_CHECKING:
+    from .models import ImportResult
 
 
 class ApplicationError(Exception):
@@ -42,6 +45,19 @@ class ApplicationError(Exception):
                 "details": self.details,
             }
         }
+
+
+class PartialImportError(ApplicationError):
+    """Carry a committed partial result while preserving a non-zero exit."""
+
+    def __init__(self, result: "ImportResult"):
+        self.result = result
+        super().__init__(
+            "partial_import",
+            "one or more HTTP pages could not be imported",
+            4,
+            {"failed_pages": list(result.failed_pages)},
+        )
 
 
 class IncompleteImplementationError(NotImplementedError):

@@ -1,6 +1,8 @@
 """Shared deterministic paths and fakes for milestone tests."""
 
 import json
+import os
+import sys
 from collections.abc import Iterator, Mapping
 from contextlib import contextmanager
 from datetime import UTC, datetime
@@ -11,6 +13,22 @@ TEST_ROOT = Path(__file__).resolve().parent
 REPOSITORY_ROOT = TEST_ROOT.parents[2]
 FIXTURES = TEST_ROOT / "fixtures"
 FIXED_TIME = datetime(2026, 7, 16, 12, 0, tzinfo=UTC)
+
+
+def cli_program() -> list[str]:
+    """Return the public CLI command, optionally measured in subprocesses."""
+
+    if os.environ.get("CAPSTONE_SUBPROCESS_COVERAGE") == "1":
+        return [
+            sys.executable,
+            "-m",
+            "coverage",
+            "run",
+            "--parallel-mode",
+            "-m",
+            "ingest_report",
+        ]
+    return [sys.executable, "-m", "ingest_report"]
 
 
 @contextmanager

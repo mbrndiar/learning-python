@@ -5,8 +5,10 @@ ready. This only needs to be done once.
 
 ## 1. Install Python
 
-1. Download Python 3.11 or newer from https://www.python.org/downloads/
-   (on Linux, use your package manager, e.g. `sudo apt install python3`).
+1. Download a supported Python 3.11 through 3.14 release from
+   https://www.python.org/downloads/ (on Linux, use your package manager, e.g.
+   `sudo apt install python3`). Newer releases may work, but the course CI has
+   not verified them yet.
 2. Verify the installation:
 
    ```bash
@@ -193,7 +195,7 @@ Measure the Task solution separately so capstone coverage cannot hide project
 gaps:
 
 ```bash
-coverage erase
+python scripts/erase_coverage_data.py
 PROJECT_IMPLEMENTATION=solution \
   coverage run -m pytest projects/tasks/tests -q
 coverage report --include="projects/tasks/solution/**/*.py"
@@ -203,15 +205,22 @@ Course completion also requires both capstone reference suites. Measure their
 configured branch coverage together:
 
 ```bash
-coverage erase
+python scripts/erase_coverage_data.py
 CAPSTONE_IMPLEMENTATION=solution CAPSTONE_SUBPROCESS_COVERAGE=1 \
   coverage run --parallel-mode -m unittest \
     discover -s capstones/comparative/tests -p 'test_*.py'
-CAPSTONE_IMPLEMENTATION=solution coverage run --parallel-mode -m unittest \
+CAPSTONE_IMPLEMENTATION=solution CAPSTONE_SUBPROCESS_COVERAGE=1 \
+  coverage run --parallel-mode -m unittest \
   discover -s capstones/idiomatic/tests -p 'test_*.py'
 coverage combine
 coverage report
 ```
+
+The cleanup script is restricted to the repository's generated
+`.coverage-data/` directory and removes both its primary and parallel data files.
+That matters after an interrupted subprocess run: plain `coverage erase` does
+not discover the parallel files when that mode is enabled only on a later
+`coverage run` command.
 
 After uv creates and populates `.venv`, the activated daily commands are
 deliberately identical. The tool has changed how Python and packages reached the

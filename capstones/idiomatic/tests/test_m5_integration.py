@@ -4,7 +4,6 @@ import json
 import os
 import sqlite3
 import subprocess
-import sys
 import threading
 import unittest
 from collections.abc import Iterator, Mapping
@@ -30,6 +29,7 @@ from support import (
     REPOSITORY_ROOT,
     FixedClock,
     FixturePageFetcher,
+    cli_program,
     test_directory,
 )
 
@@ -317,9 +317,7 @@ class IntegrationTests(unittest.TestCase):
         ):
             process = subprocess.run(
                 [
-                    sys.executable,
-                    "-m",
-                    "ingest_report",
+                    *cli_program(),
                     "--json-errors",
                     "--db",
                     str(directory / "events.db"),
@@ -358,9 +356,7 @@ class IntegrationTests(unittest.TestCase):
             }
             ingest = subprocess.run(
                 [
-                    sys.executable,
-                    "-m",
-                    "ingest_report",
+                    *cli_program(),
                     "--db",
                     str(database),
                     "ingest",
@@ -383,9 +379,7 @@ class IntegrationTests(unittest.TestCase):
 
             report = subprocess.run(
                 [
-                    sys.executable,
-                    "-m",
-                    "ingest_report",
+                    *cli_program(),
                     "--db",
                     str(database),
                     "report",
@@ -403,9 +397,7 @@ class IntegrationTests(unittest.TestCase):
 
             duplicate = subprocess.run(
                 [
-                    sys.executable,
-                    "-m",
-                    "ingest_report",
+                    *cli_program(),
                     "--json-errors",
                     "--db",
                     str(database),
