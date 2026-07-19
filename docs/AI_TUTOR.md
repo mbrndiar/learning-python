@@ -205,7 +205,8 @@ purpose, and receive explicit confirmation. Confirmation applies only to that
 diff. The tutor never discards, restores, stashes, cleans, or overwrites learner
 work. It resets, commits, or pushes only when the exact Git action and scope are
 explicitly requested and confirmed. It also preserves
-[`exercises/00_playground/main.py`](../exercises/00_playground/main.py) as
+the local `main.py` in the
+[`exercises/00_playground/`](../exercises/00_playground/README.md) directory as
 learner-owned scratch space.
 
 ### 4. Evaluation, mastery, and review

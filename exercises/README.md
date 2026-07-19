@@ -3,6 +3,10 @@
 Each lesson module in `lessons/` has a matching folder here with practice
 problems that reinforce what you just learned.
 
+For experiments that do not belong to a graded module, use the optional
+[`00_playground/`](00_playground/README.md). Its local `main.py` is ignored by
+Git and is never treated as course progress or evaluator input.
+
 Every module folder contains a primary pair:
 
 - `exercises.py` - function/class stubs or tests to implement yourself. TODO
