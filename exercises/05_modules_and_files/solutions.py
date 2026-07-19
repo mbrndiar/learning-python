@@ -46,6 +46,8 @@ class InsufficientFundsError(Exception):
 
 
 def withdraw(balance, amount):
+    if amount <= 0:
+        raise ValueError("Withdrawal amount must be positive")
     if amount > balance:
         raise InsufficientFundsError(
             f"Cannot withdraw {amount}, balance is only {balance}"
@@ -125,6 +127,11 @@ if __name__ == "__main__":
     print("safe_divide: OK")
 
     assert withdraw(100, 40) == 60
+    try:
+        withdraw(100, 0)
+        raise AssertionError("expected ValueError")
+    except ValueError:
+        pass
     try:
         withdraw(100, 150)
         raise AssertionError("expected InsufficientFundsError")

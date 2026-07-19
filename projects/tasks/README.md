@@ -89,6 +89,11 @@ The Markdown repository coordinates load-modify-save operations only between
 threads in one process. It deliberately does not teach or provide cross-process
 file locking.
 
+Because this project precedes Module 12, the starter provides the small
+path-to-`RLock` registry as infrastructure. At milestone 2, use the supplied
+`self._lock` around each complete load/use or load-modify-save operation; Module
+12 later explains thread scheduling, shared-state races, and locks directly.
+
 ## Intended Python commands
 
 These commands define the learner interface exposed by the source scaffold. Run

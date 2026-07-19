@@ -84,8 +84,6 @@ class TestMathFunctions(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    # `unittest.main()` discovers and runs all TestCase methods in this
-    # file. `exit=False` lets the script continue instead of exiting the
-    # interpreter, which keeps this consistent with the other runnable
-    # lessons in this repository.
-    unittest.main(verbosity=2, exit=False)
+    # The default exit behavior gives shells and CI a nonzero status when a test
+    # fails, so automation cannot mistake a red suite for a successful lesson.
+    unittest.main(verbosity=2)

@@ -11,14 +11,21 @@ import random
 # This form imports one name directly instead of the whole module namespace.
 from datetime import date
 
-# A module name makes the origin of its attributes explicit.
-print("Square root of 16:", math.sqrt(16))
-print("Value of pi:", math.pi)
 
-# Without a fixed seed, repeated runs can produce different values.
-print("Random number between 1 and 10:", random.randint(1, 10))
+def main():
+    """Demonstrate imports without doing work when this module is imported."""
 
-# Because date was imported directly, this call does not need datetime.date.
-# Lesson 5.7 covers datetime, time zones, timestamps, and clock semantics; this
-# call only demonstrates importing one standard-library name.
-print("Today's date:", date.today())
+    # A module name makes the origin of its attributes explicit.
+    print("Square root of 16:", math.sqrt(16))
+    print("Value of pi:", math.pi)
+
+    # Without a fixed seed, repeated runs can produce different values.
+    print("Random number between 1 and 10:", random.randint(1, 10))
+
+    # Because date was imported directly, this call does not need datetime.date.
+    # Lesson 5.7 covers time zones and clocks; this only demonstrates an import.
+    print("Today's date:", date.today())
+
+
+if __name__ == "__main__":
+    main()

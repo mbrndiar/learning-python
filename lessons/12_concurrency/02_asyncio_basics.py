@@ -21,6 +21,15 @@ async def fetch_data(name, delay):
     return f"{name} result"
 
 
+async def cancellable_work():
+    """Demonstrate cleanup that still runs when the task is cancelled."""
+    try:
+        print("  Cancellable work started")
+        await asyncio.sleep(10)
+    finally:
+        print("  Cancellable work cleaned up")
+
+
 async def main():
     start = time.perf_counter()
 
@@ -50,6 +59,17 @@ async def main():
     print("  Scheduled; finished yet?", task.done())
     result = await task
     print("  Observed result:", result)
+
+    # Cancellation is a request. Await the cancelled task so its finally block
+    # runs and the owner observes the resulting CancelledError.
+    print("\nCancellation with awaited cleanup:")
+    task = asyncio.create_task(cancellable_work())
+    await asyncio.sleep(0)
+    task.cancel()
+    try:
+        await task
+    except asyncio.CancelledError:
+        print("  Cancellation observed by owner")
 
 
 if __name__ == "__main__":

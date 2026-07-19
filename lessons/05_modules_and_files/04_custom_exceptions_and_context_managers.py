@@ -24,9 +24,19 @@ class InsufficientFundsError(Exception):
 
 def withdraw(balance, amount):
     """Raise a custom exception instead of a generic one when funds are low."""
+    if amount <= 0:
+        raise ValueError("Withdrawal amount must be positive")
     if amount > balance:
         raise InsufficientFundsError(balance, amount)
     return balance - amount
+
+
+def parse_amount(text):
+    """Translate invalid numeric text while preserving the original cause."""
+    try:
+        return int(text)
+    except ValueError as error:
+        raise ValueError("amount must be a whole number") from error
 
 
 # --- Custom context manager (class-based) -----------------------------------
@@ -77,6 +87,12 @@ if __name__ == "__main__":
     except InsufficientFundsError as error:
         print("Caught custom error:", error)
         print("  balance was:", error.balance, "| requested:", error.amount)
+
+    try:
+        parse_amount("many")
+    except ValueError as error:
+        print("Translated error:", error)
+        print("  original cause:", type(error.__cause__).__name__)
 
     file_path = Path(__file__).with_name("managed_sample.txt")
 

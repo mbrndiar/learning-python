@@ -159,10 +159,10 @@ class SQLiteTaskRepository:
         operation = "update"
         try:
             with closing(self._connect()) as connection, connection:
-                # The initial SELECT precedes sqlite3's implicit write
-                # transaction. UPDATE and the verification read commit or roll
-                # back together; serializing the entire read-modify-write cycle
-                # would require beginning a transaction before this SELECT.
+                # Reserve the SQLite writer before reading current state. Without
+                # this explicit transaction, concurrent partial updates can both
+                # read the old row and overwrite one another's unchanged field.
+                connection.execute("BEGIN IMMEDIATE")
                 current = self._get_with_connection(
                     connection,
                     task_id,

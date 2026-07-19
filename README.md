@@ -37,6 +37,9 @@ By the end of the course, you will be able to:
 - Python 3.11 through 3.14. CI validates the oldest and newest supported
  versions; newer Python releases may work but are outside the current verified
  course range.
+- The documented interpreter is CPython on Linux, macOS, or Windows. GitHub
+ Actions verifies Ubuntu; platform-specific commands and project limitations
+ are called out where they matter.
 - The core lesson scripts in Modules 1–10, Module 11's HTTP fundamentals
   lesson, Module 12, and both capstones use only the standard library. Module
   9's pytest and packaging labs, Module 11's Flask, FastAPI, `requests`, and

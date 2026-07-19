@@ -6,9 +6,11 @@ to both backends, then probe SQLite transactions and Markdown canonical-format,
 replacement, cleanup, and in-process serialization guarantees.
 """
 
+import contextlib
 import sqlite3
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from threading import Barrier, local
 from typing import Any, cast
 
 import pytest
@@ -102,6 +104,70 @@ def test_service_uses_real_repositories_interchangeably(
 
 
 @solution_only
+def test_sqlite_serializes_partial_read_modify_write_updates(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    with temporary_project_directory() as directory:
+        path = directory / "tasks.db"
+        task = SQLiteTaskRepository(path).create(CreateTaskInput("Original"))
+        barrier = Barrier(2)
+        thread_state = local()
+        original_get = SQLiteTaskRepository._get_with_connection
+
+        def coordinated_get(
+            self: SQLiteTaskRepository,
+            connection: sqlite3.Connection,
+            task_id: int,
+            *,
+            operation: str,
+        ) -> Task:
+            current = original_get(
+                self,
+                connection,
+                task_id,
+                operation=operation,
+            )
+            # The old implementation reached this read outside a transaction.
+            # Synchronizing that window makes its lost update deterministic,
+            # while the fixed BEGIN IMMEDIATE path never enters the barrier.
+            if (
+                operation == "update"
+                and not connection.in_transaction
+                and not getattr(thread_state, "waited", False)
+            ):
+                thread_state.waited = True
+                barrier.wait(timeout=5)
+            return current
+
+        monkeypatch.setattr(
+            SQLiteTaskRepository,
+            "_get_with_connection",
+            coordinated_get,
+        )
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            updates = (
+                executor.submit(
+                    SQLiteTaskRepository(path).update,
+                    task.id,
+                    UpdateTaskInput(title="Renamed"),
+                ),
+                executor.submit(
+                    SQLiteTaskRepository(path).update,
+                    task.id,
+                    UpdateTaskInput(completed=True),
+                ),
+            )
+            for update in updates:
+                update.result(timeout=10)
+
+        assert SQLiteTaskRepository(path).get(task.id) == Task(
+            task.id,
+            "Renamed",
+            True,
+        )
+
+
+@solution_only
 def test_bootstrap_selects_backend_and_builds_a_framework_neutral_service() -> None:
     with temporary_project_directory() as directory:
         sqlite = build_repository("sqlite", directory / "tasks.db")
@@ -132,7 +198,7 @@ def test_sqlite_schema_is_idempotent_checked_and_autoincrementing() -> None:
         SQLiteTaskRepository(path)
         SQLiteTaskRepository(path)
 
-        with sqlite3.connect(path) as connection:
+        with contextlib.closing(sqlite3.connect(path)) as connection, connection:
             row = connection.execute(
                 "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'tasks'"
             ).fetchone()
@@ -151,7 +217,7 @@ def test_sqlite_failed_mutations_roll_back_without_consuming_an_id() -> None:
 
         # Triggers fail inside SQLite's mutation boundary, exercising rollback
         # after an operation starts rather than merely rejecting bad input.
-        with sqlite3.connect(path) as connection:
+        with contextlib.closing(sqlite3.connect(path)) as connection, connection:
             connection.executescript(
                 """
                 CREATE TRIGGER reject_failed_insert
@@ -178,7 +244,7 @@ def test_sqlite_failed_mutations_roll_back_without_consuming_an_id() -> None:
             repository.update(1, UpdateTaskInput(title="Fail update"))
         assert repository.get(1) == Task(1, "First", False)
 
-        with sqlite3.connect(path) as connection:
+        with contextlib.closing(sqlite3.connect(path)) as connection, connection:
             connection.execute("DROP TRIGGER reject_failed_insert")
         assert repository.create(CreateTaskInput("Second")).id == 2
 
@@ -191,7 +257,7 @@ def test_sqlite_translates_path_and_schema_failures() -> None:
         assert path_error.value.operation == "initialize"
 
         path = directory / "wrong-schema.db"
-        with sqlite3.connect(path) as connection:
+        with contextlib.closing(sqlite3.connect(path)) as connection, connection:
             connection.execute("CREATE TABLE tasks (unexpected TEXT)")
         repository = SQLiteTaskRepository(path)
         with pytest.raises(StorageError) as schema_error:

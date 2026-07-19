@@ -31,8 +31,12 @@ def is_palindrome(text):
 
 def count_vowels(text):
     """Return the number of vowels (a, e, i, o, u) in `text`,
-    case-insensitive."""
-    # TODO: implement this function
+    case-insensitive.
+
+    Use ``str.lower()`` and ``str.count()``; loops and comprehensions are taught
+    in later modules.
+    """
+    # TODO: add the count of each vowel in the normalized string.
     raise NotImplementedError
 
 

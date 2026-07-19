@@ -1,9 +1,25 @@
 """Versioned Markdown repository scaffold for milestone two."""
 
 from pathlib import Path
+from threading import RLock
 
 from ..domain import CreateTaskInput, Task, UpdateTaskInput
 from ..errors import incomplete
+
+_locks_guard = RLock()
+_path_locks: dict[Path, RLock] = {}
+
+
+def _lock_for(path: Path) -> RLock:
+    """Provide the process-local coordination scaffold taught in Module 12."""
+
+    key = path.absolute()
+    with _locks_guard:
+        lock = _path_locks.get(key)
+        if lock is None:
+            lock = RLock()
+            _path_locks[key] = lock
+        return lock
 
 
 class MarkdownTaskRepository:
@@ -19,9 +35,9 @@ class MarkdownTaskRepository:
 
     def __init__(self, document_path: str | Path) -> None:
         self.document_path = Path(document_path)
-        # TODO(milestone 2): share a re-entrant lock for this absolute path key.
-        # Matching keys serialize load-modify-save in this process; other
-        # processes and path aliases such as symlinks or `..` are not coordinated.
+        # The lock registry is supplied because this project precedes Module 12.
+        # TODO(milestone 2): hold this lock across each complete load/use cycle.
+        self._lock = _lock_for(self.document_path)
 
     def create(self, task: CreateTaskInput) -> Task:
         # TODO(milestone 2): lock, strictly load, allocate next-id, and save.

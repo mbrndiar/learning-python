@@ -1,5 +1,6 @@
 """Milestone 3: schema checks, atomic imports, identities, and reopen behavior."""
 
+import json
 import sqlite3
 import unittest
 from collections.abc import Iterator
@@ -139,6 +140,32 @@ class RepositoryTests(unittest.TestCase):
                     connection.execute("SELECT COUNT(*) FROM rejects").fetchone()[0], 0
                 )
 
+    def test_rejected_surrogate_text_is_escaped_for_sqlite_storage(self):
+        with test_directory() as directory:
+            database = directory / "events.db"
+            repository = SQLiteEventRepository(database)
+            repository.import_records(
+                import_id="surrogate",
+                source_kind="jsonl",
+                source_name="fixture",
+                started_at=FIXED_TIME,
+                records=[
+                    RejectedRecord(
+                        "fixture",
+                        1,
+                        "invalid_text",
+                        "category",
+                        "category contains invalid text",
+                        {"category": "\ud800"},
+                    )
+                ],
+            )
+            with closing(sqlite3.connect(database)) as connection:
+                raw_json = connection.execute(
+                    "SELECT raw_json FROM rejects"
+                ).fetchone()[0]
+            self.assertEqual(json.loads(raw_json), {"category": "\ud800"})
+
     def test_newer_incomplete_and_corrupt_schemas_fail_closed(self):
         # Existing files are never silently adopted or rewritten when their
         # version, application shape, or SQLite contents are not recognized.
@@ -169,6 +196,35 @@ class RepositoryTests(unittest.TestCase):
                 SQLiteEventRepository(corrupt)
             self.assertEqual(corrupt_error.exception.code, "database_error")
             self.assertEqual(corrupt.read_bytes(), b"not a sqlite database")
+
+            lookalike = directory / "lookalike.db"
+            with closing(sqlite3.connect(lookalike)) as connection:
+                connection.executescript(
+                    f"""
+                    CREATE TABLE imports (
+                        import_id TEXT, source_kind TEXT, source_name TEXT,
+                        started_at TEXT, state TEXT, accepted INTEGER,
+                        duplicates INTEGER, rejected INTEGER, failed_pages TEXT
+                    );
+                    CREATE TABLE events (
+                        source TEXT, event_id TEXT, occurred_at TEXT, category TEXT,
+                        duration_ms INTEGER, status TEXT, import_id TEXT
+                    );
+                    CREATE TABLE rejects (
+                        reject_id INTEGER, import_id TEXT, source_name TEXT,
+                        record_number INTEGER, code TEXT, field TEXT,
+                        message TEXT, raw_json TEXT
+                    );
+                    CREATE TABLE import_page_issues (
+                        import_id TEXT, page_number INTEGER, code TEXT, message TEXT
+                    );
+                    PRAGMA application_id = {APPLICATION_ID};
+                    PRAGMA user_version = 1;
+                    """
+                )
+            with self.assertRaises(ApplicationError) as lookalike_error:
+                SQLiteEventRepository(lookalike)
+            self.assertEqual(lookalike_error.exception.code, "database_error")
 
     def test_values_are_parameterized_not_interpreted_as_sql(self):
         with test_directory() as directory:

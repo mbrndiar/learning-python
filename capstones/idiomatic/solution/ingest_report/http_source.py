@@ -157,7 +157,15 @@ class URLPageFetcher:
                 body = response.read(MAX_RESPONSE_BYTES + 1)
         except ApplicationError:
             raise
-        except (HTTPError, URLError, TimeoutError, OSError) as error:
+        except HTTPError as error:
+            error.close()
+            raise ApplicationError(
+                "page_fetch_failed",
+                f"could not fetch page {page}: {error}",
+                4,
+                {"page": page},
+            ) from error
+        except (URLError, TimeoutError, OSError) as error:
             raise ApplicationError(
                 "page_fetch_failed",
                 f"could not fetch page {page}: {error}",

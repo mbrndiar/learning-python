@@ -637,7 +637,7 @@ round trips.
 
 Acceptance:
 
-- `normal.json` and `migration.json` sequential cases pass;
+- `storage.json` and `migration.json` milestone-three cases pass;
 - a fresh `list` creates valid empty v1 storage;
 - migration ordering and assigned revisions are deterministic;
 - invalid/future storage is not silently repaired; and

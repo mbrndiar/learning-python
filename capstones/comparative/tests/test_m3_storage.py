@@ -22,7 +22,7 @@ from support import (
 class StorageTests(unittest.TestCase):
     def test_normal_and_migration_scenarios(self):
         self.assertIn(IMPLEMENTATION, ("starter", "solution"))
-        run_sequential_fixture(self, "normal.json")
+        run_sequential_fixture(self, "storage.json")
         run_sequential_fixture(self, "migration.json")
 
     def test_fresh_schema_has_only_the_two_exact_application_tables(self):
@@ -65,6 +65,44 @@ class StorageTests(unittest.TestCase):
                 objects, [("table", "entries"), ("table", "store_metadata")]
             )
             self.assertEqual(metadata, [(1, 1, 0)])
+            _cleanup_database(database)
+
+    def test_schema_validation_preserves_sql_literal_quotes(self):
+        with test_directory() as directory:
+            database = directory / "store.db"
+            with closing(sqlite3.connect(database)) as connection:
+                connection.executescript(
+                    """
+                    CREATE TABLE store_metadata (
+                        singleton INTEGER PRIMARY KEY CHECK (singleton = '1'),
+                        schema_version INTEGER NOT NULL CHECK (schema_version = '1'),
+                        global_revision INTEGER NOT NULL
+                            CHECK (global_revision BETWEEN '0' AND '9007199254740991')
+                    );
+                    CREATE TABLE entries (
+                        key TEXT PRIMARY KEY COLLATE BINARY,
+                        value_json TEXT NOT NULL CHECK (json_valid(value_json)),
+                        revision INTEGER NOT NULL
+                            CHECK (revision BETWEEN '1' AND '9007199254740991')
+                    );
+                    INSERT INTO store_metadata VALUES (1, 1, 0);
+                    """
+                )
+            assert_process(
+                self,
+                run_cli(["--db", str(database), "list"]),
+                {
+                    "exit": 5,
+                    "stderr": "",
+                    "stdout": {
+                        "ok": False,
+                        "error": {
+                            "category": "invalid_storage",
+                            "details": {"reason": "malformed_schema"},
+                        },
+                    },
+                },
+            )
             _cleanup_database(database)
 
 

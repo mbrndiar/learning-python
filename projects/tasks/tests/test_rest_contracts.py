@@ -1100,3 +1100,8 @@ def test_generated_fastapi_openapi_is_focused_compatible() -> None:
     assert generated["paths"]["/tasks"]["get"]["parameters"][0]["schema"] == {
         "type": "boolean"
     }
+    for operation in ("get", "patch", "delete"):
+        task_id = generated["paths"]["/tasks/{taskId}"][operation]["parameters"][0]
+        assert task_id["name"] == "taskId"
+        assert task_id["schema"]["type"] == "integer"
+        assert task_id["schema"]["minimum"] == 1

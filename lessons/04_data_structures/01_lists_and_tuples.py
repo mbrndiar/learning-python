@@ -28,6 +28,13 @@ print("last element:", numbers[-1])
 # `numbers`, although nested mutable objects would still be shared.
 print("slice [1:4]:", numbers[1:4])
 
+# A shallow copy duplicates only the outer list. Nested mutable values remain
+# shared, so changing one of them is visible through both outer lists.
+nested = [["Ada"], ["Grace"]]
+shallow_copy = nested.copy()
+shallow_copy[0].append("Lovelace")
+print("nested after changing its shallow copy:", nested)
+
 # A comprehension builds a new list by evaluating its expression once for
 # each input value.
 squares = [n**2 for n in numbers]

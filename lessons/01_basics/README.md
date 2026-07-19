@@ -38,8 +38,10 @@ string is non-empty.
 ## ➗ Operators and expressions
 
 An expression produces a value. Arithmetic includes `+`, `-`, `*`, `/`,
-floor division `//`, remainder `%`, and exponentiation `**`. `/` always
-produces a float; `//` rounds down, which matters for negative numbers:
+floor division `//`, remainder `%`, and exponentiation `**`. With integer
+operands, `/` produces a float; types such as `Decimal`, `Fraction`, and
+`complex` preserve their own numeric model. `//` rounds down, which matters for
+negative numbers:
 
 ```python
 7 / 2    # 3.5

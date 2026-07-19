@@ -470,6 +470,16 @@ def test_server_enforces_methods_routes_ids_and_query_filter() -> None:
                 }
             }
 
+            status, headers, body = _request(base_url, "PROPFIND", "/tasks")
+            assert status == 405
+            assert headers["Allow"] == "GET, POST"
+            assert _json_body(body) == {
+                "error": {
+                    "code": "method_not_allowed",
+                    "message": "method is not allowed for this path",
+                }
+            }
+
             status, headers, _ = _request(base_url, "POST", "/tasks/1")
             assert status == 405
             assert headers["Allow"] == "GET, PATCH, DELETE"

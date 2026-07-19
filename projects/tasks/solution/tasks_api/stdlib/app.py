@@ -111,6 +111,15 @@ def _handler_for(service: TaskService) -> type[BaseHTTPRequestHandler]:
         def do_CONNECT(self) -> None:
             self._dispatch()
 
+        def __getattr__(self, name: str) -> object:
+            # BaseHTTPRequestHandler normally emits an HTML 501 before route
+            # dispatch for an unknown method name. Route every syntactically
+            # valid method through the shared contract so known paths return the
+            # required JSON 405 response and unknown paths still return JSON 404.
+            if name.startswith("do_"):
+                return self._dispatch
+            raise AttributeError(name)
+
         def log_message(self, format: str, *args: object) -> None:
             _LOGGER.info("%s - %s", self.address_string(), format % args)
 

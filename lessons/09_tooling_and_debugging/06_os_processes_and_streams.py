@@ -34,15 +34,20 @@ def run_child_process() -> subprocess.CompletedProcess[str]:
     """Run deterministic Python code with the current Python interpreter."""
     child_code = (
         "import os, sys; "
+        f"assert {TOKEN_VARIABLE!r} not in os.environ; "
         f"print(os.environ[{CHILD_MESSAGE_VARIABLE!r}]); "
         "print('diagnostic from child', file=sys.stderr)"
     )
     command = [sys.executable, "-c", child_code]
 
-    # Copy instead of mutating os.environ. Remove the example secret because
-    # child processes should receive only configuration they actually need.
-    child_environment = os.environ.copy()
-    child_environment.pop(TOKEN_VARIABLE, None)
+    # Build an allowlist instead of forwarding every parent variable. Windows
+    # system roots are preserved when present; the lesson-owned message is the
+    # only application configuration passed to the child.
+    child_environment = {
+        name: os.environ[name]
+        for name in ("SYSTEMROOT", "WINDIR")
+        if name in os.environ
+    }
     child_environment[CHILD_MESSAGE_VARIABLE] = "result from child"
 
     return subprocess.run(

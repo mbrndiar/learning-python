@@ -112,6 +112,10 @@ The setup connection MUST use SQLite itself, not implementation-private code.
 SQL strings are fixture data and are executed one statement at a time without
 text substitution.
 
+`storage.json` contains the ordinary create/reopen/read round trip used by
+Milestone 3. `normal.json` and `boundary.json` add the complete expectation,
+revision, deletion, ordering, and exhaustion behavior required by Milestone 4.
+
 A `sqlite_assert` step opens the database through an independent SQLite
 connection after the preceding CLI process has exited. Each listed query is
 read-only and its complete result rows, in query order, MUST equal `rows`.

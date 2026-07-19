@@ -13,8 +13,8 @@ exceptions, custom exceptions, and context managers.
   with binary `wb`/`rb` modes and no text encoding.
 - `safe_divide(a, b)` - divide two numbers, handling `ZeroDivisionError`
   with `try`/`except`.
-- `withdraw(balance, amount)` - raise a custom exception when a
-  withdrawal exceeds the available balance.
+- `withdraw(balance, amount)` - reject non-positive withdrawals and raise a
+  custom exception when a withdrawal exceeds the available balance.
 - `save_json(path, data)` / `load_json(path)` - persist structured data.
 - `temporary_value(mapping, key, value)` - implement deterministic cleanup
   with `@contextmanager`.

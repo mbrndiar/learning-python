@@ -1,5 +1,6 @@
 """Milestone 5: HTTP protocol, bounded concurrency, partials, and subprocess CLI."""
 
+import io
 import json
 import os
 import sqlite3
@@ -8,8 +9,10 @@ import threading
 import unittest
 from collections.abc import Iterator, Mapping
 from contextlib import closing, contextmanager
+from email.message import Message
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from unittest.mock import patch
+from urllib.error import HTTPError
 from urllib.parse import parse_qs, urlsplit
 
 from implementation import IMPLEMENTATION, SOURCE_ROOT
@@ -243,6 +246,26 @@ class IntegrationTests(unittest.TestCase):
 
         with self.assertRaises(ApplicationError):
             validate_loopback_url("https://example.com/events")
+
+    def test_url_fetcher_closes_http_error_response(self):
+        response = io.BytesIO(b"server failure")
+        error = HTTPError(
+            "http://127.0.0.1/events?page=1",
+            500,
+            "Internal Server Error",
+            Message(),
+            response,
+        )
+        fetcher = URLPageFetcher()
+
+        with (
+            patch.object(fetcher._opener, "open", side_effect=error),
+            self.assertRaises(ApplicationError) as failure,
+        ):
+            fetcher.fetch_page("http://127.0.0.1/events", 1)
+
+        self.assertEqual(failure.exception.code, "page_fetch_failed")
+        self.assertTrue(response.closed)
 
     def test_loopback_fetch_ignores_ambient_proxy_configuration(self):
         target_requests: list[str] = []

@@ -20,8 +20,14 @@ def is_palindrome(text):
 
 
 def count_vowels(text):
-    # The generator produces one value per vowel without building a list.
-    return sum(1 for char in text.lower() if char in "aeiou")
+    normalized = text.lower()
+    return (
+        normalized.count("a")
+        + normalized.count("e")
+        + normalized.count("i")
+        + normalized.count("o")
+        + normalized.count("u")
+    )
 
 
 def convert_values(

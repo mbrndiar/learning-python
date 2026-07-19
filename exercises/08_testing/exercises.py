@@ -6,6 +6,7 @@ exercise is about writing tests yourself, not just implementing
 functions.
 """
 
+import io
 import sys
 import unittest
 from unittest.mock import Mock, call
@@ -69,7 +70,66 @@ def run_tests():
 
     suite = unittest.defaultTestLoader.loadTestsFromTestCase(TestCalculator)
     result = unittest.TextTestRunner(verbosity=2).run(suite)
-    return 0 if result.wasSuccessful() else 1
+    if not result.wasSuccessful():
+        return 1
+
+    mutations = (
+        (
+            "test_add",
+            Calculator,
+            "add",
+            lambda self, a, b: a - b,
+        ),
+        (
+            "test_subtract",
+            Calculator,
+            "subtract",
+            lambda self, a, b: a + b,
+        ),
+        (
+            "test_divide_by_zero_raises",
+            Calculator,
+            "divide",
+            lambda self, a, b: 0,
+        ),
+        (
+            "test_add_examples_with_subtests",
+            Calculator,
+            "add",
+            lambda self, a, b: a + b + 1,
+        ),
+    )
+    for test_name, owner, attribute, faulty in mutations:
+        original = getattr(owner, attribute)
+        setattr(owner, attribute, faulty)
+        try:
+            mutation = unittest.TextTestRunner(stream=io.StringIO()).run(
+                unittest.TestSuite([TestCalculator(test_name)])
+            )
+        finally:
+            setattr(owner, attribute, original)
+        if mutation.wasSuccessful():
+            print(
+                f"{test_name} did not detect an intentionally faulty implementation",
+                file=sys.stderr,
+            )
+            return 1
+
+    original_notify_all = notify_all
+    globals()["notify_all"] = lambda sender, recipients, message: None
+    try:
+        mutation = unittest.TextTestRunner(stream=io.StringIO()).run(
+            unittest.TestSuite([TestCalculator("test_notify_all_uses_sender_boundary")])
+        )
+    finally:
+        globals()["notify_all"] = original_notify_all
+    if mutation.wasSuccessful():
+        print(
+            "test_notify_all_uses_sender_boundary did not detect a no-op sender loop",
+            file=sys.stderr,
+        )
+        return 1
+    return 0
 
 
 if __name__ == "__main__":

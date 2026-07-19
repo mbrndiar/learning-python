@@ -232,8 +232,8 @@ CompletedQuery = Annotated[
 ]
 TaskId = Annotated[
     int,
-    BeforeValidator(_parse_task_id),
     Path(alias="taskId", ge=1, description="A positive task ID."),
+    BeforeValidator(_parse_task_id),
 ]
 
 

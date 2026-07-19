@@ -1,0 +1,114 @@
+{
+  "kind": "sequential_scenarios",
+  "spec_version": "1.0.0",
+  "scenarios": [
+    {
+      "id": "ordinary_storage_round_trip",
+      "database": "fresh",
+      "steps": [
+        {
+          "run": {
+            "args": [
+              "--db",
+              "${DB}",
+              "list"
+            ]
+          },
+          "expect": {
+            "exit": 0,
+            "stdout": {
+              "ok": true,
+              "result": {
+                "entries": [],
+                "global_revision": 0
+              }
+            },
+            "stderr": ""
+          }
+        },
+        {
+          "run": {
+            "args": [
+              "--db",
+              "${DB}",
+              "set",
+              "alpha",
+              "--value-json",
+              "{\"b\":2,\"a\":1,\"b\":3}"
+            ]
+          },
+          "expect": {
+            "exit": 0,
+            "stdout": {
+              "ok": true,
+              "result": {
+                "key": "alpha",
+                "value": {
+                  "a": 1,
+                  "b": 3
+                },
+                "revision": 1,
+                "created": true
+              }
+            },
+            "stderr": ""
+          }
+        },
+        {
+          "run": {
+            "args": [
+              "--db",
+              "${DB}",
+              "get",
+              "alpha"
+            ]
+          },
+          "expect": {
+            "exit": 0,
+            "stdout": {
+              "ok": true,
+              "result": {
+                "key": "alpha",
+                "value": {
+                  "a": 1,
+                  "b": 3
+                },
+                "revision": 1
+              }
+            },
+            "stderr": ""
+          }
+        },
+        {
+          "run": {
+            "args": [
+              "--db",
+              "${DB}",
+              "list"
+            ]
+          },
+          "expect": {
+            "exit": 0,
+            "stdout": {
+              "ok": true,
+              "result": {
+                "entries": [
+                  {
+                    "key": "alpha",
+                    "value": {
+                      "a": 1,
+                      "b": 3
+                    },
+                    "revision": 1
+                  }
+                ],
+                "global_revision": 1
+              }
+            },
+            "stderr": ""
+          }
+        }
+      ]
+    }
+  ]
+}

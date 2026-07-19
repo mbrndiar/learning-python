@@ -30,6 +30,8 @@ class BankAccount:
 
     def withdraw(self, amount):
         """Remove money from the account if funds allow it."""
+        if amount <= 0:
+            raise ValueError("Withdrawal amount must be positive")
         if amount > self._balance:
             raise ValueError("Insufficient funds")
         self._balance -= amount
@@ -82,6 +84,19 @@ class Money:
         return float(self.amount)
 
 
+class Playlist:
+    """Expose container behavior through the ordinary len/iteration protocols."""
+
+    def __init__(self, titles):
+        self._titles = list(titles)
+
+    def __len__(self):
+        return len(self._titles)
+
+    def __iter__(self):
+        return iter(self._titles)
+
+
 if __name__ == "__main__":
     account = BankAccount("Ada", 100)
     account.deposit(50)
@@ -107,3 +122,7 @@ if __name__ == "__main__":
     print("Less than?", price2 < price1)
     print("float(total):", float(total))
     print("Sorted:", sorted([price1, price2, total]))
+
+    playlist = Playlist(["First", "Second"])
+    print("Playlist length:", len(playlist))
+    print("Playlist titles:", list(playlist))

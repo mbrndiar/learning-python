@@ -639,12 +639,13 @@ def _schema_kind(objects: Sequence[tuple[str, str, str | None]]) -> str:
 def _canonical_sql(sql: str) -> str:
     """Normalize superficial formatting for comparison with known schema SQL.
 
-    Case, whitespace, and SQLite identifier quoting are ignored. This is a
-    narrow comparison against fixed CREATE TABLE templates, not a general SQL
-    parser or a claim that arbitrary statements are semantically equivalent.
+    Case, whitespace, and SQLite identifier quoting are ignored. Single-quoted
+    SQL literals remain part of the comparison so a lookalike constraint such as
+    ``CHECK (revision >= '1')`` cannot masquerade as the required numeric form.
+    This is a narrow comparison against fixed CREATE TABLE templates.
     """
 
-    return re.sub(r"""[\s"'`\[\]]+""", "", sql).lower()
+    return re.sub(r"""[\s"`\[\]]+""", "", sql).lower()
 
 
 def _stored_text(value: object) -> str:

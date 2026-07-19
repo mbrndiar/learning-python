@@ -9,8 +9,8 @@ variables, conversions, numeric types, operators, text, and binary data.
   arithmetic operators.
 - `is_palindrome(text)` - check if a string reads the same forwards and
   backwards, using string methods and slicing.
-- `count_vowels(text)` - count vowels in a string by iterating over its
-  characters.
+- `count_vowels(text)` - count vowels with the string methods taught in Module
+  1, before loops arrive in Module 2.
 - `convert_values(integer_text, decimal_text, value)` - perform explicit `int`,
   `float`, `str`, and `bool` conversions.
 - `utf8_round_trip(text)` - encode Unicode text as UTF-8 and decode it back.

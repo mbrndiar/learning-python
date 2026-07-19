@@ -27,38 +27,64 @@ from .validation import normalize_filter_timestamp, validate_import_id
 
 SCHEMA_VERSION = 1
 APPLICATION_ID = 0x49525031
-EXPECTED_COLUMNS = {
-    "imports": {
-        "import_id",
-        "source_kind",
-        "source_name",
-        "started_at",
-        "state",
-        "accepted",
-        "duplicates",
-        "rejected",
-        "failed_pages",
-    },
-    "events": {
-        "source",
-        "event_id",
-        "occurred_at",
-        "category",
-        "duration_ms",
-        "status",
-        "import_id",
-    },
-    "rejects": {
-        "reject_id",
-        "import_id",
-        "source_name",
-        "record_number",
-        "code",
-        "field",
-        "message",
-        "raw_json",
-    },
-    "import_page_issues": {"import_id", "page_number", "code", "message"},
+_SCHEMA_STATEMENTS = {
+    "imports": """
+        CREATE TABLE imports (
+            import_id TEXT PRIMARY KEY,
+            source_kind TEXT NOT NULL,
+            source_name TEXT NOT NULL,
+            started_at TEXT NOT NULL,
+            state TEXT NOT NULL CHECK (state IN ('complete', 'partial')),
+            accepted INTEGER NOT NULL,
+            duplicates INTEGER NOT NULL,
+            rejected INTEGER NOT NULL,
+            failed_pages TEXT NOT NULL
+        )
+    """,
+    "events": """
+        CREATE TABLE events (
+            source TEXT NOT NULL,
+            event_id TEXT NOT NULL,
+            occurred_at TEXT NOT NULL,
+            category TEXT NOT NULL,
+            duration_ms INTEGER NOT NULL,
+            status TEXT NOT NULL,
+            import_id TEXT NOT NULL REFERENCES imports(import_id),
+            PRIMARY KEY (source, event_id)
+        )
+    """,
+    "rejects": """
+        CREATE TABLE rejects (
+            reject_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            import_id TEXT NOT NULL REFERENCES imports(import_id),
+            source_name TEXT NOT NULL,
+            record_number INTEGER NOT NULL,
+            code TEXT NOT NULL,
+            field TEXT,
+            message TEXT NOT NULL,
+            raw_json TEXT NOT NULL
+        )
+    """,
+    "import_page_issues": """
+        CREATE TABLE import_page_issues (
+            import_id TEXT NOT NULL REFERENCES imports(import_id),
+            page_number INTEGER NOT NULL,
+            code TEXT NOT NULL,
+            message TEXT NOT NULL,
+            PRIMARY KEY (import_id, page_number)
+        )
+    """,
+}
+
+
+def _normalized_schema(sql: str) -> str:
+    """Normalize layout while preserving literals and constraint semantics."""
+
+    return " ".join(sql.strip().removesuffix(";").split())
+
+
+_EXPECTED_SCHEMA = {
+    ("table", name): _normalized_schema(sql) for name, sql in _SCHEMA_STATEMENTS.items()
 }
 
 
@@ -66,8 +92,8 @@ class SQLiteEventRepository:
     """Own short-lived connections and make each import one transaction.
 
     Existing databases are accepted only when their application identity,
-    schema version, user-table set, and column-name sets match this adapter.
-    The check deliberately does not guess at migrations or repair near-matches.
+    schema version, complete application schema, and foreign-key integrity match
+    this adapter. The check does not guess at migrations or repair near-matches.
     """
 
     def __init__(self, database_path: str | Path):
@@ -97,25 +123,35 @@ class SQLiteEventRepository:
         )
 
     @staticmethod
-    def _table_names(connection: sqlite3.Connection) -> set[str]:
+    def _schema_objects(
+        connection: sqlite3.Connection,
+    ) -> dict[tuple[str, str], str]:
         rows = connection.execute(
             """
-            SELECT name
+            SELECT type, name, sql
             FROM sqlite_master
-            WHERE type = 'table' AND name NOT LIKE 'sqlite_%'
+            WHERE name NOT LIKE 'sqlite_%'
             """
         ).fetchall()
-        return {str(row["name"]) for row in rows}
+        objects: dict[tuple[str, str], str] = {}
+        for row in rows:
+            sql = row["sql"]
+            if not isinstance(sql, str):
+                raise SQLiteEventRepository._database_error(
+                    "database schema contains an object without SQL"
+                )
+            objects[(str(row["type"]), str(row["name"]))] = _normalized_schema(sql)
+        return objects
 
     def _initialize_or_validate(self, connection: sqlite3.Connection) -> None:
         check = connection.execute("PRAGMA quick_check").fetchone()
         if check is None or str(check[0]) != "ok":
             raise self._database_error("SQLite integrity check failed")
         version = int(connection.execute("PRAGMA user_version").fetchone()[0])
-        tables = self._table_names(connection)
+        objects = self._schema_objects(connection)
         # Only a truly empty, unversioned database is initialized. Any existing
         # structure must prove compatibility instead of being modified in place.
-        if version == 0 and not tables:
+        if version == 0 and not objects:
             self._create_schema(connection)
             return
         if version != SCHEMA_VERSION:
@@ -130,66 +166,18 @@ class SQLiteEventRepository:
         application_id = int(connection.execute("PRAGMA application_id").fetchone()[0])
         if application_id != APPLICATION_ID:
             raise self._database_error("database application identifier is invalid")
-        # This compatibility surface is intentionally exact for user-table and
-        # column names after the identity/version checks. It does not reconstruct
-        # full DDL or attempt to repair a merely similar database.
-        if tables != set(EXPECTED_COLUMNS):
-            raise self._database_error("database schema tables are malformed")
-        for table, expected in EXPECTED_COLUMNS.items():
-            rows = connection.execute(f"PRAGMA table_info({table})").fetchall()
-            actual = {str(row["name"]) for row in rows}
-            if actual != expected:
-                raise self._database_error(
-                    f"database schema for table {table!r} is malformed"
-                )
+        if objects != _EXPECTED_SCHEMA:
+            raise self._database_error("database application schema is malformed")
+        foreign_key_failures = connection.execute("PRAGMA foreign_key_check").fetchall()
+        if foreign_key_failures:
+            raise self._database_error("database foreign-key integrity check failed")
 
     @staticmethod
     def _create_schema(connection: sqlite3.Connection) -> None:
         with connection:
             connection.executescript(
-                f"""
-                CREATE TABLE imports (
-                    import_id TEXT PRIMARY KEY,
-                    source_kind TEXT NOT NULL,
-                    source_name TEXT NOT NULL,
-                    started_at TEXT NOT NULL,
-                    state TEXT NOT NULL CHECK (state IN ('complete', 'partial')),
-                    accepted INTEGER NOT NULL,
-                    duplicates INTEGER NOT NULL,
-                    rejected INTEGER NOT NULL,
-                    failed_pages TEXT NOT NULL
-                );
-
-                CREATE TABLE events (
-                    source TEXT NOT NULL,
-                    event_id TEXT NOT NULL,
-                    occurred_at TEXT NOT NULL,
-                    category TEXT NOT NULL,
-                    duration_ms INTEGER NOT NULL,
-                    status TEXT NOT NULL,
-                    import_id TEXT NOT NULL REFERENCES imports(import_id),
-                    PRIMARY KEY (source, event_id)
-                );
-
-                CREATE TABLE rejects (
-                    reject_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    import_id TEXT NOT NULL REFERENCES imports(import_id),
-                    source_name TEXT NOT NULL,
-                    record_number INTEGER NOT NULL,
-                    code TEXT NOT NULL,
-                    field TEXT,
-                    message TEXT NOT NULL,
-                    raw_json TEXT NOT NULL
-                );
-
-                CREATE TABLE import_page_issues (
-                    import_id TEXT NOT NULL REFERENCES imports(import_id),
-                    page_number INTEGER NOT NULL,
-                    code TEXT NOT NULL,
-                    message TEXT NOT NULL,
-                    PRIMARY KEY (import_id, page_number)
-                );
-
+                "\n".join(f"{statement};" for statement in _SCHEMA_STATEMENTS.values())
+                + f"""
                 PRAGMA application_id = {APPLICATION_ID};
                 PRAGMA user_version = {SCHEMA_VERSION};
                 """
@@ -319,7 +307,11 @@ class SQLiteEventRepository:
                                     record.message,
                                     json.dumps(
                                         dict(record.raw),
-                                        ensure_ascii=False,
+                                        # Rejected text can contain lone
+                                        # surrogates. ASCII escapes preserve the
+                                        # diagnostic value without asking SQLite
+                                        # to encode an invalid Unicode scalar.
+                                        ensure_ascii=True,
                                         sort_keys=True,
                                         separators=(",", ":"),
                                     ),
