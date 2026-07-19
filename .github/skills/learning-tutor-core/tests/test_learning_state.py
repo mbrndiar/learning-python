@@ -133,7 +133,7 @@ class LearningStateCLITests(unittest.TestCase):
             {"course": False, "version": False},
         )
         self.assertEqual(first["schema_version"], 1)
-        with sqlite3.connect(self.db) as connection:
+        with contextlib.closing(sqlite3.connect(self.db)) as connection, connection:
             version = connection.execute("PRAGMA user_version").fetchone()[0]
             counts = {
                 table: connection.execute(f'SELECT COUNT(*) FROM "{table}"').fetchone()[
@@ -151,14 +151,14 @@ class LearningStateCLITests(unittest.TestCase):
 
     def test_rejects_newer_and_corrupt_versioned_schemas(self) -> None:
         newer = self.root / "newer.sqlite3"
-        with sqlite3.connect(newer) as connection:
+        with contextlib.closing(sqlite3.connect(newer)) as connection, connection:
             connection.execute("PRAGMA user_version = 99")
         code, stdout, stderr = self.command("status", db=newer)
         self.assertEqual((code, stdout), (learning_state.EXIT_STATE, ""))
         self.assertIn("unsupported schema version 99", stderr)
 
         corrupt = self.root / "corrupt.sqlite3"
-        with sqlite3.connect(corrupt) as connection:
+        with contextlib.closing(sqlite3.connect(corrupt)) as connection, connection:
             connection.execute(
                 "CREATE TABLE schema_meta(key TEXT PRIMARY KEY, value TEXT)"
             )
@@ -237,7 +237,7 @@ class LearningStateCLITests(unittest.TestCase):
         }
         self.assertEqual(concepts["basics"]["mastery"], "mastered")
         self.assertFalse(concepts["basics"]["solution"]["unlocked"])
-        with sqlite3.connect(self.db) as connection:
+        with contextlib.closing(sqlite3.connect(self.db)) as connection, connection:
             self.assertEqual(
                 connection.execute("SELECT COUNT(*) FROM mastery").fetchone()[0],
                 1,
@@ -423,7 +423,7 @@ class LearningStateCLITests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertEqual(json.loads(stdout)["hints"], 1)
 
-        with sqlite3.connect(self.db) as connection:
+        with contextlib.closing(sqlite3.connect(self.db)) as connection, connection:
             rows = connection.execute(
                 """
                 SELECT event_type, outcome, score, hint_level
@@ -590,7 +590,7 @@ class LearningStateCLITests(unittest.TestCase):
         )
         self.assertEqual((code, stdout), (learning_state.EXIT_USAGE, ""))
         self.assertIn("unknown prerequisites", stderr)
-        with sqlite3.connect(self.db) as connection:
+        with contextlib.closing(sqlite3.connect(self.db)) as connection, connection:
             versions = connection.execute(
                 "SELECT commit_sha FROM course_versions ORDER BY commit_sha"
             ).fetchall()
@@ -659,7 +659,7 @@ class LearningStateCLITests(unittest.TestCase):
         with ThreadPoolExecutor(max_workers=4) as executor:
             outcomes = list(executor.map(write_attempt, range(4)))
         self.assertEqual(outcomes, ["failed"] * 4)
-        with sqlite3.connect(self.db) as connection:
+        with contextlib.closing(sqlite3.connect(self.db)) as connection, connection:
             attempts = connection.execute(
                 """
                 SELECT COUNT(*) FROM attempts
