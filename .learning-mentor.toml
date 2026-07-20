@@ -1,0 +1,15 @@
+schema_version = 1
+
+[adapter]
+protocol = "1"
+skill = ".agents/skills/python-learning-path/SKILL.md"
+command = [
+  "python",
+  ".agents/skills/python-learning-path/scripts/course_adapter.py",
+]
+
+[state]
+command = [
+  "python",
+  ".agents/skills/guided-learning/scripts/learning_state.py",
+]

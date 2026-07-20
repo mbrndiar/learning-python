@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the Python course manifest and project it into tutor state JSON."""
+"""Validate the Python learning path and project it into mentor state JSON."""
 
 from __future__ import annotations
 
@@ -19,8 +19,9 @@ SCRIPT_PATH = Path(__file__).resolve()
 ADAPTER_DIR = SCRIPT_PATH.parents[1]
 REPOSITORY_ROOT = ADAPTER_DIR.parents[2]
 MANIFEST_PATH = ADAPTER_DIR / "course.toml"
-SKILL_RELATIVE_PATH = Path(".github/skills/learning-python-adapter/SKILL.md")
+SKILL_RELATIVE_PATH = Path(".agents/skills/python-learning-path/SKILL.md")
 
+SUPPORTED_ADAPTER_PROTOCOL = "1"
 SUPPORTED_MANIFEST_VERSION = 1
 SUPPORTED_SCHEMA_VERSION = "1.0.0"
 ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9.-]*$")
@@ -721,6 +722,7 @@ def run(
     projection = validate_manifest(manifest, repository_root)
     if arguments.command == "validate":
         payload: object = {
+            "adapter_protocol": SUPPORTED_ADAPTER_PROTOCOL,
             "manifest_version": manifest["manifest_version"],
             "schema_version": manifest["schema_version"],
             "status": "valid",

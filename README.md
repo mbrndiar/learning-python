@@ -274,12 +274,13 @@ Solutions are examples, not the only correct answers. Compare behavior,
 readability, handling of edge cases, and tests rather than requiring identical
 code.
 
-## 🤖 Optional AI learning tutor
+## 🤖 Optional AI Learning Mentor
 
-This repository includes a Socratic GitHub Copilot CLI tutor that follows course
-prerequisites, uses deterministic checks, protects locked solutions, and asks
-before editing learner work. See the [AI tutor guide](docs/AI_TUTOR.md) for
-setup, start/resume commands, state privacy, and milestone coaching.
+This repository includes an AI Learning Mentor for GitHub Copilot CLI, OpenAI
+Codex, and Claude Code. It follows course prerequisites, uses deterministic
+checks, protects locked solutions, and asks before editing learner work. See the
+[AI Learning Mentor guide](docs/AI_TUTOR.md) for setup, start/resume commands,
+state privacy, and milestone coaching.
 
 ## 🧭 Course boundaries
 

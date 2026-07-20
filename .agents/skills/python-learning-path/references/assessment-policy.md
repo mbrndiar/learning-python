@@ -1,6 +1,6 @@
 # Python assessment policy
 
-This policy adapts the tutor core's evidence rules to the commands and stable
+This policy adapts the shared skill's evidence rules to the commands and stable
 IDs in `../course.toml`.
 
 ## Deterministic-first decisions
@@ -220,18 +220,18 @@ and `learning`.
 ## Runtime adapter and state helper contract
 
 Use only the production CLIs. Never import
-`.github/skills/learning-python-adapter/tests/test_course_manifest.py` or any
+`.agents/skills/python-learning-path/tests/test_course_manifest.py` or any
 other test module to validate or project runtime state.
 
 Inspect the live interfaces and run validation from the repository root:
 
 ```text
-python .github/skills/learning-python-adapter/scripts/course_adapter.py --help
-python .github/skills/learning-python-adapter/scripts/course_adapter.py validate --help
-python .github/skills/learning-python-adapter/scripts/course_adapter.py state-projection --help
-python .github/skills/learning-tutor-core/scripts/learning_state.py --help
-python .github/skills/learning-tutor-core/scripts/learning_state.py <command> --help
-python .github/skills/learning-python-adapter/scripts/course_adapter.py validate
+python .agents/skills/python-learning-path/scripts/course_adapter.py --help
+python .agents/skills/python-learning-path/scripts/course_adapter.py validate --help
+python .agents/skills/python-learning-path/scripts/course_adapter.py state-projection --help
+python .agents/skills/guided-learning/scripts/learning_state.py --help
+python .agents/skills/guided-learning/scripts/learning_state.py <command> --help
+python .agents/skills/python-learning-path/scripts/course_adapter.py validate
 ```
 
 The adapter defaults to this repository's manifest and root. Its only source
@@ -244,8 +244,8 @@ After validation, initialize a remote-backed course with the portable
 stdout-to-stdin pipeline:
 
 ```text
-python .github/skills/learning-python-adapter/scripts/course_adapter.py state-projection |
-  python .github/skills/learning-tutor-core/scripts/learning_state.py init-course \
+python .agents/skills/python-learning-path/scripts/course_adapter.py state-projection |
+  python .agents/skills/guided-learning/scripts/learning_state.py init-course \
     --remote "$(git remote get-url origin)" \
     --commit "$(git rev-parse HEAD)" \
     --concepts -
@@ -254,8 +254,8 @@ python .github/skills/learning-python-adapter/scripts/course_adapter.py state-pr
 When no Git remote exists, use:
 
 ```text
-python .github/skills/learning-python-adapter/scripts/course_adapter.py state-projection |
-  python .github/skills/learning-tutor-core/scripts/learning_state.py init-course \
+python .agents/skills/python-learning-path/scripts/course_adapter.py state-projection |
+  python .agents/skills/guided-learning/scripts/learning_state.py init-course \
     --local-fallback "$(git rev-parse --show-toplevel)" \
     --commit "$(git rev-parse HEAD)" \
     --concepts -
@@ -283,9 +283,9 @@ Resume with the same identity and current SHA. Read `status`, then
 `due-reviews`, then `next-objective` when no review is due:
 
 ```text
-python .github/skills/learning-tutor-core/scripts/learning_state.py status --remote "$(git remote get-url origin)" --commit "$(git rev-parse HEAD)"
-python .github/skills/learning-tutor-core/scripts/learning_state.py due-reviews --remote "$(git remote get-url origin)" --commit "$(git rev-parse HEAD)"
-python .github/skills/learning-tutor-core/scripts/learning_state.py next-objective --remote "$(git remote get-url origin)" --commit "$(git rev-parse HEAD)"
+python .agents/skills/guided-learning/scripts/learning_state.py status --remote "$(git remote get-url origin)" --commit "$(git rev-parse HEAD)"
+python .agents/skills/guided-learning/scripts/learning_state.py due-reviews --remote "$(git remote get-url origin)" --commit "$(git rev-parse HEAD)"
+python .agents/skills/guided-learning/scripts/learning_state.py next-objective --remote "$(git remote get-url origin)" --commit "$(git rev-parse HEAD)"
 ```
 
 For local identity, replace the exact remote pair with
@@ -296,14 +296,14 @@ Use the remaining executable command contract:
 - `record-attempt ... --concept <stable-id> --outcome
   passed|failed|error|skipped` records the deterministic decision;
 - `record-hint ... --concept <stable-id> --hint-level 0|1|2|3|4` records the one
-  core hint level just given;
+  shared hint level just given;
 - `record-mastery ... --concept <stable-id> --level
   not_started|in_progress|practiced|mastered` updates mastery; use
   `--review-in-days` or `--review-result again|hard|good|easy` only with
   `practiced` or `mastered`;
 - `unlock-solution ... --concept <stable-id>` records an eligible unlock.
 
-Core hint levels 0 through 4 map directly to the same helper value. Core level 5
+Shared hint levels 0 through 4 map directly to the same helper value. Level 5
 is an `unlock-solution` event and must never be passed to `record-hint`.
 
 Fail closed at every process boundary:

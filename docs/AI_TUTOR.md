@@ -1,9 +1,9 @@
-# AI learning tutor
+# AI Learning Mentor
 
-The repository includes a GitHub Copilot CLI custom agent for Socratic,
-evidence-based Python learning. It guides predictions, experiments, exercises,
-reviews, the required Task project, and both capstones while preserving learner
-ownership.
+The repository includes a shared, evidence-based Learning Mentor with native
+entrypoints for GitHub Copilot CLI, OpenAI Codex, and Claude Code. It guides
+predictions, experiments, exercises, reviews, the required Task project, and
+both capstones while preserving learner ownership.
 
 The tutor supplements the normal [course navigation](../README.md#course-outline)
 and deterministic lesson, exercise, project, and capstone checks. It does not
@@ -13,11 +13,26 @@ replace reading the course material, following prerequisites, or running tests.
 
 1. Complete the normal [course setup](SETUP.md): use Python 3.11 through 3.14,
    create a virtual environment, and install the development dependencies.
-2. Install and authenticate
-   [GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli).
-3. Open a terminal at the repository root. Repository-level agents and skills
+2. Initialize the pinned shared mentor after an ordinary clone:
+
+   ```bash
+   git submodule update --init --recursive
+   ```
+
+   Alternatively, clone the course with `git clone --recurse-submodules`.
+
+   The initial mentor integration uses relative Git symlinks. Linux, macOS, and
+   WSL checkouts support this layout. A native Windows checkout with
+   `core.symlinks=false` materializes the discovery links as plain text and
+   cannot use the optional mentor; use WSL until the planned wrapper fallback is
+   validated. This limitation does not affect the course itself.
+3. Install and authenticate at least one supported client:
+   [GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli),
+   [OpenAI Codex](https://developers.openai.com/codex/cli), or
+   [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview).
+4. Open a terminal at the repository root. Repository-level agents and skills
    are discovered relative to the current project.
-4. Confirm the local tools:
+5. Confirm Python and your selected client, for example:
 
    ```bash
    python --version
@@ -25,20 +40,29 @@ replace reading the course material, following prerequisites, or running tests.
    copilot skill list
    ```
 
-The repository uses the officially supported project locations:
+The repository pins one canonical source and exposes it through each client's
+project locations:
 
-- custom agent:
-  [`.github/agents/learning-tutor.agent.md`](../.github/agents/learning-tutor.agent.md);
-- core learning skill:
-  [`.github/skills/learning-tutor-core/SKILL.md`](../.github/skills/learning-tutor-core/SKILL.md);
-- Python course adapter:
-  [`.github/skills/learning-python-adapter/SKILL.md`](../.github/skills/learning-python-adapter/SKILL.md).
+- canonical shared agent and policy:
+  [`.learning-mentor/`](../.learning-mentor/);
+- shared learning skill:
+  [`.agents/skills/guided-learning/SKILL.md`](../.agents/skills/guided-learning/SKILL.md);
+- course-owned Python learning path:
+  [`.agents/skills/python-learning-path/SKILL.md`](../.agents/skills/python-learning-path/SKILL.md);
+- integration descriptor:
+  [`.learning-mentor.toml`](../.learning-mentor.toml);
+- native agent entrypoints:
+  [Copilot](../.github/agents/learning-mentor.agent.md),
+  [Claude](../.claude/agents/learning-mentor.md), and
+  [Codex](../.codex/agents/learning-mentor.toml).
 
 See GitHub's documentation for
 [creating CLI custom agents](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/create-custom-agents-for-cli)
 and [invoking custom agents](https://docs.github.com/en/copilot/how-tos/copilot-cli/use-copilot-cli/invoke-custom-agents).
 
-## Select the agent and reload skills
+## Start a mentor client
+
+### GitHub Copilot CLI
 
 Start an interactive session from the repository root:
 
@@ -49,13 +73,13 @@ copilot
 Then select the tutor:
 
 ```text
-/agent learning-tutor
+/agent learning-mentor
 ```
 
 You can also start Copilot with the repository agent already selected:
 
 ```bash
-copilot --agent=learning-tutor
+copilot --agent=learning-mentor
 ```
 
 After changing or updating a skill during an existing session, reload skill
@@ -63,7 +87,7 @@ discovery and reselect the agent:
 
 ```text
 /skills reload
-/agent learning-tutor
+/agent learning-mentor
 ```
 
 Agent profiles are loaded when Copilot starts. If the agent was just added or
@@ -71,13 +95,33 @@ changed and is not listed, restart the CLI. The profile intentionally omits a
 `tools` field: operations use the normal Copilot CLI permission prompts rather
 than preapproving unrestricted tools.
 
+### Claude Code
+
+Start Claude with the repository agent selected:
+
+```bash
+claude --agent learning-mentor
+```
+
+### OpenAI Codex
+
+Codex project custom agents are subagents. Start Codex from the repository root
+and ask the main thread to delegate the tutoring session:
+
+```text
+Delegate this tutoring session to the project custom agent learning-mentor.
+```
+
+The canonical agent, shared skill, Python learning path, state, and solution-lock
+rules remain the same across clients.
+
 ## Start or resume course state
 
 The tutor uses two production CLIs:
 
-- [the course adapter](../.github/skills/learning-python-adapter/scripts/course_adapter.py)
+- [the course adapter](../.agents/skills/python-learning-path/scripts/course_adapter.py)
   validates the manifest and emits the state projection;
-- [the state helper](../.github/skills/learning-tutor-core/scripts/learning_state.py)
+- [the state helper](../.agents/skills/guided-learning/scripts/learning_state.py)
   initializes and queries persistent learner state.
 
 Run the complete flow from any directory inside this repository:
@@ -88,8 +132,8 @@ Run the complete flow from any directory inside this repository:
 
   ROOT="$(git rev-parse --show-toplevel)"
   cd "$ROOT"
-  ADAPTER=".github/skills/learning-python-adapter/scripts/course_adapter.py"
-  STATE=".github/skills/learning-tutor-core/scripts/learning_state.py"
+  ADAPTER=".agents/skills/python-learning-path/scripts/course_adapter.py"
+  STATE=".agents/skills/guided-learning/scripts/learning_state.py"
   COMMIT="$(git rev-parse HEAD)"
 
   REMOTE_NAME="$(git remote | sed -n '1p')"
@@ -137,10 +181,10 @@ test fixture, direct import of adapter internals, or hand-written projection.
 You can inspect the live interfaces with:
 
 ```bash
-python .github/skills/learning-python-adapter/scripts/course_adapter.py --help
-python .github/skills/learning-python-adapter/scripts/course_adapter.py validate --help
-python .github/skills/learning-python-adapter/scripts/course_adapter.py state-projection --help
-python .github/skills/learning-tutor-core/scripts/learning_state.py init-course --help
+python .agents/skills/python-learning-path/scripts/course_adapter.py --help
+python .agents/skills/python-learning-path/scripts/course_adapter.py validate --help
+python .agents/skills/python-learning-path/scripts/course_adapter.py state-projection --help
+python .agents/skills/guided-learning/scripts/learning_state.py init-course --help
 ```
 
 ### After the Git commit changes
@@ -163,10 +207,10 @@ reuse a previous commit's objective as if it belonged to the current commit.
 
 ### 1. Onboarding or resuming
 
-The tutor verifies the two skills and runs the production start/resume flow
-above before selecting an objective. It explains what state is stored and asks
-about your goal, prior experience, available time, and whether you want to
-resume.
+The mentor verifies the descriptor, shared skill, and Python learning path, then
+runs the production start/resume flow before selecting an objective. It explains
+what state is stored and asks about your goal, prior experience, available time,
+and whether you want to resume.
 
 Self-reported confidence helps select questions but is not mastery evidence. If
 a review is due, the tutor offers it before new material. Otherwise it resumes
@@ -180,7 +224,7 @@ For each concept, the tutor:
 1. states one problem and observable success criteria;
 2. asks you to predict the result or propose an approach;
 3. runs the smallest command declared in the
-   [course manifest](../.github/skills/learning-python-adapter/course.toml);
+   [course manifest](../.agents/skills/python-learning-path/course.toml);
 4. asks what you observed and why it happened;
 5. changes one assumption or input and asks for another prediction;
 6. asks you to state the general rule;
@@ -266,7 +310,7 @@ exercise passed, or edit before confirmation.
 ## Learner state and privacy
 
 The bundled
-[`learning_state.py`](../.github/skills/learning-tutor-core/scripts/learning_state.py)
+[`learning_state.py`](../.agents/skills/guided-learning/scripts/learning_state.py)
 stores structured progress in SQLite outside the repository. The path is:
 
 1. `--db PATH`, when explicitly supplied;
@@ -288,9 +332,9 @@ must also succeed before state is claimed. You can inspect the executable
 interface at any time:
 
 ```bash
-python .github/skills/learning-python-adapter/scripts/course_adapter.py --help
-python .github/skills/learning-tutor-core/scripts/learning_state.py --help
-python .github/skills/learning-tutor-core/scripts/learning_state.py status --help
+python .agents/skills/python-learning-path/scripts/course_adapter.py --help
+python .agents/skills/guided-learning/scripts/learning_state.py --help
+python .agents/skills/guided-learning/scripts/learning_state.py status --help
 ```
 
 ### Status export
@@ -302,7 +346,7 @@ limited progress export:
 ```bash
 REMOTE="$(git config --get remote.origin.url)"
 COMMIT="$(git rev-parse HEAD)"
-python .github/skills/learning-tutor-core/scripts/learning_state.py \
+python .agents/skills/guided-learning/scripts/learning_state.py \
   status --remote "$REMOTE" --commit "$COMMIT" \
   > "$HOME/learning-python-progress.json"
 ```
@@ -318,7 +362,7 @@ The supported reset is concept-specific. Ask the tutor for the stable manifest
 ID and confirm the reset, or run:
 
 ```bash
-python .github/skills/learning-tutor-core/scripts/learning_state.py \
+python .agents/skills/guided-learning/scripts/learning_state.py \
   record-mastery --remote "$REMOTE" --commit "$COMMIT" \
   --concept concept.basics.hello-world --reset
 ```
@@ -333,7 +377,7 @@ at a new path outside the repository, then start a new tutor session:
 
 ```bash
 export COPILOT_LEARNING_TUTOR_DB="$HOME/.local/share/copilot-learning-tutor/state-fresh.sqlite3"
-copilot --agent=learning-tutor
+copilot --agent=learning-mentor
 ```
 
 Unset the variable to return to the default database.
@@ -358,8 +402,8 @@ PY
 
 Protect the backup like the original because it contains course identity and
 learning history. Restoring is a deliberate file-level operation, not a helper
-command; do not replace an active database while Copilot or the helper is using
-it.
+command; do not replace an active database while a mentor client or the helper
+is using it.
 
 ## Course and Git version behavior
 
@@ -444,16 +488,21 @@ Final completion also requires the manifest's cumulative learner-safe checks.
 ### The agent is not listed
 
 - Confirm the current directory is the repository root.
-- Confirm `.github/agents/learning-tutor.agent.md` exists.
-- Restart Copilot, then run `/agent learning-tutor`.
-- A user agent at `~/.copilot/agents/learning-tutor.agent.md` overrides the
+- Confirm `.github/agents/learning-mentor.agent.md` exists.
+- Confirm the entrypoint is a symlink resolving into `.learning-mentor/`. On a
+  native Windows checkout with `core.symlinks=false`, use WSL as described in
+  the setup section.
+- Restart Copilot, then run `/agent learning-mentor`.
+- A user agent at `~/.copilot/agents/learning-mentor.agent.md` overrides the
   repository agent with the same filename.
 
 ### A required skill is not listed
 
-Run `copilot skill list`. In an active session, run `/skills reload`. Confirm
-both `SKILL.md` files are under `.github/skills/`. If either skill or the
-manifest is unavailable, the tutor should stop rather than invent course rules.
+Run `git submodule update --init --recursive`, then `copilot skill list`. In an
+active Copilot session, run `/skills reload`. Confirm `guided-learning` and
+`python-learning-path` are available under `.agents/skills/`. If the submodule,
+either skill, or the descriptor is unavailable, the mentor should stop rather
+than invent course rules.
 
 ### State is unavailable
 

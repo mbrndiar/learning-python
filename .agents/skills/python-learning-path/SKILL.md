@@ -1,14 +1,14 @@
 ---
-name: learning-python-adapter
-description: Repository-specific Python tutoring for the learning-python course. Use when a learner wants to start or resume the 12-module course, run or debug a lesson or exercise, assess Python, unittest, pytest, Ruff, mypy, or process failures, or complete the Task project or either required capstone milestone by milestone.
+name: python-learning-path
+description: Repository-specific Python learning path for the learning-python course. Use when a learner wants to start or resume the 12-module course, run or debug a lesson or exercise, assess Python, unittest, pytest, Ruff, mypy, or process failures, or complete the Task project or either required capstone milestone by milestone.
 ---
 
-# Learning Python adapter
+# Python learning path
 
-Use this adapter with
-[learning-tutor-core](../learning-tutor-core/SKILL.md). The core owns the
-Socratic learning cycle; this adapter owns this repository's paths, commands,
-selectors, diagnostics, and milestone routing.
+Use this learning path with
+[guided-learning](../guided-learning/SKILL.md). The shared skill owns the
+learning cycle; this skill owns this repository's paths, commands, selectors,
+diagnostics, and milestone routing.
 
 Read these sources before tutoring:
 
@@ -18,8 +18,8 @@ Read these sources before tutoring:
   manifest;
 - [assessment policy](references/assessment-policy.md) — deterministic result
   and diagnostic rules;
-- [Socratic policy](../learning-tutor-core/references/socratic-policy.md);
-- [state model](../learning-tutor-core/references/state-model.md).
+- [Socratic policy](../guided-learning/references/socratic-policy.md);
+- [state model](../guided-learning/references/state-model.md).
 
 Stop rather than guessing if the manifest cannot be parsed with Python 3.11+
 `tomllib`, its schema is unsupported, a required path is absent, or an ID,
@@ -68,15 +68,18 @@ and before Module 12.
 For one concept:
 
 1. read the parent module's `lesson_readme` and the concept's `lesson_file`;
-2. ask for an output or behavior prediction;
-3. run exactly the concept's manifest `run_command`;
-4. distinguish an intentionally demonstrated exception from an unexpected
+2. for a new concept, give the shared policy's short teaching explanation of its
+   purpose, syntax, and mechanism, then name the bounded reading passage;
+3. ask for an output or behavior prediction and respond with explanatory
+   feedback rather than only a verdict;
+4. run exactly the concept's manifest `run_command`;
+5. distinguish an intentionally demonstrated exception from an unexpected
    failure by checking the cited lesson source and README;
-5. ask for the learner's observation and explanation;
-6. with confirmation, vary one value or assumption and rerun the same focused
+6. ask for the learner's observation and explanation;
+7. with confirmation, vary one value or assumption and rerun the same focused
    command;
-7. use the manifest review-question source, then the module exercise starter;
-8. run the module's exact `validation_commands` entry.
+8. use the manifest review-question source, then the module exercise starter;
+9. run the module's exact `validation_commands` entry.
 
 Do not widen to repository-wide Ruff, mypy, or test commands merely because a
 focused lesson or exercise failed.
@@ -200,23 +203,23 @@ Resolve every starter or solution path through the manifest's
 ## Runtime adapter and learner state
 
 Use the production manifest CLI at
-`.github/skills/learning-python-adapter/scripts/course_adapter.py`. Do not import
+`.agents/skills/python-learning-path/scripts/course_adapter.py`. Do not import
 the adapter test module or call test helpers at runtime. Run these commands from
 the repository root and inspect their executable interface before use:
 
 ```text
-python .github/skills/learning-python-adapter/scripts/course_adapter.py --help
-python .github/skills/learning-python-adapter/scripts/course_adapter.py validate --help
-python .github/skills/learning-python-adapter/scripts/course_adapter.py state-projection --help
-python .github/skills/learning-tutor-core/scripts/learning_state.py --help
-python .github/skills/learning-tutor-core/scripts/learning_state.py <command> --help
+python .agents/skills/python-learning-path/scripts/course_adapter.py --help
+python .agents/skills/python-learning-path/scripts/course_adapter.py validate --help
+python .agents/skills/python-learning-path/scripts/course_adapter.py state-projection --help
+python .agents/skills/guided-learning/scripts/learning_state.py --help
+python .agents/skills/guided-learning/scripts/learning_state.py <command> --help
 ```
 
 The default manifest and repository root are already derived from the production
 script location. Validate them before starting or resuming:
 
 ```text
-python .github/skills/learning-python-adapter/scripts/course_adapter.py validate
+python .agents/skills/python-learning-path/scripts/course_adapter.py validate
 ```
 
 Successful stdout is compact JSON with `status: "valid"`. Adapter exit 0 means
@@ -225,7 +228,7 @@ I/O failure. Parse stdout only after exit 0. The optional source overrides are
 exactly `--manifest PATH` and `--repository-root PATH`, for example:
 
 ```text
-python .github/skills/learning-python-adapter/scripts/course_adapter.py validate --manifest .github/skills/learning-python-adapter/course.toml --repository-root .
+python .agents/skills/python-learning-path/scripts/course_adapter.py validate --manifest .agents/skills/python-learning-path/course.toml --repository-root .
 ```
 
 ### First initialization
@@ -235,8 +238,8 @@ adapter's stdout-to-stdin projection pipeline; `--concepts -` is the state
 helper's documented stdin contract:
 
 ```text
-python .github/skills/learning-python-adapter/scripts/course_adapter.py state-projection |
-  python .github/skills/learning-tutor-core/scripts/learning_state.py init-course \
+python .agents/skills/python-learning-path/scripts/course_adapter.py state-projection |
+  python .agents/skills/guided-learning/scripts/learning_state.py init-course \
     --remote "$(git remote get-url origin)" \
     --commit "$(git rev-parse HEAD)" \
     --concepts -
@@ -246,8 +249,8 @@ If the repository has no Git remote, use the explicit local fallback and surface
 the helper warning:
 
 ```text
-python .github/skills/learning-python-adapter/scripts/course_adapter.py state-projection |
-  python .github/skills/learning-tutor-core/scripts/learning_state.py init-course \
+python .agents/skills/python-learning-path/scripts/course_adapter.py state-projection |
+  python .agents/skills/guided-learning/scripts/learning_state.py init-course \
     --local-fallback "$(git rev-parse --show-toplevel)" \
     --commit "$(git rev-parse HEAD)" \
     --concepts -
@@ -276,13 +279,13 @@ commit-specific.
 For a remote-backed resume, use the same current identity and SHA:
 
 ```text
-python .github/skills/learning-tutor-core/scripts/learning_state.py status \
+python .agents/skills/guided-learning/scripts/learning_state.py status \
   --remote "$(git remote get-url origin)" \
   --commit "$(git rev-parse HEAD)"
-python .github/skills/learning-tutor-core/scripts/learning_state.py due-reviews \
+python .agents/skills/guided-learning/scripts/learning_state.py due-reviews \
   --remote "$(git remote get-url origin)" \
   --commit "$(git rev-parse HEAD)"
-python .github/skills/learning-tutor-core/scripts/learning_state.py next-objective \
+python .agents/skills/guided-learning/scripts/learning_state.py next-objective \
   --remote "$(git remote get-url origin)" \
   --commit "$(git rev-parse HEAD)"
 ```

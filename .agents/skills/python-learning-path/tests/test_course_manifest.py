@@ -18,12 +18,13 @@ MANIFEST_PATH = ADAPTER_DIR / "course.toml"
 ADAPTER_SCRIPT = ADAPTER_DIR / "scripts" / "course_adapter.py"
 STATE_SCRIPT = (
     REPOSITORY_ROOT
-    / ".github"
+    / ".agents"
     / "skills"
-    / "learning-tutor-core"
+    / "guided-learning"
     / "scripts"
     / "learning_state.py"
 )
+DESCRIPTOR_PATH = REPOSITORY_ROOT / ".learning-mentor.toml"
 TEST_COMMIT = "c" * 40
 
 SPEC = importlib.util.spec_from_file_location("course_adapter", ADAPTER_SCRIPT)
@@ -96,6 +97,10 @@ class CourseManifestTests(unittest.TestCase):
 
     def test_toml_and_schema_versions_are_supported(self) -> None:
         self.assertEqual(
+            course_adapter.SUPPORTED_ADAPTER_PROTOCOL,
+            "1",
+        )
+        self.assertEqual(
             self.manifest["manifest_version"],
             course_adapter.SUPPORTED_MANIFEST_VERSION,
         )
@@ -106,6 +111,67 @@ class CourseManifestTests(unittest.TestCase):
         schema_path = REPOSITORY_ROOT / self.manifest["schema_document"]
         schema_heading = schema_path.read_text(encoding="utf-8").splitlines()[0]
         self.assertEqual(schema_heading, "# Course manifest schema 1.0")
+
+    def test_descriptor_and_native_entrypoints_use_canonical_sources(self) -> None:
+        with DESCRIPTOR_PATH.open("rb") as stream:
+            descriptor = tomllib.load(stream)
+        self.assertEqual(descriptor["schema_version"], 1)
+        self.assertEqual(
+            descriptor["adapter"],
+            {
+                "protocol": "1",
+                "skill": ".agents/skills/python-learning-path/SKILL.md",
+                "command": [
+                    "python",
+                    ".agents/skills/python-learning-path/scripts/course_adapter.py",
+                ],
+            },
+        )
+        self.assertEqual(
+            descriptor["state"]["command"],
+            [
+                "python",
+                ".agents/skills/guided-learning/scripts/learning_state.py",
+            ],
+        )
+
+        links = {
+            REPOSITORY_ROOT / ".agents" / "skills" / "guided-learning": (
+                REPOSITORY_ROOT / ".learning-mentor" / "skills" / "guided-learning"
+            ),
+            REPOSITORY_ROOT / ".github" / "agents" / "learning-mentor.agent.md": (
+                REPOSITORY_ROOT
+                / ".learning-mentor"
+                / "agents"
+                / "learning-mentor.agent.md"
+            ),
+            REPOSITORY_ROOT / ".claude" / "agents" / "learning-mentor.md": (
+                REPOSITORY_ROOT
+                / ".learning-mentor"
+                / "agents"
+                / "learning-mentor.agent.md"
+            ),
+            REPOSITORY_ROOT / ".claude" / "skills" / "guided-learning": (
+                REPOSITORY_ROOT / ".learning-mentor" / "skills" / "guided-learning"
+            ),
+            REPOSITORY_ROOT / ".claude" / "skills" / "python-learning-path": (
+                REPOSITORY_ROOT / ".agents" / "skills" / "python-learning-path"
+            ),
+            REPOSITORY_ROOT / ".codex" / "agents" / "learning-mentor.toml": (
+                REPOSITORY_ROOT
+                / ".learning-mentor"
+                / "integrations"
+                / "codex"
+                / "learning-mentor.toml"
+            ),
+        }
+        for link, target in links.items():
+            with self.subTest(link=link):
+                self.assertTrue(link.is_symlink())
+                self.assertEqual(
+                    link.resolve(strict=True),
+                    target.resolve(strict=True),
+                )
 
     def test_all_declared_repository_paths_and_review_headings_exist(self) -> None:
         paths = list(course_adapter.declared_paths(self.manifest))
@@ -240,6 +306,7 @@ class CourseManifestTests(unittest.TestCase):
     def test_validate_cli_emits_compact_deterministic_json(self) -> None:
         result = run_cli("validate")
         expected = {
+            "adapter_protocol": "1",
             "manifest_version": 1,
             "schema_version": "1.0.0",
             "status": "valid",

@@ -1,10 +1,7 @@
-name: Run lessons, project, and capstones
+name: Validate course
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -17,6 +14,8 @@ jobs:
         python-version: ["3.11", "3.14"]
     steps:
       - uses: actions/checkout@v7
+        with:
+          submodules: recursive
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v6
@@ -27,28 +26,33 @@ jobs:
       - name: Install development dependencies
         run: python -m pip install -r requirements-dev.txt
 
-      - name: Validate tutor tooling
+      - name: Validate mentor tooling
         run: |
-          echo "::group::Tutor state-engine tests"
+          echo "::group::Mentor state-engine tests"
           python -m unittest discover \
-            -s .github/skills/learning-tutor-core/tests \
+            -s .agents/skills/guided-learning/tests \
+            -p 'test_*.py' -v
+          echo "::endgroup::"
+          echo "::group::Mentor distribution tests"
+          python -m unittest discover \
+            -s .learning-mentor/tests \
             -p 'test_*.py' -v
           echo "::endgroup::"
           echo "::group::Course manifest validation"
-          python .github/skills/learning-python-adapter/scripts/course_adapter.py \
+          python .agents/skills/python-learning-path/scripts/course_adapter.py \
             validate
           echo "::endgroup::"
           echo "::group::Course adapter tests"
           python -m unittest discover \
-            -s .github/skills/learning-python-adapter/tests \
+            -s .agents/skills/python-learning-path/tests \
             -p 'test_course_manifest.py' -v
           echo "::endgroup::"
-          echo "::group::Compile tutor Python"
+          echo "::group::Compile mentor Python"
           python -m py_compile \
-            .github/skills/learning-tutor-core/scripts/learning_state.py \
-            .github/skills/learning-tutor-core/tests/test_learning_state.py \
-            .github/skills/learning-python-adapter/scripts/course_adapter.py \
-            .github/skills/learning-python-adapter/tests/test_course_manifest.py
+            .agents/skills/guided-learning/scripts/learning_state.py \
+            .agents/skills/guided-learning/tests/test_learning_state.py \
+            .agents/skills/python-learning-path/scripts/course_adapter.py \
+            .agents/skills/python-learning-path/tests/test_course_manifest.py
           echo "::endgroup::"
 
       - name: Check documentation links
@@ -60,16 +64,16 @@ jobs:
         run: |
           ruff format --check .
           ruff format --check \
-            .github/skills/learning-tutor-core/scripts/learning_state.py \
-            .github/skills/learning-tutor-core/tests/test_learning_state.py \
-            .github/skills/learning-python-adapter/scripts/course_adapter.py \
-            .github/skills/learning-python-adapter/tests/test_course_manifest.py
+            .agents/skills/guided-learning/scripts/learning_state.py \
+            .agents/skills/guided-learning/tests/test_learning_state.py \
+            .agents/skills/python-learning-path/scripts/course_adapter.py \
+            .agents/skills/python-learning-path/tests/test_course_manifest.py
           ruff check .
           ruff check \
-            .github/skills/learning-tutor-core/scripts/learning_state.py \
-            .github/skills/learning-tutor-core/tests/test_learning_state.py \
-            .github/skills/learning-python-adapter/scripts/course_adapter.py \
-            .github/skills/learning-python-adapter/tests/test_course_manifest.py
+            .agents/skills/guided-learning/scripts/learning_state.py \
+            .agents/skills/guided-learning/tests/test_learning_state.py \
+            .agents/skills/python-learning-path/scripts/course_adapter.py \
+            .agents/skills/python-learning-path/tests/test_course_manifest.py
           mypy
           mypy --strict \
             capstones/comparative/starter/comparative_kv \

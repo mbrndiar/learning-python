@@ -1,6 +1,6 @@
 manifest_version = 1
 schema_version = "1.0.0"
-schema_document = ".github/skills/learning-python-adapter/references/course-schema.md"
+schema_document = ".agents/skills/python-learning-path/references/course-schema.md"
 
 [course]
 id = "learning-python"
