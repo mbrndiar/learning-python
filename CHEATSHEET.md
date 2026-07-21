@@ -1,9 +1,9 @@
-# Python Cheat Sheet & Glossary
+# 🗒️ Python Cheat Sheet & Glossary
 
 A quick-reference companion to the lessons. Use it to jog your memory
 after finishing the course, or while working through the exercises.
 
-## Glossary
+## 📖 Glossary
 
 | Term | Meaning |
 | --- | --- |
@@ -49,7 +49,7 @@ after finishing the course, or while working through the exercises.
 | Process | An isolated interpreter and memory space that can run CPU work in parallel |
 | Aware datetime | A date and time with enough time-zone information to identify an instant |
 
-## Quick syntax reference
+## ⚡ Quick syntax reference
 
 ```python
 # Variables and types
@@ -183,7 +183,7 @@ def find_name(user_id: int, names: dict[int, str]) -> str | None:
     return names.get(user_id)
 ```
 
-## Core type operations
+## 🧰 Core type operations
 
 | Goal | Example |
 | --- | --- |
@@ -218,7 +218,7 @@ left - right                   # difference
 Most methods that mutate a collection return `None`. `list.sort()` mutates;
 `sorted(iterable)` returns a new list.
 
-## Numbers, text, and bytes
+## 🔢 Numbers, text, and bytes
 
 ```python
 import math
@@ -241,7 +241,7 @@ Use `Decimal` when a decimal rounding contract matters and `Fraction` for exact
 rational arithmetic. Do not construct a `Decimal` from an already approximated
 float when the original decimal text is available.
 
-## Function call contracts
+## 📞 Function call contracts
 
 ```python
 def connect(host, /, port=443, *, timeout=5.0):
@@ -257,7 +257,7 @@ keyword-only. Arguments are bound to local names by assignment. Mutating a
 shared mutable object can be visible to the caller; rebinding the local
 parameter cannot replace the caller's reference.
 
-## Scope, copying, and identity
+## 🔭 Scope, copying, and identity
 
 Names resolve in Local, Enclosing, Global, then Built-in scope (LEGB).
 Assignment binds another name to the same object:
@@ -273,7 +273,7 @@ value is None                  # canonical identity check
 
 Use `copy.deepcopy()` only when an independent recursive copy is required.
 
-## Exceptions and context managers
+## 🛡️ Exceptions and context managers
 
 ```python
 try:
@@ -292,7 +292,7 @@ with open("file.txt", encoding="utf-8") as file:
 Catch the narrowest exception you can meaningfully handle. Use `raise` to
 signal failure and `raise NewError(...) from error` to preserve its cause.
 
-## Imports and script entry points
+## 📦 Imports and script entry points
 
 ```python
 import math
@@ -305,7 +305,7 @@ if __name__ == "__main__":
 Top-level module code executes on first import. Protect application startup so
 the module can also be imported safely by tests or other modules.
 
-## Dates, times, and clocks
+## 🕐 Dates, times, and clocks
 
 ```python
 from datetime import datetime, timedelta, timezone
@@ -322,7 +322,7 @@ Prefer aware datetimes for real instants and normalize storage or interchange
 deliberately, commonly to UTC. State timestamp units. Use `time.monotonic()` for
 elapsed duration because wall-clock time can be adjusted.
 
-## Environment, processes, and streams
+## 🖥️ Environment, processes, and streams
 
 ```python
 import os
@@ -345,7 +345,7 @@ Pass subprocess arguments as a sequence. Do not interpolate untrusted values
 into a shell command. Write diagnostics to `sys.stderr` and return a nonzero
 exit status when a CLI cannot complete its request.
 
-## Testing reminders
+## 🧪 Testing reminders
 
 ```python
 import unittest
@@ -362,7 +362,7 @@ class TestExample(unittest.TestCase):
 Test normal behavior, boundaries, empty input, and expected failures. Keep
 tests independent and deterministic.
 
-## Command-line quick reference
+## ⌨️ Command-line quick reference
 
 ```bash
 python3 --version                 # check Python version
@@ -412,7 +412,7 @@ ruff check .
 mypy
 ```
 
-## Advanced course sequence
+## 🚀 Advanced course sequence
 
 1. [Module 10: SQL and SQLite](lessons/10_sql_and_sqlite/README.md)
 2. [Module 11: REST APIs and HTTP Clients](lessons/11_rest_apis_and_clients/README.md)
@@ -420,7 +420,7 @@ mypy
 4. [Module 12: Concurrency](lessons/12_concurrency/README.md)
 5. Both required [capstones](capstones/README.md)
 
-## Where to go next
+## 🧭 Where to go next
 
 - [Python official documentation](https://docs.python.org/3/)
 - [pytest documentation](https://docs.pytest.org/en/stable/)

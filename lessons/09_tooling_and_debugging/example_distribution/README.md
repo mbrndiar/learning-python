@@ -1,4 +1,4 @@
-# Packaging public API example
+# 📦 Packaging public API example
 
 This deliberately small distribution accompanies
 [`07_packaging_and_public_apis.py`](../07_packaging_and_public_apis.py). It uses

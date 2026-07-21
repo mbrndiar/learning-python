@@ -1,9 +1,9 @@
-# Setting Up Your Environment
+# 🛠️ Setting Up Your Environment
 
 Before starting the lessons, get Python installed and a project workspace
 ready. This only needs to be done once.
 
-## 1. Install Python
+## 🐍 1. Install Python
 
 1. Download a supported Python 3.11 through 3.14 release from
    https://www.python.org/downloads/ (on Linux, use your package manager, e.g.
@@ -21,17 +21,28 @@ ready. This only needs to be done once.
    selected interpreter, for example `python3 -m pip`, rather than relying on a
    separate `pip` command that may belong to another installation.
 
-## 2. Get the code
+## 📥 2. Get the code
 
-Clone this repository (or download it as a ZIP) and open a terminal in the
-project's root directory:
+Clone this repository with its optional Learning Mentor submodule, then open a
+terminal in the project's root directory:
 
 ```bash
-git clone https://github.com/mbrndiar/learning-python.git
+git clone --recurse-submodules https://github.com/mbrndiar/learning-python.git
 cd learning-python
 ```
 
-## 3. Create a virtual environment
+If you already cloned the repository without submodules, initialize them from
+the repository root:
+
+```bash
+git submodule update --init --recursive
+```
+
+A ZIP download does not include an initialized `.learning-mentor` submodule.
+The core course remains usable, but the optional
+[AI Learning Mentor](AI_TUTOR.md) requires the Git checkout above.
+
+## 🧪 3. Create a virtual environment
 
 A virtual environment keeps this project's Python packages isolated from
 the rest of your system. The core lesson scripts in Modules 1–10, Module 11's
@@ -53,7 +64,7 @@ source .venv/bin/activate        # macOS / Linux
 Once activated, your shell prompt is usually prefixed with `(.venv)`. To
 leave the virtual environment, run `deactivate`.
 
-## 4. Install dependencies
+## 📦 4. Install dependencies
 
 The development requirements install the Task project's runtime and
 executable-contract libraries plus
@@ -73,14 +84,14 @@ python -m pip install -r requirements-dev.txt
 command creates the complete course development environment. If you only want
 to run the Task project, you may install its requirements file directly instead.
 
-## 5. Choose an editor
+## ✍️ 5. Choose an editor
 
 Any text editor works. If you are looking for a recommendation, both
 [VS Code](https://code.visualstudio.com/) (with the Python extension) and
 [PyCharm Community Edition](https://www.jetbrains.com/pycharm/download/)
 are free and beginner-friendly.
 
-## 6. Run your first lesson
+## ▶️ 6. Run your first lesson
 
 ```bash
 python lessons/01_basics/01_hello_world.py
@@ -94,7 +105,7 @@ Module 11 REST APIs and clients, the
 [Task REST API and clients project](../projects/tasks/README.md), Module 12
 concurrency, then both capstones.
 
-## Optional modern setup with uv
+## ⚡ Optional modern setup with uv
 
 The `venv` and `pip` workflow above is built into Python, widely available, and
 worth understanding. [uv](https://docs.astral.sh/uv/) is a Python-focused
@@ -128,7 +139,7 @@ input already describes the complete resolved environment. This repository's
 lists the direct development requirements. The installer resolves their
 transitive dependencies.
 
-## Daily development flow
+## 🔁 Daily development flow
 
 Start narrow: reproduce the behavior you changed before running every check.
 For example:
@@ -232,14 +243,11 @@ The repository's
 in a clean environment. Running them locally first shortens the feedback loop;
 CI confirms that the result does not depend on unrecorded local state.
 
-The predecessor Task examples have been removed and do not define any
-development gates. The [migration guide](CAPSTONE_MIGRATION.md) maps their
-concepts to the two required capstones and records where to inspect the removed
-source in Git history. The current
-[`projects/tasks/`](../projects/tasks/README.md) applied project is a new,
+Removed predecessor Task examples do not define any development gates. The
+current [`projects/tasks/`](../projects/tasks/README.md) applied project is a
 required course stage rather than a restored legacy path.
 
-## Troubleshooting
+## 🩺 Troubleshooting
 
 ### `python` or `python3` is not found
 

@@ -1,4 +1,4 @@
-# AI Learning Mentor
+# 🤖 AI Learning Mentor
 
 The repository includes a shared, evidence-based Learning Mentor with native
 entrypoints for GitHub Copilot CLI, OpenAI Codex, and Claude Code. It guides
@@ -9,7 +9,7 @@ The tutor supplements the normal [course navigation](../README.md#course-outline
 and deterministic lesson, exercise, project, and capstone checks. It does not
 replace reading the course material, following prerequisites, or running tests.
 
-## Prerequisites and setup
+## ✅ Prerequisites and setup
 
 1. Complete the normal [course setup](SETUP.md): use Python 3.11 through 3.14,
    create a virtual environment, and install the development dependencies.
@@ -60,7 +60,7 @@ See GitHub's documentation for
 [creating CLI custom agents](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/create-custom-agents-for-cli)
 and [invoking custom agents](https://docs.github.com/en/copilot/how-tos/copilot-cli/use-copilot-cli/invoke-custom-agents).
 
-## Start a mentor client
+## 🚀 Start a mentor client
 
 ### GitHub Copilot CLI
 
@@ -115,7 +115,7 @@ Delegate this tutoring session to the project custom agent learning-mentor.
 The canonical agent, shared skill, Python learning path, state, and solution-lock
 rules remain the same across clients.
 
-## Who runs what
+## 🤝 Who runs what
 
 Normal tutoring does not require you to invoke the course adapter, state helper,
 lesson scripts, or evaluators manually.
@@ -132,7 +132,7 @@ lesson scripts, or evaluators manually.
 The internal commands remain documented in the agent and skill contracts for
 maintainers and automated tests. They are not learner setup steps.
 
-## Start or resume course state
+## 💾 Start or resume course state
 
 After you select `learning-mentor`, the mentor automatically:
 
@@ -164,7 +164,7 @@ If the new manifest or projection is invalid, or initialization fails, the
 tutor remains read-only and reports persistent state as unavailable. It must not
 reuse a previous commit's objective as if it belonged to the current commit.
 
-## Learning flow
+## 🧭 Learning flow
 
 ### 1. Onboarding or resuming
 
@@ -223,7 +223,7 @@ requires an explanation and independent transfer or later recall. Reviews are
 scheduled from observed evidence. A due review is a scheduling fact, not proof
 that previous learning was lost.
 
-## Example session
+## 💬 Example session
 
 This abbreviated example is illustrative; the tutor uses current repository
 lines and actual command output in a real session.
@@ -261,7 +261,7 @@ does division by 5 occur before adding 32?
 The example deliberately does not reveal `solutions.py`, claim that the whole
 exercise passed, or edit learner-owned code.
 
-## Learner state and privacy
+## 🔒 Learner state and privacy
 
 The mentor stores structured progress in SQLite outside the repository. The
 path is:
@@ -304,7 +304,7 @@ Close active mentor sessions first and protect the backup like the original
 because it contains course identity and learning history. The state helper has
 no backup or restore command.
 
-## Course and Git version behavior
+## 🔀 Course and Git version behavior
 
 The manifest declares course version `1.0.0`, but persistent helper versions are
 identified by `git rev-parse HEAD`. Stable manifest IDs allow mastery and review
@@ -319,7 +319,7 @@ concept graph before querying or recording new evidence. A renamed or
 incompatible concept needs a new stable ID and reassessment. If either CLI
 fails, no new-commit state is claimed.
 
-## Solution locks
+## 🔐 Solution locks
 
 Solution locks are a teaching policy enforced by the tutor:
 
@@ -336,7 +336,7 @@ The lock is not filesystem access control, encryption, or a security boundary.
 You can still open repository files yourself. If you do, the tutor must not use
 that accidental access as evidence or silently unlock other scopes.
 
-## Project and capstone milestones
+## 🏁 Project and capstone milestones
 
 The required [Task project](../projects/tasks/README.md) follows Module 11 and
 precedes Module 12. The mentor always assesses the learner tree explicitly with
@@ -371,7 +371,7 @@ a plan, runs a narrow baseline, confirms each proposed edit, reruns the same
 focused check, requests a demonstration and explanation, and only then advances.
 Final completion also requires the manifest's cumulative learner-safe checks.
 
-## Troubleshooting
+## 🩺 Troubleshooting
 
 ### The agent is not listed
 

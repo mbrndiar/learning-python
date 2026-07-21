@@ -162,9 +162,7 @@ selected milestone tests pass.
 
 The predecessor Task Manager, REST API, and client examples have been removed.
 They are distinct from the current required [`projects/tasks/`](projects/tasks/)
-learning project and are not a third capstone. See the
-[capstone migration guide](docs/CAPSTONE_MIGRATION.md) for concept mappings and
-the exact Git revision that still contains their source.
+learning project and are not a third capstone.
 
 ## 🗒️ Cheat sheet
 

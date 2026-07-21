@@ -10,9 +10,7 @@ learners may choose any clear design that preserves the public boundaries.
 
 The removed connected Task projects are historical material. They are distinct
 from the current required
-[Task REST API and clients project](../../projects/tasks/README.md). See the
-[migration guide](../../docs/CAPSTONE_MIGRATION.md) for the historical concept
-mapping.
+[Task REST API and clients project](../../projects/tasks/README.md).
 
 ## Bounded problem
 
@@ -429,10 +427,9 @@ Repository-wide coverage is branch-aware with an 85% minimum and combines this
 suite with the equally required comparative capstone. The canonical combined
 command is in the [capstone overview](../README.md).
 
-## Migration and reuse guidance
+## Reuse guidance
 
-The durable [migration guide](../../docs/CAPSTONE_MIGRATION.md) maps legacy
-concepts and commands to both capstones. Reuse patterns, not the task domain:
+Reuse patterns, not the task domain:
 
 - `Protocol` and dependency-injection style, strict untrusted-dictionary
   narrowing, and `argparse`/exit separation;
@@ -442,5 +439,3 @@ concepts and commands to both capstones. Reuse patterns, not the task domain:
 - atomic export, temporary paths, and loopback server test support where useful.
 
 Do not rename Task fields into events or preserve Task CRUD/storage interfaces.
-Historical source paths remain documented only in the migration guide and Git
-history.

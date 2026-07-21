@@ -5,7 +5,7 @@ Applied projects sit between the focused lessons and the larger
 bounded application while still leaving room to compare tools and design
 choices.
 
-## Projects
+## 📚 Projects
 
 | Project | Focus | When to start |
 | --- | --- | --- |
@@ -21,7 +21,7 @@ standard-library version.
 
 The existing capstones remain the course's final, equally required projects.
 
-## Setup and checks
+## ✅ Setup and checks
 
 The repository-wide development installation includes the Task project's Flask,
 FastAPI, HTTP client, OpenAPI, and YAML dependencies:

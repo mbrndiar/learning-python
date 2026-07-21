@@ -22,14 +22,14 @@ two implementations.
 | Comparative | [`comparative/README.md`](comparative/README.md) | [`SPEC.md`](comparative/spec/SPEC.md), [`SCENARIOS.md`](comparative/spec/SCENARIOS.md), and [`fixtures/`](comparative/spec/fixtures/) |
 | Idiomatic | [`idiomatic/README.md`](idiomatic/README.md) | [`SPEC.md`](idiomatic/SPEC.md) and [`tests/fixtures/`](idiomatic/tests/fixtures/) |
 
-## Included implementation
+## 📦 Included implementation
 
 Both capstones contain complete standard-library reference solutions,
 deterministic fixtures, and five milestone test groups. Their starters remain
 compileable, strictly typed guides with progressive `TODO(m1)` through
 `TODO(m5)` boundaries.
 
-## Recommended workflow
+## 🧭 Recommended workflow
 
 1. Read the track README and specification.
 2. Work in `starter/` one milestone at a time.
@@ -84,6 +84,4 @@ coverage report
 
 The removed predecessor Task examples are historical material, not a third
 capstone. They are separate from the current required Task REST API and clients
-project. Use the
-[migration guide](../docs/CAPSTONE_MIGRATION.md) to map their concepts and
-commands to these two required capstones or inspect their Git revision.
+project.

@@ -1,4 +1,4 @@
-# Idiomatic Python capstone: ingestion and reporting
+# ✨ Idiomatic Python capstone: ingestion and reporting
 
 Build the offline-first pipeline defined by [`SPEC.md`](SPEC.md). The project
 combines immutable values, streaming iterators, structural protocols, SQLite,
@@ -9,7 +9,7 @@ This is one of the course's
 Begin after Modules 1–12 and the required
 [Task REST API and clients project](../../projects/tasks/README.md).
 
-## Choose a source root
+## 🗂️ Choose a source root
 
 Both roots expose the same `ingest_report` package and commands:
 
@@ -22,7 +22,7 @@ Both roots expose the same `ingest_report` package and commands:
 Tests select a root through `CAPSTONE_IMPLEMENTATION=starter|solution`; no
 implementation code is copied into the harness.
 
-## Guided milestones
+## 🪜 Guided milestones
 
 1. **Domain:** implement field validation, UTC millisecond normalization,
    immutable events/rejects, and stable single-pass deduplication.
@@ -48,7 +48,7 @@ Advance the pattern through `test_m5_*.py`. The untouched starter intentionally
 raises `IncompleteImplementationError`; CI only compiles and type-checks it and
 runs its harness smoke test.
 
-## Run the reference CLI
+## ▶️ Run the reference CLI
 
 ```bash
 PYTHONPATH=capstones/idiomatic/solution \
@@ -64,7 +64,7 @@ HTTP imports accept only unauthenticated loopback `http://` URLs. Page transport
 is injectable through `PageFetcher`, and worker creation is injectable through
 `ExecutorFactory`, so tests need neither DNS nor public services.
 
-## Public boundaries
+## 🛡️ Public boundaries
 
 - `ingest_report.cli.main(argv) -> int`;
 - immutable `Event`, `RejectedRecord`, `ImportResult`, and `Report`;
@@ -75,7 +75,7 @@ is injectable through `PageFetcher`, and worker creation is injectable through
 Expected failures use stable codes and exit categories. Add `--json-errors` for
 the semantic error envelope documented in the specification.
 
-## Quality commands
+## ✅ Quality commands
 
 ```bash
 python -m compileall -q \

@@ -1,4 +1,4 @@
-# Comparative capstone: versioned configuration store
+# ⚖️ Comparative capstone: versioned configuration store
 
 Implement the frozen [`comparative-kv` 1.0.0 specification](spec/SPEC.md) as
 the standard-library `comparative_kv` package. The shared contract fixes the CLI,
@@ -9,7 +9,7 @@ This is one of the course's
 Begin after Modules 1–12 and the required
 [Task REST API and clients project](../../projects/tasks/README.md).
 
-## Choose a source root
+## 🗂️ Choose a source root
 
 Both roots expose the same public package:
 
@@ -34,7 +34,7 @@ The untouched starter parses the documented command and raises
 `IncompleteImplementationError` before opening storage. It never emits
 provisional output that could be confused with conformance.
 
-## Guided milestones
+## 🪜 Guided milestones
 
 1. **Domain:** keys, expectations, safe revisions, restricted JSON,
    exact-decimal integral checks, depth/byte limits, duplicates, and surrogates.
@@ -59,7 +59,7 @@ CAPSTONE_IMPLEMENTATION=starter python -m unittest \
 Advance through `test_m5_*.py`. CI runs only the starter smoke test; it runs all
 five suites against the solution.
 
-## Public boundaries
+## 🛡️ Public boundaries
 
 - `comparative_kv.cli.build_parser() -> argparse.ArgumentParser`;
 - `comparative_kv.cli.main(argv) -> int`;
@@ -68,7 +68,7 @@ five suites against the solution.
 - the structural `comparative_kv.store.Store` protocol; and
 - `comparative_kv.store.open_store(path)`.
 
-## Quality and conformance commands
+## ✅ Quality and conformance commands
 
 ```bash
 (cd capstones/comparative/spec && sha256sum -c MANIFEST.sha256)

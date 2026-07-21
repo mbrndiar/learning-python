@@ -10,7 +10,7 @@ a shared test harness. The starter keeps all five milestones intentionally
 guided and incomplete. The solution implements both repositories, all three
 servers and clients, the shared contracts, and the interoperability matrix.
 
-## Course placement
+## 🗺️ Course placement
 
 This is the required applied project between
 [Module 11: REST APIs and HTTP Clients](../../lessons/11_rest_apis_and_clients/README.md)
@@ -18,7 +18,7 @@ and [Module 12: Concurrency](../../lessons/12_concurrency/README.md). Module 10'
 SQL/SQLite material and Module 11's HTTP boundaries are prerequisites. Complete
 all five milestones before moving to concurrency and the final capstones.
 
-## Start with the contract
+## 📋 Start with the contract
 
 - [`docs/SPEC.md`](docs/SPEC.md) explains the behavior, workflows, persistence,
   errors, client commands, and project boundaries.
@@ -35,7 +35,7 @@ all five milestones before moving to concurrency and the final capstones.
 Read the specification before tests or source. Tests will provide fast
 feedback, but they are not a hidden replacement for the written contract.
 
-## Architecture
+## 🏗️ Architecture
 
 Both source roots will expose the same packages:
 
@@ -66,7 +66,7 @@ contains one shared command application and three thin outbound transports.
 Every client must work with every server; the directory names are comparisons,
 not pairings.
 
-## Five milestones
+## 🪜 Five milestones
 
 1. **Domain and contracts** — implement Task validation, domain errors, the
    repository protocol, the service boundary, and the client transport
@@ -94,7 +94,7 @@ path-to-`RLock` registry as infrastructure. At milestone 2, use the supplied
 `self._lock` around each complete load/use or load-modify-save operation; Module
 12 later explains thread scheduling, shared-state races, and locks directly.
 
-## Intended Python commands
+## ▶️ Intended Python commands
 
 These commands define the learner interface exposed by the source scaffold. Run
 them from the repository root; unfinished operations fail with an explicit
@@ -176,7 +176,7 @@ PYTHONPATH=projects/tasks/solution \
 The server launchers use loopback and one local process for learning. They are
 not production deployment instructions.
 
-## What changes between implementations?
+## 🔄 What changes between implementations?
 
 | Boundary | Makes explicit | Adds or provides |
 | --- | --- | --- |

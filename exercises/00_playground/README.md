@@ -1,4 +1,4 @@
-# Optional playground
+# 🧪 Optional playground
 
 Use this directory for temporary Python experiments that do not belong to a
 module exercise. Create `main.py` locally if it does not already exist:
