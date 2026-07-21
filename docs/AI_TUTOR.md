@@ -115,84 +115,45 @@ Delegate this tutoring session to the project custom agent learning-mentor.
 The canonical agent, shared skill, Python learning path, state, and solution-lock
 rules remain the same across clients.
 
+## Who runs what
+
+Normal tutoring does not require you to invoke the course adapter, state helper,
+lesson scripts, or evaluators manually.
+
+| You | The mentor |
+| --- | --- |
+| initialize the submodule and install a supported client | validate the descriptor, course manifest, and pinned integration |
+| start the client and select `learning-mentor` | initialize and query persistent course state |
+| read the suggested material and answer predictions or explanations | choose due reviews and prerequisite-valid objectives |
+| make hands-on changes in learner-owned files | inspect your diff and run the focused lesson or evaluator command |
+| approve narrowly scoped tool operations | classify observed results and record learning evidence |
+| explicitly request any exceptional edit, reset, commit, or push | remain read-only unless that exact operation is requested and confirmed |
+
+The internal commands remain documented in the agent and skill contracts for
+maintainers and automated tests. They are not learner setup steps.
+
 ## Start or resume course state
 
-The tutor uses two production CLIs:
+After you select `learning-mentor`, the mentor automatically:
 
-- [the course adapter](../.agents/skills/python-learning-path/scripts/course_adapter.py)
-  validates the manifest and emits the state projection;
-- [the state helper](../.agents/skills/guided-learning/scripts/learning_state.py)
-  initializes and queries persistent learner state.
+1. verifies the submodule, discovery links, descriptor, and Python learning path;
+2. validates the course manifest and its stable prerequisite graph;
+3. initializes state for the configured Git remote and current commit;
+4. reads progress, due reviews, and the next prerequisite-valid objective;
+5. prefers the first due review over new material; and
+6. explains the effective state location and privacy boundary.
 
-Run the complete flow from any directory inside this repository:
-
-```bash
-(
-  set -euo pipefail
-
-  ROOT="$(git rev-parse --show-toplevel)"
-  cd "$ROOT"
-  ADAPTER=".agents/skills/python-learning-path/scripts/course_adapter.py"
-  STATE=".agents/skills/guided-learning/scripts/learning_state.py"
-  COMMIT="$(git rev-parse HEAD)"
-
-  REMOTE_NAME="$(git remote | sed -n '1p')"
-  if [[ -n "$REMOTE_NAME" ]]; then
-    REMOTE="$(git remote get-url "$REMOTE_NAME")"
-    IDENTITY=(--remote "$REMOTE")
-  else
-    IDENTITY=(--local-fallback "$ROOT")
-  fi
-
-  python "$ADAPTER" validate
-  python "$ADAPTER" state-projection |
-    python "$STATE" init-course \
-      "${IDENTITY[@]}" --commit "$COMMIT" --concepts -
-
-  python "$STATE" status "${IDENTITY[@]}" --commit "$COMMIT"
-  python "$STATE" due-reviews "${IDENTITY[@]}" --commit "$COMMIT"
-  python "$STATE" next-objective "${IDENTITY[@]}" --commit "$COMMIT"
-)
-```
-
-Because the block does not pass `--db`, it uses
-`COPILOT_LEARNING_TUTOR_DB` when set, otherwise
-`$XDG_DATA_HOME/copilot-learning-tutor/state.sqlite3`, falling back to
-`~/.local/share/copilot-learning-tutor/state.sqlite3`.
-
-The adapter's `validate` command checks the manifest contract and declared
-paths, commands, selectors, prerequisites, and locks. `state-projection` emits
-the validated concept graph as JSON. The helper's `init-course --concepts -`
-reads that projection from standard input and creates or updates the current Git
-commit transactionally.
-
-The commands emit compact JSON on standard output and errors on standard error.
-The subshell uses `set -euo pipefail`, so it stops if validation, projection,
-initialization, or either side of the pipe fails. The tutor must parse JSON only
-after exit status zero and must not claim initialization, status, reviews, or an
-objective if either CLI fails or emits invalid JSON.
-
-Use `status` to inspect current progress, `due-reviews` to select scheduled
-retrieval practice, and `next-objective` to find the next prerequisite-valid
-item. A due review takes priority over new material.
-
-These are the supported runtime entry points. Do not substitute a test module,
-test fixture, direct import of adapter internals, or hand-written projection.
-You can inspect the live interfaces with:
-
-```bash
-python .agents/skills/python-learning-path/scripts/course_adapter.py --help
-python .agents/skills/python-learning-path/scripts/course_adapter.py validate --help
-python .agents/skills/python-learning-path/scripts/course_adapter.py state-projection --help
-python .agents/skills/guided-learning/scripts/learning_state.py init-course --help
-```
+If any startup boundary fails, the mentor reports the failing operation and
+continues read-only when useful. It must not invent state or reuse an objective
+from another commit. You only need to review the client's normal permission
+request for each narrowly scoped operation.
 
 ### After the Git commit changes
 
-State is initialized per `git rev-parse HEAD`. After pulling, switching
-branches, or otherwise changing `HEAD`, rerun the entire validation, projection,
-and initialization flow before querying or recording state. Initialization is
-safe to repeat for the same commit and validated projection.
+State is initialized per Git commit. After pulling, switching branches, or
+otherwise changing `HEAD`, the mentor reruns validation and initialization
+before querying or recording state. You do not need to invoke the internal state
+commands.
 
 Mastery and review data follow stable manifest IDs across commits. Attempts
 remain historical evidence on their original commit, and solution unlocks are
@@ -243,13 +204,14 @@ relevant source or error, contrasting expected and observed behavior, offering
 structure, and only then giving a small code-shaped hint. The tutor waits for
 new learner evidence before escalating.
 
-The tutor starts read-only. Before changing learner code, it must inspect the
-current file and diff, show the smallest proposed unified diff, identify its
-purpose, and receive explicit confirmation. Confirmation applies only to that
-diff. The tutor never discards, restores, stashes, cleans, or overwrites learner
+Hands-on changes belong to you. The mentor gives a bounded outcome and exact
+check, then asks you to edit the learner-owned file. Afterward it inspects your
+diff and runs the focused command. Only when you explicitly request help may it
+propose a minimal diff; applying that diff still requires your confirmation.
+
+The mentor never discards, restores, stashes, cleans, or overwrites learner
 work. It resets, commits, or pushes only when the exact Git action and scope are
-explicitly requested and confirmed. It also preserves
-the local `main.py` in the
+explicitly requested and confirmed. It also preserves the local `main.py` in the
 [`exercises/00_playground/`](../exercises/00_playground/README.md) directory as
 learner-owned scratch space.
 
@@ -284,34 +246,25 @@ formula?
 
 Learner: celsius * 9 / 5 + 32.
 
-Tutor: Proposed edit:
---- a/exercises/01_basics/exercises.py
-+++ b/exercises/01_basics/exercises.py
-@@ -16,5 +16,4 @@ def celsius_to_fahrenheit(celsius):
-     Formula: F = C * 9/5 + 32
-     """
--    # TODO: implement this function
--    raise NotImplementedError
-+    return celsius * 9 / 5 + 32
+Tutor: Implement only celsius_to_fahrenheit in the starter file according to
+its documented formula. Tell me when the change is ready; I will inspect the
+diff and rerun the same focused command.
 
-Apply only this diff?
+Learner: Done.
 
-Learner: Yes.
-
-Tutor: [applies the confirmed diff and reruns the same focused command]
+Tutor: [inspects the learner's diff and reruns the focused command]
 The command still exits 1 at the next unfinished exercise, while the two
 temperature assertions passed. That is progress, not a full module pass. Why
 does division by 5 occur before adding 32?
 ```
 
 The example deliberately does not reveal `solutions.py`, claim that the whole
-exercise passed, or edit before confirmation.
+exercise passed, or edit learner-owned code.
 
 ## Learner state and privacy
 
-The bundled
-[`learning_state.py`](../.agents/skills/guided-learning/scripts/learning_state.py)
-stores structured progress in SQLite outside the repository. The path is:
+The mentor stores structured progress in SQLite outside the repository. The
+path is:
 
 1. `--db PATH`, when explicitly supplied;
 2. `COPILOT_LEARNING_TUTOR_DB`, when set;
@@ -326,84 +279,30 @@ credentials, or free-form personal notes. Local storage is private to the
 machine's account permissions, but it is not anonymous or encrypted by the
 helper.
 
-The tutor must use the helper's JSON output and exit status rather than opening
-or changing SQLite directly. The adapter projection and state initialization
-must also succeed before state is claimed. You can inspect the executable
-interface at any time:
-
-```bash
-python .agents/skills/python-learning-path/scripts/course_adapter.py --help
-python .agents/skills/guided-learning/scripts/learning_state.py --help
-python .agents/skills/guided-learning/scripts/learning_state.py status --help
-```
+The mentor uses the state helper's structured interface rather than opening or
+changing SQLite directly. Adapter validation and state initialization must
+succeed before it claims progress, reviews, or an objective.
 
 ### Status export
 
-The helper has no dedicated `export` or `import` subcommand. `status` produces a
-JSON snapshot of the current course and commit, suitable for inspection or a
-limited progress export:
-
-```bash
-REMOTE="$(git config --get remote.origin.url)"
-COMMIT="$(git rev-parse HEAD)"
-python .agents/skills/guided-learning/scripts/learning_state.py \
-  status --remote "$REMOTE" --commit "$COMMIT" \
-  > "$HOME/learning-python-progress.json"
-```
-
-If the repository has no remote, replace `--remote "$REMOTE"` with
-`--local-fallback "$PWD"`; the helper warns that this identity will not follow a
-future remote. The status JSON is not a full audit backup and there is no helper
-command to import it.
+Ask the mentor to show current progress or export a status snapshot. The helper
+has no matching import operation, so that snapshot is for inspection rather
+than a full audit backup.
 
 ### Resetting progress
 
-The supported reset is concept-specific. Ask the tutor for the stable manifest
-ID and confirm the reset, or run:
-
-```bash
-python .agents/skills/guided-learning/scripts/learning_state.py \
-  record-mastery --remote "$REMOTE" --commit "$COMMIT" \
-  --concept concept.basics.hello-world --reset
-```
-
-This sets that concept's mastery to `not_started` and removes its review
-schedule. It does not erase attempts, hints, or solution-unlock history. Verify
-the result with `status`.
-
-There is no whole-course reset or database deletion command. To start with a
-separate fresh state without destroying the existing database, point the helper
-at a new path outside the repository, then start a new tutor session:
-
-```bash
-export COPILOT_LEARNING_TUTOR_DB="$HOME/.local/share/copilot-learning-tutor/state-fresh.sqlite3"
-copilot --agent=learning-mentor
-```
-
-Unset the variable to return to the default database.
+Ask the mentor to reset a specific stable concept ID and confirm the exact
+scope. A concept reset returns mastery to `not_started` and removes its review
+schedule, but retains attempts, hints, and solution-unlock history. There is no
+whole-course reset operation.
 
 ### Backing up state
 
-Close active tutor sessions first, keep backups outside the repository, and use
-Python's SQLite backup API so WAL state is copied consistently:
-
-```bash
-DB="${COPILOT_LEARNING_TUTOR_DB:-${XDG_DATA_HOME:-$HOME/.local/share}/copilot-learning-tutor/state.sqlite3}"
-BACKUP="$HOME/learning-tutor-state-backup.sqlite3"
-python - "$DB" "$BACKUP" <<'PY'
-import sqlite3
-import sys
-
-with sqlite3.connect(sys.argv[1]) as source:
-    with sqlite3.connect(sys.argv[2]) as destination:
-        source.backup(destination)
-PY
-```
-
-Protect the backup like the original because it contains course identity and
-learning history. Restoring is a deliberate file-level operation, not a helper
-command; do not replace an active database while a mentor client or the helper
-is using it.
+Backup and restore are advanced maintenance rather than normal tutoring steps.
+Ask the mentor for the effective database path and a safe backup procedure.
+Close active mentor sessions first and protect the backup like the original
+because it contains course identity and learning history. The state helper has
+no backup or restore command.
 
 ## Course and Git version behavior
 
@@ -440,43 +339,32 @@ that accidental access as evidence or silently unlock other scopes.
 ## Project and capstone milestones
 
 The required [Task project](../projects/tasks/README.md) follows Module 11 and
-precedes Module 12. Always assess the learner tree explicitly with
+precedes Module 12. The mentor always assesses the learner tree explicitly with
 `PROJECT_IMPLEMENTATION=starter`.
 
-| Milestone | Focused check |
-| --- | --- |
-| Domain and contracts | `PROJECT_IMPLEMENTATION=starter python -m pytest projects/tasks/tests/test_m1_domain.py -q` |
-| Persistence | `PROJECT_IMPLEMENTATION=starter python -m pytest projects/tasks/tests/test_m2_persistence.py -q` |
-| Standard-library HTTP | `PROJECT_IMPLEMENTATION=starter python -m pytest projects/tasks/tests/test_m3_stdlib.py -q` |
-| Flask | `PROJECT_IMPLEMENTATION=starter python -m pytest projects/tasks/tests/test_m4_flask.py -q` |
-| FastAPI and parity | `PROJECT_IMPLEMENTATION=starter python -m pytest projects/tasks/tests/test_m5_fastapi_and_parity.py -q` |
+The milestones are domain and contracts, persistence, standard-library HTTP,
+Flask, and FastAPI with parity. The mentor selects and runs each exact focused
+check from the Python learning path; you do not need to invoke the project test
+harness manually.
 
 After Module 12 and the Task project, complete both required
-[capstones](../capstones/README.md). Always select the starter tree explicitly
-with `CAPSTONE_IMPLEMENTATION=starter`.
+[capstones](../capstones/README.md). The mentor always selects the starter tree
+explicitly with `CAPSTONE_IMPLEMENTATION=starter`.
 
 ### Comparative configuration store
 
-| Milestone | Focused check |
-| --- | --- |
-| Domain | `CAPSTONE_IMPLEMENTATION=starter python -m unittest discover -s capstones/comparative/tests -p 'test_m1_*.py' -v` |
-| CLI | `CAPSTONE_IMPLEMENTATION=starter python -m unittest discover -s capstones/comparative/tests -p 'test_m2_*.py' -v` |
-| SQLite | `CAPSTONE_IMPLEMENTATION=starter python -m unittest discover -s capstones/comparative/tests -p 'test_m3_*.py' -v` |
-| Mutations | `CAPSTONE_IMPLEMENTATION=starter python -m unittest discover -s capstones/comparative/tests -p 'test_m4_*.py' -v` |
-| Independent processes | `CAPSTONE_IMPLEMENTATION=starter python -m unittest discover -s capstones/comparative/tests -p 'test_m5_*.py' -v` |
+The milestones are domain, CLI, SQLite, mutations, and independent processes.
+The mentor selects the exact starter-scoped evaluator for each milestone.
 
-Verify the frozen comparative specification checksum before conformance work as
-described in the [comparative guide](../capstones/comparative/README.md).
+The mentor verifies the frozen comparative specification checksum before
+conformance work as described in the
+[comparative guide](../capstones/comparative/README.md).
 
 ### Idiomatic ingestion and reporting
 
-| Milestone | Focused check |
-| --- | --- |
-| Domain | `CAPSTONE_IMPLEMENTATION=starter python -m unittest discover -s capstones/idiomatic/tests -p 'test_m1_*.py' -v` |
-| Sources and application boundary | `CAPSTONE_IMPLEMENTATION=starter python -m unittest discover -s capstones/idiomatic/tests -p 'test_m2_*.py' -v` |
-| SQLite | `CAPSTONE_IMPLEMENTATION=starter python -m unittest discover -s capstones/idiomatic/tests -p 'test_m3_*.py' -v` |
-| Reporting | `CAPSTONE_IMPLEMENTATION=starter python -m unittest discover -s capstones/idiomatic/tests -p 'test_m4_*.py' -v` |
-| HTTP and integration | `CAPSTONE_IMPLEMENTATION=starter python -m unittest discover -s capstones/idiomatic/tests -p 'test_m5_*.py' -v` |
+The milestones are domain, sources and application boundary, SQLite, reporting,
+and HTTP with integration. The mentor again selects the exact starter-scoped
+evaluator.
 
 For every project or capstone milestone, the tutor reads the contract, asks for
 a plan, runs a narrow baseline, confirms each proposed edit, reruns the same
@@ -506,12 +394,11 @@ than invent course rules.
 
 ### State is unavailable
 
-Run both production CLIs' `--help`, confirm Python 3.11-3.14, rerun adapter
-`validate`, and verify that exactly one of `--remote` or `--local-fallback` and
-the current commit are supplied. Use `set -o pipefail` for the projection/init
-pipe. On a nonzero exit, invalid JSON, invalid projection, corrupt state, or
-SQLite conflict, the tutor must not claim initialization or a state update. It
-may continue read-only while clearly labeling state as unavailable.
+Confirm Python 3.11-3.14, the initialized submodule, and the normal course
+setup, then ask the mentor to retry startup and report the failing boundary. You
+should not need to invoke the adapter or state helper directly. On a startup
+failure, the mentor must not claim initialization or a state update; it may
+continue read-only while clearly labeling state as unavailable.
 
 ### A focused check cannot run
 
