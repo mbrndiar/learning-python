@@ -236,172 +236,275 @@ run_command = "python lessons/05_functions/04_recursion.py"
 
 
 [[modules]]
-id = "module.modules-and-files"
+id = "module.modules-and-packages"
 ordinal = 6
-title = "Modules and Files"
+title = "Modules and Packages"
 prerequisites = ["module.function-contracts-and-scope"]
-lesson_readme = "lessons/05_modules_and_files/README.md"
-review_questions = { path = "lessons/05_modules_and_files/README.md", heading = "❓ Review questions" }
-exercise_starter = "exercises/05_modules_and_files/exercises.py"
-exercise_solution = "exercises/05_modules_and_files/solutions.py"
-validation_commands = ["python exercises/05_modules_and_files/exercises.py"]
-solution_lock_group = "solutions.module.modules-and-files"
+lesson_readme = "lessons/06_modules_and_packages/README.md"
+review_questions = { path = "lessons/06_modules_and_packages/README.md", heading = "❓ Review questions (closed notes)" }
+exercise_starter = "exercises/06_modules_and_packages/exercises.py"
+exercise_solution = "exercises/06_modules_and_packages/solutions.py"
+validation_commands = ["python exercises/06_modules_and_packages/exercises.py"]
+solution_lock_group = "solutions.module.modules-and-packages"
 required_outcomes = [
-  "Import modules and packages without accidental side effects.",
-  "Distinguish import packages from installable distributions.",
-  "Work safely with paths, directories, text files, and binary files.",
-  "Represent instants and elapsed time deliberately.",
-  "Exchange and validate structured JSON data.",
-  "Handle expected errors and implement deterministic cleanup.",
+  "Explain how import finds, caches, and executes a module exactly once.",
+  "Organize related modules into a package with a deliberate __init__.py.",
+  "Choose absolute or relative imports and run packages with python -m.",
+  "Distinguish a script's __main__ entry point from its importable API.",
+  "Declare a small public API deliberately with __all__ and re-exports.",
 ]
 
 [[modules.concepts]]
-id = "concept.modules-and-files.modules"
-title = "Modules and standard-library imports"
+id = "concept.modules-and-packages.modules-and-imports"
+title = "Module objects, the import cache, and import forms"
 prerequisites = []
-lesson_file = "lessons/05_modules_and_files/01_modules.py"
-run_command = "python lessons/05_modules_and_files/01_modules.py"
+lesson_file = "lessons/06_modules_and_packages/01_modules_and_imports.py"
+run_command = "python lessons/06_modules_and_packages/01_modules_and_imports.py"
 
 [[modules.concepts]]
-id = "concept.modules-and-files.packages"
-title = "Packages, imports, and public APIs"
-prerequisites = ["concept.modules-and-files.modules"]
-lesson_file = "lessons/05_modules_and_files/02_packages.py"
-run_command = "python lessons/05_modules_and_files/02_packages.py"
+id = "concept.modules-and-packages.packages-and-resolution"
+title = "Package layout, __init__.py, and import resolution"
+prerequisites = ["concept.modules-and-packages.modules-and-imports"]
+lesson_file = "lessons/06_modules_and_packages/02_packages_and_resolution.py"
+run_command = "python lessons/06_modules_and_packages/02_packages_and_resolution.py"
 
 [[modules.concepts]]
-id = "concept.modules-and-files.files-and-exceptions"
-title = "Text and binary files with expected failures"
-prerequisites = ["concept.modules-and-files.packages"]
-lesson_file = "lessons/05_modules_and_files/03_files_and_exceptions.py"
-run_command = "python lessons/05_modules_and_files/03_files_and_exceptions.py"
-
-[[modules.concepts]]
-id = "concept.modules-and-files.custom-exceptions-and-context-managers"
-title = "Custom exceptions and context managers"
-prerequisites = ["concept.modules-and-files.files-and-exceptions"]
-lesson_file = "lessons/05_modules_and_files/04_custom_exceptions_and_context_managers.py"
-run_command = "python lessons/05_modules_and_files/04_custom_exceptions_and_context_managers.py"
-
-[[modules.concepts]]
-id = "concept.modules-and-files.json-and-structured-data"
-title = "JSON serialization and validation"
-prerequisites = ["concept.modules-and-files.custom-exceptions-and-context-managers"]
-lesson_file = "lessons/05_modules_and_files/05_json_and_structured_data.py"
-run_command = "python lessons/05_modules_and_files/05_json_and_structured_data.py"
-
-[[modules.concepts]]
-id = "concept.modules-and-files.directories-and-paths"
-title = "Directory and path operations"
-prerequisites = ["concept.modules-and-files.json-and-structured-data"]
-lesson_file = "lessons/05_modules_and_files/06_directories_and_paths.py"
-run_command = "python lessons/05_modules_and_files/06_directories_and_paths.py"
-
-[[modules.concepts]]
-id = "concept.modules-and-files.dates-and-times"
-title = "Dates, times, zones, and clocks"
-prerequisites = ["concept.modules-and-files.directories-and-paths"]
-lesson_file = "lessons/05_modules_and_files/07_dates_and_times.py"
-run_command = "python lessons/05_modules_and_files/07_dates_and_times.py"
+id = "concept.modules-and-packages.scripts-and-public-apis"
+title = "Scripts vs. modules, guarded entry points, and public APIs"
+prerequisites = ["concept.modules-and-packages.packages-and-resolution"]
+lesson_file = "lessons/06_modules_and_packages/03_scripts_modules_and_public_apis.py"
+run_command = "python lessons/06_modules_and_packages/03_scripts_modules_and_public_apis.py"
 
 [[modules]]
-id = "module.object-oriented-programming"
+id = "module.exceptions-files-and-paths"
 ordinal = 7
-title = "Object-Oriented Programming"
-prerequisites = ["module.modules-and-files"]
-lesson_readme = "lessons/06_object_oriented_programming/README.md"
-review_questions = { path = "lessons/06_object_oriented_programming/README.md", heading = "❓ Review questions" }
-exercise_starter = "exercises/06_object_oriented_programming/exercises.py"
-exercise_solution = "exercises/06_object_oriented_programming/solutions.py"
-validation_commands = ["python exercises/06_object_oriented_programming/exercises.py"]
-solution_lock_group = "solutions.module.object-oriented-programming"
+title = "Exceptions, Files, and Paths"
+prerequisites = ["module.modules-and-packages"]
+lesson_readme = "lessons/07_exceptions_files_and_paths/README.md"
+review_questions = { path = "lessons/07_exceptions_files_and_paths/README.md", heading = "❓ Review questions (closed notes)" }
+exercise_starter = "exercises/07_exceptions_files_and_paths/exercises.py"
+exercise_solution = "exercises/07_exceptions_files_and_paths/solutions.py"
+validation_commands = ["python exercises/07_exceptions_files_and_paths/exercises.py"]
+solution_lock_group = "solutions.module.exceptions-files-and-paths"
 required_outcomes = [
-  "Model related state and behavior with classes.",
-  "Distinguish class data, instance data, and method kinds.",
-  "Choose composition or inheritance deliberately.",
-  "Define useful object protocols and reduce data-class boilerplate.",
+  "Trace how an exception propagates and choose narrow except clauses deliberately.",
+  "Use else, finally, raise, and exception chaining to keep error handling precise.",
+  "Navigate the filesystem safely with pathlib.Path.",
+  "Read and write text and binary files with explicit encodings and ownership.",
+  "Bound a resource's lifetime with with and closing.",
 ]
 
 [[modules.concepts]]
-id = "concept.object-oriented-programming.classes-and-objects"
-title = "Classes, objects, methods, and properties"
+id = "concept.exceptions-files-and-paths.exception-flow"
+title = "Traceback propagation, narrow except, else, finally, and chaining"
 prerequisites = []
-lesson_file = "lessons/06_object_oriented_programming/01_classes_and_objects.py"
-run_command = "python lessons/06_object_oriented_programming/01_classes_and_objects.py"
+lesson_file = "lessons/07_exceptions_files_and_paths/01_exception_flow.py"
+run_command = "python lessons/07_exceptions_files_and_paths/01_exception_flow.py"
 
 [[modules.concepts]]
-id = "concept.object-oriented-programming.inheritance-and-polymorphism"
-title = "Inheritance and polymorphism"
-prerequisites = ["concept.object-oriented-programming.classes-and-objects"]
-lesson_file = "lessons/06_object_oriented_programming/02_inheritance_and_polymorphism.py"
-run_command = "python lessons/06_object_oriented_programming/02_inheritance_and_polymorphism.py"
+id = "concept.exceptions-files-and-paths.paths-and-directories"
+title = "Path, relative and absolute paths, iteration, and metadata"
+prerequisites = ["concept.exceptions-files-and-paths.exception-flow"]
+lesson_file = "lessons/07_exceptions_files_and_paths/02_paths_and_directories.py"
+run_command = "python lessons/07_exceptions_files_and_paths/02_paths_and_directories.py"
 
 [[modules.concepts]]
-id = "concept.object-oriented-programming.encapsulation-and-dunder-methods"
-title = "Encapsulation and dunder methods"
-prerequisites = ["concept.object-oriented-programming.inheritance-and-polymorphism"]
-lesson_file = "lessons/06_object_oriented_programming/03_encapsulation_and_magic_methods.py"
-run_command = "python lessons/06_object_oriented_programming/03_encapsulation_and_magic_methods.py"
+id = "concept.exceptions-files-and-paths.text-and-binary-files"
+title = "Open modes, encodings, newline behavior, and bytes"
+prerequisites = ["concept.exceptions-files-and-paths.paths-and-directories"]
+lesson_file = "lessons/07_exceptions_files_and_paths/03_text_and_binary_files.py"
+run_command = "python lessons/07_exceptions_files_and_paths/03_text_and_binary_files.py"
 
 [[modules.concepts]]
-id = "concept.object-oriented-programming.abstract-classes-dataclasses-enums"
-title = "Abstract classes, dataclasses, and enums"
-prerequisites = ["concept.object-oriented-programming.encapsulation-and-dunder-methods"]
-lesson_file = "lessons/06_object_oriented_programming/04_abstract_classes_and_dataclasses.py"
-run_command = "python lessons/06_object_oriented_programming/04_abstract_classes_and_dataclasses.py"
+id = "concept.exceptions-files-and-paths.context-managers-and-resource-lifetimes"
+title = "with, __enter__/__exit__, closing, and memoryview lifetime"
+prerequisites = ["concept.exceptions-files-and-paths.text-and-binary-files"]
+lesson_file = "lessons/07_exceptions_files_and_paths/04_context_managers_and_resource_lifetimes.py"
+run_command = "python lessons/07_exceptions_files_and_paths/04_context_managers_and_resource_lifetimes.py"
 
 [[modules]]
-id = "module.advanced-python"
+id = "module.structured-data-and-time"
 ordinal = 8
-title = "Advanced Python"
-prerequisites = ["module.object-oriented-programming"]
-lesson_readme = "lessons/07_advanced_python/README.md"
-review_questions = { path = "lessons/07_advanced_python/README.md", heading = "❓ Review questions" }
-exercise_starter = "exercises/07_advanced_python/exercises.py"
-exercise_solution = "exercises/07_advanced_python/solutions.py"
-validation_commands = ["python exercises/07_advanced_python/exercises.py"]
-solution_lock_group = "solutions.module.advanced-python"
+title = "Structured Data and Time"
+prerequisites = ["module.exceptions-files-and-paths"]
+lesson_readme = "lessons/08_structured_data_and_time/README.md"
+review_questions = { path = "lessons/08_structured_data_and_time/README.md", heading = "❓ Review questions (closed notes)" }
+exercise_starter = "exercises/08_structured_data_and_time/exercises.py"
+exercise_solution = "exercises/08_structured_data_and_time/solutions.py"
+validation_commands = ["python exercises/08_structured_data_and_time/exercises.py"]
+solution_lock_group = "solutions.module.structured-data-and-time"
 required_outcomes = [
-  "Wrap behavior with decorators while preserving metadata.",
-  "Distinguish iterables, iterators, and generators.",
-  "Evaluate the trade-offs of lazy processing.",
-  "Write useful modern type annotations.",
-  "Describe collaborators with protocols and inject them into business logic.",
+  "Exchange structured data across the JSON boundary and validate its shape.",
+  "Produce deterministic, validated JSON output and reject malformed input.",
+  "Distinguish naive from aware datetimes and normalize to UTC.",
+  "Measure elapsed time with a monotonic clock and an injected clock for tests.",
 ]
 
 [[modules.concepts]]
-id = "concept.advanced-python.decorators"
-title = "Decorators and decorator factories"
+id = "concept.structured-data-and-time.json-boundaries"
+title = "JSON vs. Python values, dump/load, validation, and malformed input"
 prerequisites = []
-lesson_file = "lessons/07_advanced_python/01_decorators.py"
-run_command = "python lessons/07_advanced_python/01_decorators.py"
+lesson_file = "lessons/08_structured_data_and_time/01_json_boundaries.py"
+run_command = "python lessons/08_structured_data_and_time/01_json_boundaries.py"
 
 [[modules.concepts]]
-id = "concept.advanced-python.generators-and-iterators"
-title = "Generators and the iterator protocol"
-prerequisites = ["concept.advanced-python.decorators"]
-lesson_file = "lessons/07_advanced_python/02_generators_and_iterators.py"
-run_command = "python lessons/07_advanced_python/02_generators_and_iterators.py"
+id = "concept.structured-data-and-time.datetimes-timezones-and-clocks"
+title = "Naive/aware datetimes, UTC, parsing/formatting, and injected clocks"
+prerequisites = ["concept.structured-data-and-time.json-boundaries"]
+lesson_file = "lessons/08_structured_data_and_time/02_datetimes_timezones_and_clocks.py"
+run_command = "python lessons/08_structured_data_and_time/02_datetimes_timezones_and_clocks.py"
+
+[[modules]]
+id = "module.objects-and-data-models"
+ordinal = 9
+title = "Objects and Data Models"
+prerequisites = ["module.structured-data-and-time"]
+lesson_readme = "lessons/09_object_oriented_programming/README.md"
+review_questions = { path = "lessons/09_object_oriented_programming/README.md", heading = "❓ Review questions (closed notes)" }
+exercise_starter = "exercises/09_object_oriented_programming/exercises.py"
+exercise_solution = "exercises/09_object_oriented_programming/solutions.py"
+validation_commands = ["python exercises/09_object_oriented_programming/exercises.py"]
+solution_lock_group = "solutions.module.objects-and-data-models"
+required_outcomes = [
+  "Model related state and behavior with classes, methods, and properties.",
+  "Choose composition or inheritance deliberately for an 'is-a' vs. 'has-a' relationship.",
+  "Encapsulate invariants behind properties instead of trusting every caller.",
+  "Implement Python's data model (dunder methods) for value-like types.",
+  "Use ABCs, dataclasses, enums, and a custom exception after inheritance to express a domain.",
+]
 
 [[modules.concepts]]
-id = "concept.advanced-python.type-hints"
-title = "Modern type hints"
-prerequisites = ["concept.advanced-python.generators-and-iterators"]
-lesson_file = "lessons/07_advanced_python/03_type_hints.py"
-run_command = "python lessons/07_advanced_python/03_type_hints.py"
+id = "concept.objects-and-data-models.classes-objects-and-methods"
+title = "Classes, objects, instance/class methods, and properties"
+prerequisites = []
+lesson_file = "lessons/09_object_oriented_programming/01_classes_objects_and_methods.py"
+run_command = "python lessons/09_object_oriented_programming/01_classes_objects_and_methods.py"
 
 [[modules.concepts]]
-id = "concept.advanced-python.protocols-and-dependency-injection"
-title = "Protocols, dependency injection, and adapters"
-prerequisites = ["concept.advanced-python.type-hints"]
-lesson_file = "lessons/07_advanced_python/04_protocols_and_dependency_injection.py"
-run_command = "python lessons/07_advanced_python/04_protocols_and_dependency_injection.py"
+id = "concept.objects-and-data-models.composition-and-inheritance"
+title = "Composition and inheritance, and choosing between them"
+prerequisites = ["concept.objects-and-data-models.classes-objects-and-methods"]
+lesson_file = "lessons/09_object_oriented_programming/02_composition_and_inheritance.py"
+run_command = "python lessons/09_object_oriented_programming/02_composition_and_inheritance.py"
+
+[[modules.concepts]]
+id = "concept.objects-and-data-models.properties-and-encapsulation"
+title = "Properties and encapsulation"
+prerequisites = ["concept.objects-and-data-models.composition-and-inheritance"]
+lesson_file = "lessons/09_object_oriented_programming/03_properties_and_encapsulation.py"
+run_command = "python lessons/09_object_oriented_programming/03_properties_and_encapsulation.py"
+
+[[modules.concepts]]
+id = "concept.objects-and-data-models.python-data-model"
+title = "The Python data model (dunder methods)"
+prerequisites = ["concept.objects-and-data-models.properties-and-encapsulation"]
+lesson_file = "lessons/09_object_oriented_programming/04_python_data_model.py"
+run_command = "python lessons/09_object_oriented_programming/04_python_data_model.py"
+
+[[modules.concepts]]
+id = "concept.objects-and-data-models.abcs-dataclasses-enums-and-domain-errors"
+title = "ABCs, dataclasses, enums, and domain errors after inheritance"
+prerequisites = ["concept.objects-and-data-models.python-data-model"]
+lesson_file = "lessons/09_object_oriented_programming/05_abcs_dataclasses_enums_and_domain_errors.py"
+run_command = "python lessons/09_object_oriented_programming/05_abcs_dataclasses_enums_and_domain_errors.py"
+
+[[modules]]
+id = "module.iteration-decorators-and-contexts"
+ordinal = 10
+title = "Iteration, Decorators, and Contexts"
+prerequisites = ["module.objects-and-data-models"]
+lesson_readme = "lessons/10_iteration_decorators_and_contexts/README.md"
+review_questions = { path = "lessons/10_iteration_decorators_and_contexts/README.md", heading = "❓ Review questions (closed notes)" }
+exercise_starter = "exercises/10_iteration_decorators_and_contexts/exercises.py"
+exercise_solution = "exercises/10_iteration_decorators_and_contexts/solutions.py"
+validation_commands = ["python exercises/10_iteration_decorators_and_contexts/exercises.py"]
+solution_lock_group = "solutions.module.iteration-decorators-and-contexts"
+required_outcomes = [
+  "Distinguish an iterable from an iterator and implement the iterator protocol.",
+  "Write lazy generators and understand exhaustion via StopIteration.",
+  "Wrap a function's behavior with a decorator while preserving its metadata.",
+  "Build a decorator factory and a generator-based context manager with functools.wraps and contextmanager.",
+]
+
+[[modules.concepts]]
+id = "concept.iteration-decorators-and-contexts.iterables-iterators-and-stopiteration"
+title = "Iterables, iterators, and StopIteration"
+prerequisites = []
+lesson_file = "lessons/10_iteration_decorators_and_contexts/01_iterables_iterators_and_stopiteration.py"
+run_command = "python lessons/10_iteration_decorators_and_contexts/01_iterables_iterators_and_stopiteration.py"
+
+[[modules.concepts]]
+id = "concept.iteration-decorators-and-contexts.generators-and-lazy-evaluation"
+title = "Generators and lazy evaluation"
+prerequisites = ["concept.iteration-decorators-and-contexts.iterables-iterators-and-stopiteration"]
+lesson_file = "lessons/10_iteration_decorators_and_contexts/02_generators_and_lazy_evaluation.py"
+run_command = "python lessons/10_iteration_decorators_and_contexts/02_generators_and_lazy_evaluation.py"
+
+[[modules.concepts]]
+id = "concept.iteration-decorators-and-contexts.decorators-and-wrappers"
+title = "Decorators and wrappers"
+prerequisites = ["concept.iteration-decorators-and-contexts.generators-and-lazy-evaluation"]
+lesson_file = "lessons/10_iteration_decorators_and_contexts/03_decorators_and_wrappers.py"
+run_command = "python lessons/10_iteration_decorators_and_contexts/03_decorators_and_wrappers.py"
+
+[[modules.concepts]]
+id = "concept.iteration-decorators-and-contexts.decorator-factories-and-contextmanager"
+title = "Decorator factories and @contextmanager"
+prerequisites = ["concept.iteration-decorators-and-contexts.decorators-and-wrappers"]
+lesson_file = "lessons/10_iteration_decorators_and_contexts/04_decorator_factories_and_contextmanager.py"
+run_command = "python lessons/10_iteration_decorators_and_contexts/04_decorator_factories_and_contextmanager.py"
+
+[[modules]]
+id = "module.typing-protocols-and-di"
+ordinal = 11
+title = "Typing, Protocols, and Dependency Injection"
+prerequisites = ["module.iteration-decorators-and-contexts"]
+lesson_readme = "lessons/11_typing_protocols_and_di/README.md"
+review_questions = { path = "lessons/11_typing_protocols_and_di/README.md", heading = "❓ Review questions (closed notes)" }
+exercise_starter = "exercises/11_typing_protocols_and_di/exercises.py"
+exercise_solution = "exercises/11_typing_protocols_and_di/solutions.py"
+validation_commands = ["python exercises/11_typing_protocols_and_di/exercises.py"]
+solution_lock_group = "solutions.module.typing-protocols-and-di"
+required_outcomes = [
+  "Write and narrow modern type annotations, including unions and None.",
+  "Write functions generic over Iterable, Sequence, Mapping, and Callable.",
+  "Use Literal, Annotated, and Self to express precise, chainable APIs.",
+  "Depend on a Protocol instead of one concrete class and inject collaborators explicitly.",
+]
+
+[[modules.concepts]]
+id = "concept.typing-protocols-and-di.annotations-and-narrowing"
+title = "Runtime vs. static annotations, unions, None, narrowing, and aliases"
+prerequisites = []
+lesson_file = "lessons/11_typing_protocols_and_di/01_annotations_and_narrowing.py"
+run_command = "python lessons/11_typing_protocols_and_di/01_annotations_and_narrowing.py"
+
+[[modules.concepts]]
+id = "concept.typing-protocols-and-di.collections-callables-and-generics"
+title = "Iterable, Sequence, Mapping, Callable, and generic functions"
+prerequisites = ["concept.typing-protocols-and-di.annotations-and-narrowing"]
+lesson_file = "lessons/11_typing_protocols_and_di/02_collections_callables_and_generics.py"
+run_command = "python lessons/11_typing_protocols_and_di/02_collections_callables_and_generics.py"
+
+[[modules.concepts]]
+id = "concept.typing-protocols-and-di.literal-annotated-and-self"
+title = "Literal, Annotated, and Self"
+prerequisites = ["concept.typing-protocols-and-di.collections-callables-and-generics"]
+lesson_file = "lessons/11_typing_protocols_and_di/03_literal_annotated_and_self.py"
+run_command = "python lessons/11_typing_protocols_and_di/03_literal_annotated_and_self.py"
+
+[[modules.concepts]]
+id = "concept.typing-protocols-and-di.protocols-adapters-and-dependency-injection"
+title = "Protocol, interchangeable implementations, and dependency injection"
+prerequisites = ["concept.typing-protocols-and-di.literal-annotated-and-self"]
+lesson_file = "lessons/11_typing_protocols_and_di/04_protocols_adapters_and_dependency_injection.py"
+run_command = "python lessons/11_typing_protocols_and_di/04_protocols_adapters_and_dependency_injection.py"
 
 [[modules]]
 id = "module.testing"
-ordinal = 9
+ordinal = 12
 title = "Testing"
-prerequisites = ["module.advanced-python"]
+prerequisites = ["module.typing-protocols-and-di"]
 lesson_readme = "lessons/08_testing/README.md"
 review_questions = { path = "lessons/08_testing/README.md", heading = "❓ Review questions" }
 exercise_starter = "exercises/08_testing/exercises.py"
@@ -424,7 +527,7 @@ run_command = "python lessons/08_testing/01_unittest_basics.py"
 
 [[modules]]
 id = "module.tooling-and-debugging"
-ordinal = 10
+ordinal = 13
 title = "Tooling and Debugging"
 prerequisites = ["module.testing"]
 lesson_readme = "lessons/09_tooling_and_debugging/README.md"
@@ -494,7 +597,7 @@ run_command = "python lessons/09_tooling_and_debugging/07_packaging_and_public_a
 
 [[modules]]
 id = "module.sql-and-sqlite"
-ordinal = 11
+ordinal = 14
 title = "SQL and SQLite"
 prerequisites = ["module.tooling-and-debugging"]
 lesson_readme = "lessons/10_sql_and_sqlite/README.md"
@@ -543,7 +646,7 @@ run_command = "python lessons/10_sql_and_sqlite/04_repository_pattern.py"
 
 [[modules]]
 id = "module.rest-apis-and-clients"
-ordinal = 12
+ordinal = 15
 title = "REST APIs and HTTP Clients"
 prerequisites = ["module.sql-and-sqlite"]
 lesson_readme = "lessons/11_rest_apis_and_clients/README.md"
@@ -591,7 +694,7 @@ run_command = "python lessons/11_rest_apis_and_clients/04_http_clients.py"
 
 [[modules]]
 id = "module.concurrency"
-ordinal = 13
+ordinal = 16
 title = "Concurrency"
 prerequisites = ["project.tasks-rest-api-clients"]
 lesson_readme = "lessons/12_concurrency/README.md"
@@ -873,20 +976,38 @@ unlock_policy = "after-unit-validation"
 solution_unlock_after = 1
 
 [[solution_lock_groups]]
-id = "solutions.module.modules-and-files"
-paths = ["exercises/05_modules_and_files/solutions.py"]
+id = "solutions.module.modules-and-packages"
+paths = ["exercises/06_modules_and_packages/solutions.py"]
 unlock_policy = "after-unit-validation"
 solution_unlock_after = 1
 
 [[solution_lock_groups]]
-id = "solutions.module.object-oriented-programming"
-paths = ["exercises/06_object_oriented_programming/solutions.py"]
+id = "solutions.module.exceptions-files-and-paths"
+paths = ["exercises/07_exceptions_files_and_paths/solutions.py"]
 unlock_policy = "after-unit-validation"
 solution_unlock_after = 1
 
 [[solution_lock_groups]]
-id = "solutions.module.advanced-python"
-paths = ["exercises/07_advanced_python/solutions.py"]
+id = "solutions.module.structured-data-and-time"
+paths = ["exercises/08_structured_data_and_time/solutions.py"]
+unlock_policy = "after-unit-validation"
+solution_unlock_after = 1
+
+[[solution_lock_groups]]
+id = "solutions.module.objects-and-data-models"
+paths = ["exercises/09_object_oriented_programming/solutions.py"]
+unlock_policy = "after-unit-validation"
+solution_unlock_after = 1
+
+[[solution_lock_groups]]
+id = "solutions.module.iteration-decorators-and-contexts"
+paths = ["exercises/10_iteration_decorators_and_contexts/solutions.py"]
+unlock_policy = "after-unit-validation"
+solution_unlock_after = 1
+
+[[solution_lock_groups]]
+id = "solutions.module.typing-protocols-and-di"
+paths = ["exercises/11_typing_protocols_and_di/solutions.py"]
 unlock_policy = "after-unit-validation"
 solution_unlock_after = 1
 

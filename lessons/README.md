@@ -26,29 +26,38 @@ python lessons/01_python_fundamentals/01_running_python.py
 5. [`05_functions/`](05_functions/README.md) -
    function definitions, parameters, return values, scope, closures,
    higher-order functions, lambdas, and recursion
-6. [`05_modules_and_files/`](05_modules_and_files/README.md) - modules,
-   packages, files and directories, date/time, JSON, exceptions, and context
-   managers
-7. [`06_object_oriented_programming/`](06_object_oriented_programming/README.md) -
-   classes, method kinds, inheritance, encapsulation, abstract classes, and
-   dataclasses
-8. [`07_advanced_python/`](07_advanced_python/README.md) - decorators,
-   generators/iterators, type hints, protocols and dependency injection
-9. [`08_testing/`](08_testing/README.md) - testing with `unittest`
-10. [`09_tooling_and_debugging/`](09_tooling_and_debugging/README.md) -
+6. [`06_modules_and_packages/`](06_modules_and_packages/README.md) - module
+   objects, the import cache, package layout, `__init__.py`, absolute/relative
+   imports, `python -m`, and public APIs
+7. [`07_exceptions_files_and_paths/`](07_exceptions_files_and_paths/README.md) -
+   exception flow, narrow `except`, `else`/`finally`/`raise`/chaining, `Path`,
+   text/binary files, and context managers
+8. [`08_structured_data_and_time/`](08_structured_data_and_time/README.md) -
+   JSON boundaries, validation, naive/aware datetimes, UTC, and injected clocks
+9. [`09_object_oriented_programming/`](09_object_oriented_programming/README.md) -
+   classes, composition and inheritance, properties and encapsulation, the
+   Python data model, ABCs, dataclasses, enums, and domain errors
+10. [`10_iteration_decorators_and_contexts/`](10_iteration_decorators_and_contexts/README.md) -
+    iterables/iterators, generators, decorators and wrappers, decorator
+    factories, and `@contextmanager`
+11. [`11_typing_protocols_and_di/`](11_typing_protocols_and_di/README.md) -
+    annotations and narrowing, generic collections/callables, `Literal`,
+    `Annotated`, `Self`, and `Protocol`-based dependency injection
+12. [`08_testing/`](08_testing/README.md) - testing with `unittest`
+13. [`09_tooling_and_debugging/`](09_tooling_and_debugging/README.md) -
     environments, debugging, CLI and process boundaries, packaging,
     documentation, logging, and quality tools
-11. [`10_sql_and_sqlite/`](10_sql_and_sqlite/README.md) - relational modeling,
+14. [`10_sql_and_sqlite/`](10_sql_and_sqlite/README.md) - relational modeling,
     portable SQL fundamentals, SQLite behavior, and repository boundaries
-12. [`11_rest_apis_and_clients/`](11_rest_apis_and_clients/README.md) - HTTP,
+15. [`11_rest_apis_and_clients/`](11_rest_apis_and_clients/README.md) - HTTP,
     REST boundaries, Flask, FastAPI, `urllib`, `requests`, and `httpx`
     - Complete the required
       [Task REST API and clients project](../projects/tasks/README.md) before the
       next module.
-13. [`12_concurrency/`](12_concurrency/README.md) - threads, processes,
+16. [`12_concurrency/`](12_concurrency/README.md) - threads, processes,
     `asyncio`, bounded work, cancellation, and cleanup
 
-Modules 6 through 13 keep their existing `05_`-`12_` directory prefixes from
+Modules 12 through 16 keep their existing `08_`-`12_` directory prefixes from
 before this migration; the numbered list above reflects each module's
 authoritative teaching order, not its directory name.
 

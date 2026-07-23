@@ -9,12 +9,12 @@ choices.
 
 | Project | Focus | When to start |
 | --- | --- | --- |
-| [Task REST API and clients](tasks/README.md) | Domain boundaries, repository adapters, SQLite, a versioned Markdown file, HTTP/JSON, three server stacks, and three client libraries | Required after Module 11 and before Module 12 |
+| [Task REST API and clients](tasks/README.md) | Domain boundaries, repository adapters, SQLite, a versioned Markdown file, HTTP/JSON, three server stacks, and three client libraries | Required after Module 15 and before Module 16 |
 
 The Task project is required and intentionally smaller than a capstone. Work
 through it after
-[Module 11](../lessons/11_rest_apis_and_clients/README.md), then continue to
-[Module 12](../lessons/12_concurrency/README.md). Complete its
+[Module 15](../lessons/11_rest_apis_and_clients/README.md), then continue to
+[Module 16](../lessons/12_concurrency/README.md). Complete its
 five milestones in order, run the shared contract tests after each milestone,
 and compare the framework implementations only after you understand the
 standard-library version.

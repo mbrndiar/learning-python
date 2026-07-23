@@ -13,9 +13,9 @@ servers and clients, the shared contracts, and the interoperability matrix.
 ## 🗺️ Course placement
 
 This is the required applied project between
-[Module 11: REST APIs and HTTP Clients](../../lessons/11_rest_apis_and_clients/README.md)
-and [Module 12: Concurrency](../../lessons/12_concurrency/README.md). Module 10's
-SQL/SQLite material and Module 11's HTTP boundaries are prerequisites. Complete
+[Module 15: REST APIs and HTTP Clients](../../lessons/11_rest_apis_and_clients/README.md)
+and [Module 16: Concurrency](../../lessons/12_concurrency/README.md). Module 14's
+SQL/SQLite material and Module 15's HTTP boundaries are prerequisites. Complete
 all five milestones before moving to concurrency and the final capstones.
 
 ## 📋 Start with the contract
@@ -89,10 +89,10 @@ The Markdown repository coordinates load-modify-save operations only between
 threads in one process. It deliberately does not teach or provide cross-process
 file locking.
 
-Because this project precedes Module 12, the starter provides the small
+Because this project precedes Module 16, the starter provides the small
 path-to-`RLock` registry as infrastructure. At milestone 2, use the supplied
 `self._lock` around each complete load/use or load-modify-save operation; Module
-12 later explains thread scheduling, shared-state races, and locks directly.
+16 later explains thread scheduling, shared-state races, and locks directly.
 
 ## ▶️ Intended Python commands
 

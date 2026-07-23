@@ -40,9 +40,9 @@ By the end of the course, you will be able to:
 - The documented interpreter is CPython on Linux, macOS, or Windows. GitHub
  Actions verifies Ubuntu; platform-specific commands and project limitations
  are called out where they matter.
-- The core lesson scripts in Modules 1–11, Module 12's HTTP fundamentals
-  lesson, Module 13, and both capstones use only the standard library. Module
-  10's pytest and packaging labs, Module 12's Flask, FastAPI, `requests`, and
+- The core lesson scripts in Modules 1–14, Module 15's HTTP fundamentals
+  lesson, Module 16, and both capstones use only the standard library. Module
+  13's pytest and packaging labs, Module 15's Flask, FastAPI, `requests`, and
   `httpx` comparisons, and the Task project use development or runtime
   dependencies from this repository.
   Task runtime dependencies are declared in
@@ -123,7 +123,7 @@ PROJECT_IMPLEMENTATION=solution \
 coverage report --include="projects/tasks/solution/**/*.py"
 ```
 
-Module 10 explains what each tool checks, how to measure coverage, and how these
+Module 13 explains what each tool checks, how to measure coverage, and how these
 local commands map to
 [GitHub Actions](https://docs.github.com/en/actions). The
 [setup guide](docs/SETUP.md#optional-modern-setup-with-uv) also provides the
@@ -143,13 +143,13 @@ equivalent optional [uv](https://docs.astral.sh/uv/) workflow.
 
 Each module has a matching folder under [`exercises/`](exercises/README.md)
 with hands-on problems to implement yourself, plus reference solutions to
-check your work. After Module 12, complete the required
+check your work. After Module 15, complete the required
 [Task REST API and clients project](projects/tasks/README.md) before moving to
-Module 13.
+Module 16.
 
 ## 🏆 Capstone projects
 
-Once you've completed all 13 modules and the required applied project, build both
+Once you've completed all 16 modules and the required applied project, build both
 equally required
 [capstone projects](capstones/README.md):
 
@@ -198,37 +198,38 @@ reference to jog your memory after finishing the course.
    - [`03_scope_closures_and_higher_order.py`](lessons/05_functions/03_scope_closures_and_higher_order.py) – LEGB scope, closures
      (including `nonlocal`), functions as values, and lambdas
    - [`04_recursion.py`](lessons/05_functions/04_recursion.py) – base cases, stack frames, and when iteration is clearer
-6. **[Modules and Files](lessons/05_modules_and_files/)**
-   - [`01_modules.py`](lessons/05_modules_and_files/01_modules.py) – using the standard library (`math`, `random`, `datetime`)
-   - [`02_packages.py`](lessons/05_modules_and_files/02_packages.py) – modules vs. packages, absolute/relative imports,
-     `__init__.py` re-exports and `__all__`
-   - [`03_files_and_exceptions.py`](lessons/05_modules_and_files/03_files_and_exceptions.py) – reading/writing UTF-8 text and raw bytes, plus handling errors
-   - [`04_custom_exceptions_and_context_managers.py`](lessons/05_modules_and_files/04_custom_exceptions_and_context_managers.py) – defining custom
-     exception classes and writing your own context managers
-   - [`05_json_and_structured_data.py`](lessons/05_modules_and_files/05_json_and_structured_data.py) – serializing structured data with JSON
-   - [`06_directories_and_paths.py`](lessons/05_modules_and_files/06_directories_and_paths.py) – directory creation/traversal, metadata, deterministic globbing, copy/move, and path boundaries
-   - [`07_dates_and_times.py`](lessons/05_modules_and_files/07_dates_and_times.py) – dates, times, durations, aware/naive datetimes, UTC, IANA zones, timestamps, DST, and monotonic clocks
-7. **[Object-Oriented Programming](lessons/06_object_oriented_programming/)**
-   - [`01_classes_and_objects.py`](lessons/06_object_oriented_programming/01_classes_and_objects.py) – classes, attributes, bound/class/static methods, and properties
-   - [`02_inheritance_and_polymorphism.py`](lessons/06_object_oriented_programming/02_inheritance_and_polymorphism.py) – inheritance, `super()` and
-     polymorphism
-   - [`03_encapsulation_and_magic_methods.py`](lessons/06_object_oriented_programming/03_encapsulation_and_magic_methods.py) – protected/private attributes
-     and dunder methods (`__repr__`, `__eq__`, `__add__`, etc.)
-   - [`04_abstract_classes_and_dataclasses.py`](lessons/06_object_oriented_programming/04_abstract_classes_and_dataclasses.py) – abstract base classes,
-     `@dataclass` and `enum.Enum`
-8. **[Advanced Python](lessons/07_advanced_python/)**
-   - [`01_decorators.py`](lessons/07_advanced_python/01_decorators.py) – function decorators, decorator factories and
-     `functools.wraps`
-   - [`02_generators_and_iterators.py`](lessons/07_advanced_python/02_generators_and_iterators.py) – `yield`, generator expressions and
-     the iterator protocol (`__iter__` / `__next__`)
-   - [`03_type_hints.py`](lessons/07_advanced_python/03_type_hints.py) – annotating variables, functions and classes with
-     modern Python type syntax
-   - [`04_protocols_and_dependency_injection.py`](lessons/07_advanced_python/04_protocols_and_dependency_injection.py) – structural interfaces,
-     dependency injection and adapters
-9. **[Testing](lessons/08_testing/)**
-   - [`01_unittest_basics.py`](lessons/08_testing/01_unittest_basics.py) – writing and running tests with the
-     `unittest` standard-library framework
-10. **[Tooling and Debugging](lessons/09_tooling_and_debugging/)**
+6. **[Modules and Packages](lessons/06_modules_and_packages/)**
+   - [`01_modules_and_imports.py`](lessons/06_modules_and_packages/01_modules_and_imports.py) – module objects, the import cache, import forms, and namespacing
+   - [`02_packages_and_resolution.py`](lessons/06_modules_and_packages/02_packages_and_resolution.py) – package layout, `__init__.py`, absolute/relative imports, and `python -m`
+   - [`03_scripts_modules_and_public_apis.py`](lessons/06_modules_and_packages/03_scripts_modules_and_public_apis.py) – `__name__`, import-time side effects, guarded entry points, re-exports, and `__all__`
+7. **[Exceptions, Files, and Paths](lessons/07_exceptions_files_and_paths/)**
+   - [`01_exception_flow.py`](lessons/07_exceptions_files_and_paths/01_exception_flow.py) – traceback propagation, narrow `except`, `else`, `finally`, `raise`, and chaining
+   - [`02_paths_and_directories.py`](lessons/07_exceptions_files_and_paths/02_paths_and_directories.py) – `Path`, relative/absolute paths, iteration, metadata, and temporary directories
+   - [`03_text_and_binary_files.py`](lessons/07_exceptions_files_and_paths/03_text_and_binary_files.py) – `open`, modes, encodings, newline behavior, bytes, and explicit ownership
+   - [`04_context_managers_and_resource_lifetimes.py`](lessons/07_exceptions_files_and_paths/04_context_managers_and_resource_lifetimes.py) – `with`, `__enter__`/`__exit__`, `closing`, and `memoryview` lifetime
+8. **[Structured Data and Time](lessons/08_structured_data_and_time/)**
+   - [`01_json_boundaries.py`](lessons/08_structured_data_and_time/01_json_boundaries.py) – JSON vs. Python values, `dump`/`load`/`dumps`/`loads`, validation, and malformed input
+   - [`02_datetimes_timezones_and_clocks.py`](lessons/08_structured_data_and_time/02_datetimes_timezones_and_clocks.py) – naive/aware datetimes, UTC, parsing/formatting, elapsed clocks, and injected clocks
+9. **[Objects and Data Models](lessons/09_object_oriented_programming/)**
+   - [`01_classes_objects_and_methods.py`](lessons/09_object_oriented_programming/01_classes_objects_and_methods.py) – classes, attributes, bound/class/static methods, and properties
+   - [`02_composition_and_inheritance.py`](lessons/09_object_oriented_programming/02_composition_and_inheritance.py) – composition versus inheritance, and a coherent multi-level hierarchy
+   - [`03_properties_and_encapsulation.py`](lessons/09_object_oriented_programming/03_properties_and_encapsulation.py) – properties, name-mangling, and encapsulated invariants
+   - [`04_python_data_model.py`](lessons/09_object_oriented_programming/04_python_data_model.py) – dunder methods (`__repr__`, `__eq__`, `__add__`, `__iter__`, etc.)
+   - [`05_abcs_dataclasses_enums_and_domain_errors.py`](lessons/09_object_oriented_programming/05_abcs_dataclasses_enums_and_domain_errors.py) – abstract base classes, `@dataclass`, `enum.Enum`, and a custom exception after inheritance
+10. **[Iteration, Decorators, and Contexts](lessons/10_iteration_decorators_and_contexts/)**
+    - [`01_iterables_iterators_and_stopiteration.py`](lessons/10_iteration_decorators_and_contexts/01_iterables_iterators_and_stopiteration.py) – the iterable/iterator protocol and `StopIteration`
+    - [`02_generators_and_lazy_evaluation.py`](lessons/10_iteration_decorators_and_contexts/02_generators_and_lazy_evaluation.py) – `yield`, laziness, and generator expressions
+    - [`03_decorators_and_wrappers.py`](lessons/10_iteration_decorators_and_contexts/03_decorators_and_wrappers.py) – decorators, wrapper state, and `functools.wraps`
+    - [`04_decorator_factories_and_contextmanager.py`](lessons/10_iteration_decorators_and_contexts/04_decorator_factories_and_contextmanager.py) – decorator factories and generator-based context managers via `@contextmanager`
+11. **[Typing, Protocols, and Dependency Injection](lessons/11_typing_protocols_and_di/)**
+    - [`01_annotations_and_narrowing.py`](lessons/11_typing_protocols_and_di/01_annotations_and_narrowing.py) – runtime versus static annotations, unions, `None`, narrowing, and aliases
+    - [`02_collections_callables_and_generics.py`](lessons/11_typing_protocols_and_di/02_collections_callables_and_generics.py) – `Iterable`, `Sequence`, `Mapping`, `Callable`, and generic functions with `TypeVar`
+    - [`03_literal_annotated_and_self.py`](lessons/11_typing_protocols_and_di/03_literal_annotated_and_self.py) – `Literal`, `Annotated`, and `Self`
+    - [`04_protocols_adapters_and_dependency_injection.py`](lessons/11_typing_protocols_and_di/04_protocols_adapters_and_dependency_injection.py) – structural interfaces (`Protocol`), interchangeable implementations, and dependency injection
+12. **[Testing](lessons/08_testing/)**
+    - [`01_unittest_basics.py`](lessons/08_testing/01_unittest_basics.py) – writing and running tests with the
+      `unittest` standard-library framework
+13. **[Tooling and Debugging](lessons/09_tooling_and_debugging/)**
     - [`01_virtual_environments_and_pip.py`](lessons/09_tooling_and_debugging/01_virtual_environments_and_pip.py) – virtual environments, `pip`,
       and why to use them
     - [`02_debugging_and_tracebacks.py`](lessons/09_tooling_and_debugging/02_debugging_and_tracebacks.py) – reading tracebacks, common
@@ -244,22 +245,22 @@ reference to jog your memory after finishing the course.
       [Coverage.py](https://coverage.readthedocs.io/en/stable/)
     - [`06_os_processes_and_streams.py`](lessons/09_tooling_and_debugging/06_os_processes_and_streams.py) – environment validation, standard streams, exit statuses, and safe subprocess execution
     - [`07_packaging_and_public_apis.py`](lessons/09_tooling_and_debugging/07_packaging_and_public_apis.py) – import packages versus distributions, `pyproject.toml`, `src/` layout, editable installs, builds, and public API documentation
-11. **[SQL and SQLite](lessons/10_sql_and_sqlite/)**
+14. **[SQL and SQLite](lessons/10_sql_and_sqlite/)**
     - [`01_relational_model_and_sql.py`](lessons/10_sql_and_sqlite/01_relational_model_and_sql.py) – schemas, constraints, parameterized CRUD, filtering, ordering, limits, and row mapping
     - [`02_joins_aggregates_and_indexes.py`](lessons/10_sql_and_sqlite/02_joins_aggregates_and_indexes.py) – related tables, joins, grouped aggregates, indexes, and query plans
     - [`03_transactions_and_sqlite.py`](lessons/10_sql_and_sqlite/03_transactions_and_sqlite.py) – transactions, generated IDs, SQLite affinity, pragmas, and limitations
     - [`04_repository_pattern.py`](lessons/10_sql_and_sqlite/04_repository_pattern.py) – a small injected repository and reusable contract checks
-12. **[REST APIs and HTTP Clients](lessons/11_rest_apis_and_clients/)**
+15. **[REST APIs and HTTP Clients](lessons/11_rest_apis_and_clients/)**
     - [`01_http_fundamentals.py`](lessons/11_rest_apis_and_clients/01_http_fundamentals.py) – methods, routes, queries, headers, statuses, bytes, UTF-8, JSON, and finite timeouts
     - [`02_flask_api.py`](lessons/11_rest_apis_and_clients/02_flask_api.py) – an application factory, thin routes, injected dependencies, centralized errors, and Flask's test client
     - [`03_fastapi_api.py`](lessons/11_rest_apis_and_clients/03_fastapi_api.py) – Pydantic boundary models, dependency providers, response models, exception mapping, OpenAPI, and `TestClient`
     - [`04_http_clients.py`](lessons/11_rest_apis_and_clients/04_http_clients.py) – `urllib`, `requests`, and `httpx` transports with finite timeouts and status-first validation
     - **Required applied project:** [Task REST API and clients](projects/tasks/README.md) – implement the shared Task domain, SQLite and Markdown repositories, three server adapters, three client transports, and their contract tests
-13. **[Concurrency](lessons/12_concurrency/)**
+16. **[Concurrency](lessons/12_concurrency/)**
     - [`01_threading_and_multiprocessing.py`](lessons/12_concurrency/01_threading_and_multiprocessing.py) – threads for blocking I/O, processes for CPU-bound work, shared-state hazards, and cleanup
     - [`02_asyncio_basics.py`](lessons/12_concurrency/02_asyncio_basics.py) – cooperative concurrency, owned tasks, `async`/`await`, and `asyncio.gather`
 
-Modules 6 through 13 keep their existing `05_`-`12_` directory prefixes from
+Modules 12 through 16 keep their existing `08_`-`12_` directory prefixes from
 before this migration; the numbered list above reflects each module's
 authoritative teaching order, not its directory name.
 
@@ -273,7 +274,7 @@ you learned.
 When something fails, read the final line of the traceback first: it names the
 exception and usually explains the immediate cause. Then inspect the referenced
 line in your code and work upward through the traceback. Search this repository
-for the exception or concept before consulting another source. Module 10 gives a
+for the exception or concept before consulting another source. Module 13 gives a
 systematic debugging process.
 
 Solutions are examples, not the only correct answers. Compare behavior,

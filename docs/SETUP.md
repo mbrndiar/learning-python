@@ -45,9 +45,9 @@ The core course remains usable, but the optional
 ## 🧪 3. Create a virtual environment
 
 A virtual environment keeps this project's Python packages isolated from
-the rest of your system. The core lesson scripts in Modules 1–11, Module 12's
-HTTP fundamentals lesson, Module 13, and both capstones use only the standard
-library. Module 10's pytest and packaging labs, Module 12's framework/client
+the rest of your system. The core lesson scripts in Modules 1–14, Module 15's
+HTTP fundamentals lesson, Module 16, and both capstones use only the standard
+library. Module 13's pytest and packaging labs, Module 15's framework/client
 comparisons, and the required Task project use project-local tools or runtime
 dependencies. A virtual environment keeps them isolated.
 
@@ -100,9 +100,9 @@ python lessons/01_python_fundamentals/01_running_python.py
 If you see `Hello, World!` printed, you're ready to start. Continue to the
 [course guide in the README](../README.md).
 
-Near the end of the course, follow the required order: Module 10 SQL/SQLite,
-Module 11 REST APIs and clients, the
-[Task REST API and clients project](../projects/tasks/README.md), Module 12
+Near the end of the course, follow the required order: Module 14 SQL/SQLite,
+Module 15 REST APIs and clients, the
+[Task REST API and clients project](../projects/tasks/README.md), Module 16
 concurrency, then both capstones.
 
 ## ⚡ Optional modern setup with uv
@@ -174,7 +174,7 @@ python -m build lessons/09_tooling_and_debugging/example_distribution
 python -m pydoc packaging_public_api_example
 ```
 
-Run the `pydoc` command after the editable install from Module 9. Remove generated
+Run the `pydoc` command after the editable install from Module 13. Remove generated
 `dist/`, `build/`, and `*.egg-info` directories after inspection; Git ignores
 them, but a clean source tree makes accidental reliance on stale artifacts less
 likely.

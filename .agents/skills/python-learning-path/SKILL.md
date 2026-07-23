@@ -44,11 +44,11 @@ commands from the repository root, as required by the manifest schema.
   learner confirmation. One confirmation covers only that edit.
 - Do not commit or push unless the learner explicitly asks.
 
-## Navigate the 13 modules
+## Navigate the 16 modules
 
 Use module and concept IDs from the manifest, never titles or directory order as
-state keys. Respect prerequisites; the Task project is required after Module 12
-and before Module 13.
+state keys. Respect prerequisites; the Task project is required after Module 15
+and before Module 16.
 
 | Order | Stable module ID | Read | Focused exercise evaluator |
 | --- | --- | --- | --- |
@@ -57,14 +57,17 @@ and before Module 13.
 | 3 | `module.collections` | `lessons/03_collections/README.md` | `python exercises/03_collections/exercises.py` |
 | 4 | `module.flow-and-iteration` | `lessons/04_control_flow/README.md` | `python exercises/04_control_flow/exercises.py` |
 | 5 | `module.function-contracts-and-scope` | `lessons/05_functions/README.md` | `python exercises/05_functions/exercises.py` |
-| 6 | `module.modules-and-files` | `lessons/05_modules_and_files/README.md` | `python exercises/05_modules_and_files/exercises.py` |
-| 7 | `module.object-oriented-programming` | `lessons/06_object_oriented_programming/README.md` | `python exercises/06_object_oriented_programming/exercises.py` |
-| 8 | `module.advanced-python` | `lessons/07_advanced_python/README.md` | `python exercises/07_advanced_python/exercises.py` |
-| 9 | `module.testing` | `lessons/08_testing/README.md` | `python exercises/08_testing/exercises.py` |
-| 10 | `module.tooling-and-debugging` | `lessons/09_tooling_and_debugging/README.md` | `python exercises/09_tooling_and_debugging/exercises.py` |
-| 11 | `module.sql-and-sqlite` | `lessons/10_sql_and_sqlite/README.md` | `python exercises/10_sql_and_sqlite/exercises.py` |
-| 12 | `module.rest-apis-and-clients` | `lessons/11_rest_apis_and_clients/README.md` | `python exercises/11_rest_apis_and_clients/exercises.py` |
-| 13 | `module.concurrency` | `lessons/12_concurrency/README.md` | `python exercises/12_concurrency/exercises.py` |
+| 6 | `module.modules-and-packages` | `lessons/06_modules_and_packages/README.md` | `python exercises/06_modules_and_packages/exercises.py` |
+| 7 | `module.exceptions-files-and-paths` | `lessons/07_exceptions_files_and_paths/README.md` | `python exercises/07_exceptions_files_and_paths/exercises.py` |
+| 8 | `module.structured-data-and-time` | `lessons/08_structured_data_and_time/README.md` | `python exercises/08_structured_data_and_time/exercises.py` |
+| 9 | `module.objects-and-data-models` | `lessons/09_object_oriented_programming/README.md` | `python exercises/09_object_oriented_programming/exercises.py` |
+| 10 | `module.iteration-decorators-and-contexts` | `lessons/10_iteration_decorators_and_contexts/README.md` | `python exercises/10_iteration_decorators_and_contexts/exercises.py` |
+| 11 | `module.typing-protocols-and-di` | `lessons/11_typing_protocols_and_di/README.md` | `python exercises/11_typing_protocols_and_di/exercises.py` |
+| 12 | `module.testing` | `lessons/08_testing/README.md` | `python exercises/08_testing/exercises.py` |
+| 13 | `module.tooling-and-debugging` | `lessons/09_tooling_and_debugging/README.md` | `python exercises/09_tooling_and_debugging/exercises.py` |
+| 14 | `module.sql-and-sqlite` | `lessons/10_sql_and_sqlite/README.md` | `python exercises/10_sql_and_sqlite/exercises.py` |
+| 15 | `module.rest-apis-and-clients` | `lessons/11_rest_apis_and_clients/README.md` | `python exercises/11_rest_apis_and_clients/exercises.py` |
+| 16 | `module.concurrency` | `lessons/12_concurrency/README.md` | `python exercises/12_concurrency/exercises.py` |
 
 For one concept:
 

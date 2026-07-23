@@ -25,7 +25,7 @@ Every module folder contains a primary pair:
 - `solutions.py` - a reference implementation, in case you get stuck or
   want to compare approaches. Try to solve each exercise yourself first!
 
-## 🧭 Modules 11–13 and the applied project
+## 🧭 Modules 14–16 and the applied project
 
 Complete the advanced sequence in this order:
 
