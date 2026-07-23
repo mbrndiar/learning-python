@@ -6,7 +6,7 @@ JSON envelopes, SQLite schema, migration, revisions, compare-and-set behavior,
 and independent-process contention; the Python module design remains local.
 This is one of the course's
 [two completed, equally required capstones](../README.md).
-Begin after Modules 1–12 and the required
+Begin after Modules 1–17 and the required
 [Task REST API and clients project](../../projects/tasks/README.md).
 
 ## 🗂️ Choose a source root

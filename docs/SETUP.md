@@ -45,11 +45,12 @@ The core course remains usable, but the optional
 ## 🧪 3. Create a virtual environment
 
 A virtual environment keeps this project's Python packages isolated from
-the rest of your system. The core lesson scripts in Modules 1–14, Module 15's
-HTTP fundamentals lesson, Module 16, and both capstones use only the standard
-library. Module 13's pytest and packaging labs, Module 15's framework/client
-comparisons, and the required Task project use project-local tools or runtime
-dependencies. A virtual environment keeps them isolated.
+the rest of your system. The core lesson scripts in Modules 1–15, Module 16's
+HTTP fundamentals lesson, Module 17, and both capstones use only the standard
+library. Module 12's pytest lesson, Module 14's quality-tool and packaging labs,
+Module 16's framework/client comparisons, and the required Task project use
+project-local tools or runtime dependencies. A virtual environment keeps them
+isolated.
 
 ```bash
 # Create the environment (creates a .venv/ folder)
@@ -100,9 +101,9 @@ python lessons/01_python_fundamentals/01_running_python.py
 If you see `Hello, World!` printed, you're ready to start. Continue to the
 [course guide in the README](../README.md).
 
-Near the end of the course, follow the required order: Module 14 SQL/SQLite,
-Module 15 REST APIs and clients, the
-[Task REST API and clients project](../projects/tasks/README.md), Module 16
+Near the end of the course, follow the required order: Module 15 SQL/SQLite,
+Module 16 REST APIs and clients, the
+[Task REST API and clients project](../projects/tasks/README.md), Module 17
 concurrency, then both capstones.
 
 ## ⚡ Optional modern setup with uv
@@ -122,7 +123,7 @@ uv venv --python 3.14
 uv pip install -r requirements-dev.txt
 source .venv/bin/activate
 python lessons/01_python_fundamentals/01_running_python.py
-python -m pytest lessons/09_tooling_and_debugging/04_pytest_basics.py
+python -m pytest lessons/12_testing/03_pytest_assertions_parameterization_and_fixtures.py
 ruff format .
 ruff check .
 mypy
@@ -145,7 +146,7 @@ Start narrow: reproduce the behavior you changed before running every check.
 For example:
 
 ```bash
-python -m pytest lessons/09_tooling_and_debugging/04_pytest_basics.py -v
+python -m pytest lessons/12_testing/03_pytest_assertions_parameterization_and_fixtures.py -v
 ```
 
 Then apply formatting and run the configured static checks:
@@ -170,11 +171,11 @@ When changing the example distribution or packaging lesson, build the declared
 artifacts and inspect its public documentation:
 
 ```bash
-python -m build lessons/09_tooling_and_debugging/example_distribution
+python -m build lessons/14_environments_processes_and_packaging/example_distribution
 python -m pydoc packaging_public_api_example
 ```
 
-Run the `pydoc` command after the editable install from Module 13. Remove generated
+Run the `pydoc` command after the editable install from Module 14. Remove generated
 `dist/`, `build/`, and `*.egg-info` directories after inspection; Git ignores
 them, but a clean source tree makes accidental reliance on stale artifacts less
 likely.

@@ -317,6 +317,15 @@ class CourseManifestTests(unittest.TestCase):
             },
             {1},
         )
+        for module in course_adapter.records(self.manifest, "modules"):
+            lock = locks[module["solution_lock_group"]]
+            self.assertEqual(
+                lock["paths"],
+                [
+                    module["exercise_solution"],
+                    *module.get("solution_supplements", []),
+                ],
+            )
 
     def test_required_outcomes_cover_every_container_and_milestone(self) -> None:
         course_adapter.validate_required_outcomes(self.manifest)

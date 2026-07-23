@@ -501,105 +501,157 @@ lesson_file = "lessons/11_typing_protocols_and_di/04_protocols_adapters_and_depe
 run_command = "python lessons/11_typing_protocols_and_di/04_protocols_adapters_and_dependency_injection.py"
 
 [[modules]]
-id = "module.testing"
+id = "module.automated-testing"
 ordinal = 12
-title = "Testing"
+title = "Automated Testing"
 prerequisites = ["module.typing-protocols-and-di"]
-lesson_readme = "lessons/08_testing/README.md"
-review_questions = { path = "lessons/08_testing/README.md", heading = "❓ Review questions" }
-exercise_starter = "exercises/08_testing/exercises.py"
-exercise_solution = "exercises/08_testing/solutions.py"
-validation_commands = ["python exercises/08_testing/exercises.py"]
-solution_lock_group = "solutions.module.testing"
+lesson_readme = "lessons/12_testing/README.md"
+review_questions = { path = "lessons/12_testing/README.md", heading = "❓ Review questions (closed notes)" }
+exercise_starter = "exercises/12_testing/exercises.py"
+exercise_solution = "exercises/12_testing/solutions.py"
+validation_commands = ["python exercises/12_testing/exercises.py"]
+solution_lock_group = "solutions.module.automated-testing"
 required_outcomes = [
-  "Define unittest test cases with independent fixtures.",
-  "Choose precise assertions and test expected failures.",
-  "Use mocks at meaningful collaborator boundaries.",
-  "Explain what makes a test suite trustworthy and what coverage omits.",
+  "Explain what a test checks and structure any test as arrange-act-assert.",
+  "Write unittest TestCase classes with per-test fixtures and precise assertions.",
+  "Write pytest tests with plain assert, parameterization, and fixtures.",
+  "Choose and constrain test doubles, including Mock(spec=...) and patch.",
 ]
 
 [[modules.concepts]]
-id = "concept.testing.unittest-basics"
-title = "Test cases, fixtures, assertions, and mocks"
+id = "concept.automated-testing.mental-model"
+title = "The testing mental model and determinism"
 prerequisites = []
-lesson_file = "lessons/08_testing/01_unittest_basics.py"
-run_command = "python lessons/08_testing/01_unittest_basics.py"
+lesson_file = "lessons/12_testing/01_testing_mental_model.py"
+run_command = "python lessons/12_testing/01_testing_mental_model.py"
+
+[[modules.concepts]]
+id = "concept.automated-testing.unittest-lifecycle"
+title = "The unittest lifecycle and assertions"
+prerequisites = ["concept.automated-testing.mental-model"]
+lesson_file = "lessons/12_testing/02_unittest_lifecycle_and_assertions.py"
+run_command = "python lessons/12_testing/02_unittest_lifecycle_and_assertions.py"
+
+[[modules.concepts]]
+id = "concept.automated-testing.pytest-and-fixtures"
+title = "Pytest assertions, parameterization, and fixtures"
+prerequisites = ["concept.automated-testing.unittest-lifecycle"]
+lesson_file = "lessons/12_testing/03_pytest_assertions_parameterization_and_fixtures.py"
+run_command = "python -m pytest lessons/12_testing/03_pytest_assertions_parameterization_and_fixtures.py -v"
+
+[[modules.concepts]]
+id = "concept.automated-testing.test-doubles-and-mocking"
+title = "Test doubles and mocking"
+prerequisites = ["concept.automated-testing.pytest-and-fixtures"]
+lesson_file = "lessons/12_testing/04_test_doubles_and_mocking.py"
+run_command = "python lessons/12_testing/04_test_doubles_and_mocking.py"
 
 [[modules]]
-id = "module.tooling-and-debugging"
+id = "module.debugging-and-cli"
 ordinal = 13
-title = "Tooling and Debugging"
-prerequisites = ["module.testing"]
-lesson_readme = "lessons/09_tooling_and_debugging/README.md"
-review_questions = { path = "lessons/09_tooling_and_debugging/README.md", heading = "❓ Review questions" }
-exercise_starter = "exercises/09_tooling_and_debugging/exercises.py"
-exercise_solution = "exercises/09_tooling_and_debugging/solutions.py"
-validation_commands = ["python exercises/09_tooling_and_debugging/exercises.py"]
-solution_lock_group = "solutions.module.tooling-and-debugging"
+title = "Debugging and Command-Line Interfaces"
+prerequisites = ["module.automated-testing"]
+lesson_readme = "lessons/13_debugging_and_cli/README.md"
+review_questions = { path = "lessons/13_debugging_and_cli/README.md", heading = "❓ Review questions (closed notes)" }
+exercise_starter = "exercises/13_debugging_and_cli/exercises.py"
+exercise_solution = "exercises/13_debugging_and_cli/solutions.py"
+validation_commands = ["python exercises/13_debugging_and_cli/exercises.py"]
+solution_lock_group = "solutions.module.debugging-and-cli"
 required_outcomes = [
-  "Isolate dependencies and invoke pip through the intended interpreter.",
-  "Read tracebacks and inspect state with pdb.",
-  "Keep command-line parsing at the application boundary.",
-  "Write concise pytest tests and use logging deliberately.",
-  "Cross environment, process, and standard-stream boundaries safely.",
-  "Build and document a distribution with an intentional public API.",
-  "Explain formatting, linting, typing, testing, coverage, and CI feedback.",
+  "Read tracebacks from the bottom up and inspect state with pdb.",
+  "Keep command-line parsing at the application boundary with argparse.",
+  "Reject invalid input with custom validators and build subcommands.",
+  "Emit runtime diagnostics with logging and choose among print, pdb, and logging.",
 ]
 
 [[modules.concepts]]
-id = "concept.tooling-and-debugging.virtual-environments-and-pip"
-title = "Virtual environments, pip, and dependency declarations"
+id = "concept.debugging-and-cli.tracebacks-and-pdb"
+title = "Tracebacks and interactive debugging with pdb"
 prerequisites = []
-lesson_file = "lessons/09_tooling_and_debugging/01_virtual_environments_and_pip.py"
-run_command = "python lessons/09_tooling_and_debugging/01_virtual_environments_and_pip.py"
+lesson_file = "lessons/13_debugging_and_cli/01_tracebacks_and_pdb.py"
+run_command = "python lessons/13_debugging_and_cli/01_tracebacks_and_pdb.py"
 
 [[modules.concepts]]
-id = "concept.tooling-and-debugging.tracebacks-and-pdb"
-title = "Tracebacks and interactive debugging"
-prerequisites = ["concept.tooling-and-debugging.virtual-environments-and-pip"]
-lesson_file = "lessons/09_tooling_and_debugging/02_debugging_and_tracebacks.py"
-run_command = "python lessons/09_tooling_and_debugging/02_debugging_and_tracebacks.py"
+id = "concept.debugging-and-cli.argparse-basics"
+title = "Command-line argument parsing at the boundary"
+prerequisites = ["concept.debugging-and-cli.tracebacks-and-pdb"]
+lesson_file = "lessons/13_debugging_and_cli/02_argparse_basics.py"
+run_command = "python lessons/13_debugging_and_cli/02_argparse_basics.py"
 
 [[modules.concepts]]
-id = "concept.tooling-and-debugging.command-line-arguments"
-title = "Command-line argument parsing"
-prerequisites = ["concept.tooling-and-debugging.tracebacks-and-pdb"]
-lesson_file = "lessons/09_tooling_and_debugging/03_command_line_arguments.py"
-run_command = "python lessons/09_tooling_and_debugging/03_command_line_arguments.py"
+id = "concept.debugging-and-cli.subcommands-and-validation"
+title = "Subcommands and custom validation"
+prerequisites = ["concept.debugging-and-cli.argparse-basics"]
+lesson_file = "lessons/13_debugging_and_cli/03_subcommands_and_custom_validation.py"
+run_command = "python lessons/13_debugging_and_cli/03_subcommands_and_custom_validation.py"
 
 [[modules.concepts]]
-id = "concept.tooling-and-debugging.pytest-basics"
-title = "Pytest assertions, parameterization, failures, and fixtures"
-prerequisites = ["concept.tooling-and-debugging.command-line-arguments"]
-lesson_file = "lessons/09_tooling_and_debugging/04_pytest_basics.py"
-run_command = "python -m pytest lessons/09_tooling_and_debugging/04_pytest_basics.py -v"
+id = "concept.debugging-and-cli.logging-and-diagnostics"
+title = "Logging and diagnostics"
+prerequisites = ["concept.debugging-and-cli.subcommands-and-validation"]
+lesson_file = "lessons/13_debugging_and_cli/04_logging_and_diagnostics.py"
+run_command = "python lessons/13_debugging_and_cli/04_logging_and_diagnostics.py"
+
+[[modules]]
+id = "module.environments-processes-and-packaging"
+ordinal = 14
+title = "Environments, Processes, and Packaging"
+prerequisites = ["module.debugging-and-cli"]
+lesson_readme = "lessons/14_environments_processes_and_packaging/README.md"
+review_questions = { path = "lessons/14_environments_processes_and_packaging/README.md", heading = "❓ Review questions (closed notes)" }
+exercise_starter = "exercises/14_environments_processes_and_packaging/exercises.py"
+exercise_solution = "exercises/14_environments_processes_and_packaging/solutions.py"
+solution_supplements = ["exercises/14_environments_processes_and_packaging/solution_distribution"]
+validation_commands = ["python exercises/14_environments_processes_and_packaging/exercises.py"]
+solution_lock_group = "solutions.module.environments-processes-and-packaging"
+required_outcomes = [
+  "Isolate dependencies and invoke pip through the intended interpreter.",
+  "Cross environment, standard-stream, and exit-status boundaries safely.",
+  "Own a subprocess with an argument list, explicit environment, timeout, and error taxonomy.",
+  "Explain formatting, linting, typing, testing, coverage, and CI feedback.",
+  "Build and document a distribution and declare a console entry point.",
+]
 
 [[modules.concepts]]
-id = "concept.tooling-and-debugging.logging-and-quality-tools"
-title = "Logging and automated quality tools"
-prerequisites = ["concept.tooling-and-debugging.pytest-basics"]
-lesson_file = "lessons/09_tooling_and_debugging/05_logging_and_quality_tools.py"
-run_command = "python lessons/09_tooling_and_debugging/05_logging_and_quality_tools.py"
+id = "concept.environments-processes-and-packaging.virtual-environments-and-pip"
+title = "Virtual environments and pip"
+prerequisites = []
+lesson_file = "lessons/14_environments_processes_and_packaging/01_virtual_environments_and_pip.py"
+run_command = "python lessons/14_environments_processes_and_packaging/01_virtual_environments_and_pip.py"
 
 [[modules.concepts]]
-id = "concept.tooling-and-debugging.processes-and-streams"
-title = "Environment, process, and standard-stream boundaries"
-prerequisites = ["concept.tooling-and-debugging.logging-and-quality-tools"]
-lesson_file = "lessons/09_tooling_and_debugging/06_os_processes_and_streams.py"
-run_command = "python lessons/09_tooling_and_debugging/06_os_processes_and_streams.py"
+id = "concept.environments-processes-and-packaging.streams-and-exit-status"
+title = "Environment, standard streams, and exit status"
+prerequisites = ["concept.environments-processes-and-packaging.virtual-environments-and-pip"]
+lesson_file = "lessons/14_environments_processes_and_packaging/02_environment_streams_and_exit_status.py"
+run_command = "python lessons/14_environments_processes_and_packaging/02_environment_streams_and_exit_status.py"
 
 [[modules.concepts]]
-id = "concept.tooling-and-debugging.packaging-and-public-apis"
-title = "Distributions, builds, and public API documentation"
-prerequisites = ["concept.tooling-and-debugging.processes-and-streams"]
-lesson_file = "lessons/09_tooling_and_debugging/07_packaging_and_public_apis.py"
-run_command = "python lessons/09_tooling_and_debugging/07_packaging_and_public_apis.py"
+id = "concept.environments-processes-and-packaging.subprocess-ownership"
+title = "Owning a subprocess safely"
+prerequisites = ["concept.environments-processes-and-packaging.streams-and-exit-status"]
+lesson_file = "lessons/14_environments_processes_and_packaging/03_subprocess_ownership.py"
+run_command = "python lessons/14_environments_processes_and_packaging/03_subprocess_ownership.py"
+
+[[modules.concepts]]
+id = "concept.environments-processes-and-packaging.quality-gates-and-ci"
+title = "Format, lint, type, test, coverage, and CI"
+prerequisites = ["concept.environments-processes-and-packaging.subprocess-ownership"]
+lesson_file = "lessons/14_environments_processes_and_packaging/04_format_lint_type_test_coverage_ci.py"
+run_command = "python lessons/14_environments_processes_and_packaging/04_format_lint_type_test_coverage_ci.py"
+
+[[modules.concepts]]
+id = "concept.environments-processes-and-packaging.distributions-and-public-apis"
+title = "Distributions, builds, and public APIs"
+prerequisites = ["concept.environments-processes-and-packaging.quality-gates-and-ci"]
+lesson_file = "lessons/14_environments_processes_and_packaging/05_distributions_builds_and_public_apis.py"
+run_command = "python lessons/14_environments_processes_and_packaging/05_distributions_builds_and_public_apis.py"
 
 [[modules]]
 id = "module.sql-and-sqlite"
-ordinal = 14
+ordinal = 15
 title = "SQL and SQLite"
-prerequisites = ["module.tooling-and-debugging"]
+prerequisites = ["module.environments-processes-and-packaging"]
 lesson_readme = "lessons/10_sql_and_sqlite/README.md"
 review_questions = { path = "lessons/10_sql_and_sqlite/README.md", heading = "❓ Review questions" }
 exercise_starter = "exercises/10_sql_and_sqlite/exercises.py"
@@ -646,7 +698,7 @@ run_command = "python lessons/10_sql_and_sqlite/04_repository_pattern.py"
 
 [[modules]]
 id = "module.rest-apis-and-clients"
-ordinal = 15
+ordinal = 16
 title = "REST APIs and HTTP Clients"
 prerequisites = ["module.sql-and-sqlite"]
 lesson_readme = "lessons/11_rest_apis_and_clients/README.md"
@@ -694,7 +746,7 @@ run_command = "python lessons/11_rest_apis_and_clients/04_http_clients.py"
 
 [[modules]]
 id = "module.concurrency"
-ordinal = 16
+ordinal = 17
 title = "Concurrency"
 prerequisites = ["project.tasks-rest-api-clients"]
 lesson_readme = "lessons/12_concurrency/README.md"
@@ -1012,14 +1064,23 @@ unlock_policy = "after-unit-validation"
 solution_unlock_after = 1
 
 [[solution_lock_groups]]
-id = "solutions.module.testing"
-paths = ["exercises/08_testing/solutions.py"]
+id = "solutions.module.automated-testing"
+paths = ["exercises/12_testing/solutions.py"]
 unlock_policy = "after-unit-validation"
 solution_unlock_after = 1
 
 [[solution_lock_groups]]
-id = "solutions.module.tooling-and-debugging"
-paths = ["exercises/09_tooling_and_debugging/solutions.py"]
+id = "solutions.module.debugging-and-cli"
+paths = ["exercises/13_debugging_and_cli/solutions.py"]
+unlock_policy = "after-unit-validation"
+solution_unlock_after = 1
+
+[[solution_lock_groups]]
+id = "solutions.module.environments-processes-and-packaging"
+paths = [
+  "exercises/14_environments_processes_and_packaging/solutions.py",
+  "exercises/14_environments_processes_and_packaging/solution_distribution",
+]
 unlock_policy = "after-unit-validation"
 solution_unlock_after = 1
 

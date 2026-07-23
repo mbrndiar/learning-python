@@ -25,7 +25,7 @@ Every module folder contains a primary pair:
 - `solutions.py` - a reference implementation, in case you get stuck or
   want to compare approaches. Try to solve each exercise yourself first!
 
-## 🧭 Modules 14–16 and the applied project
+## 🧭 Modules 15–17 and the applied project
 
 Complete the advanced sequence in this order:
 
@@ -70,7 +70,7 @@ assert double(4) == 8
 ```
 
 Add your own assertions for empty values, zero, negative values, mixed case,
-and other boundaries when they make sense. Modules 9 and 10 turn this habit
+and other boundaries when they make sense. Module 12 turns this habit
 into structured automated testing.
 
 ## 🔍 Using reference solutions well

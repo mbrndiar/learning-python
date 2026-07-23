@@ -1,0 +1,20 @@
+# Build frontends read this table before loading any project code.
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+# PEP 621 project metadata.
+[project]
+name = "timekeeper-cli-example"
+version = "0.1.0"
+description = "A tiny distribution for practicing console script entry points"
+readme = "README.md"
+requires-python = ">=3.11"
+
+# TODO: add a [project.scripts] table that maps a console command named
+# "timekeeper" to the supplied callable "timekeeper_cli:main". Installing this
+# distribution would then create a runnable `timekeeper` command. The table
+# shape is:
+#
+#   [project.scripts]
+#   command-name = "import_package:function"

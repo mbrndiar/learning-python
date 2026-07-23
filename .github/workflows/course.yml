@@ -100,7 +100,7 @@ jobs:
 
       - name: Validate packaging example
         run: |
-          example="lessons/09_tooling_and_debugging/example_distribution"
+          example="lessons/14_environments_processes_and_packaging/example_distribution"
           output="$RUNNER_TEMP/example-dist"
           target="$RUNNER_TEMP/example-install"
           python -m build --outdir "$output" "$example"
@@ -170,4 +170,4 @@ jobs:
           coverage report --include="projects/tasks/solution/**/*.py"
 
       - name: Run pytest lesson with pytest
-        run: python -m pytest lessons/09_tooling_and_debugging/04_pytest_basics.py -v
+        run: python -m pytest lessons/12_testing/03_pytest_assertions_parameterization_and_fixtures.py -v

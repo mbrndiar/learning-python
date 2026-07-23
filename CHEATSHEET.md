@@ -375,7 +375,7 @@ python -m pip install -e path/to/project  # editable local distribution
 python -m build path/to/project   # build wheel + source distribution
 python script.py arg1 --flag      # run a script with arguments
 python -m unittest discover       # run all unittest tests
-python -m pytest lessons/09_tooling_and_debugging/04_pytest_basics.py
+python -m pytest lessons/12_testing/03_pytest_assertions_parameterization_and_fixtures.py
 ruff format .                     # format files
 ruff check .                      # lint
 ruff format --check .             # verify formatting
@@ -406,7 +406,7 @@ uv venv --python 3.14
 uv pip install -r requirements-dev.txt
 source .venv/bin/activate
 python script.py
-python -m pytest lessons/09_tooling_and_debugging/04_pytest_basics.py
+python -m pytest lessons/12_testing/03_pytest_assertions_parameterization_and_fixtures.py
 ruff format .
 ruff check .
 mypy
@@ -414,10 +414,10 @@ mypy
 
 ## 🚀 Advanced course sequence
 
-1. [Module 14: SQL and SQLite](lessons/10_sql_and_sqlite/README.md)
-2. [Module 15: REST APIs and HTTP Clients](lessons/11_rest_apis_and_clients/README.md)
+1. [Module 15: SQL and SQLite](lessons/10_sql_and_sqlite/README.md)
+2. [Module 16: REST APIs and HTTP Clients](lessons/11_rest_apis_and_clients/README.md)
 3. Required [Task REST API and clients project](projects/tasks/README.md)
-4. [Module 16: Concurrency](lessons/12_concurrency/README.md)
+4. [Module 17: Concurrency](lessons/12_concurrency/README.md)
 5. Both required [capstones](capstones/README.md)
 
 ## 🧭 Where to go next

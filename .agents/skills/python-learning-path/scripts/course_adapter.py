@@ -257,6 +257,13 @@ def declared_paths(manifest: dict[str, Any]) -> Iterator[tuple[str, object]]:
         module_id = module["id"]
         for key in ("lesson_readme", "exercise_starter", "exercise_solution"):
             yield f"{module_id}.{key}", module.get(key)
+        solution_supplements = module.get("solution_supplements", [])
+        require(
+            isinstance(solution_supplements, list),
+            f"{module_id}.solution_supplements must be an array",
+        )
+        for index, path in enumerate(solution_supplements):
+            yield f"{module_id}.solution_supplements[{index}]", path
         review_questions = module.get("review_questions")
         require(
             isinstance(review_questions, dict),
@@ -364,16 +371,20 @@ def validate_solution_locks(manifest: dict[str, Any]) -> dict[str, dict[str, Any
     require(not duplicates, f"duplicate solution lock IDs: {', '.join(duplicates)}")
     locks = {lock["id"]: lock for lock in lock_records}
 
-    owners: list[tuple[dict[str, Any], str, str]] = []
+    owners: list[tuple[dict[str, Any], list[str], str]] = []
     owners.extend(
-        (module, module["exercise_solution"], "after-unit-validation")
+        (
+            module,
+            [module["exercise_solution"], *module.get("solution_supplements", [])],
+            "after-unit-validation",
+        )
         for module in records(manifest, "modules")
     )
     for owner_kind in ("projects", "capstones"):
         owners.extend(
             (
                 owner,
-                owner["solution_root"],
+                [owner["solution_root"]],
                 "after-matching-milestone-validation",
             )
             for owner in records(manifest, owner_kind)
@@ -381,7 +392,7 @@ def validate_solution_locks(manifest: dict[str, Any]) -> dict[str, dict[str, Any
 
     referenced_locks: list[str] = []
     locked_paths: list[str] = []
-    for owner, expected_path, expected_policy in owners:
+    for owner, expected_paths, expected_policy in owners:
         owner_id = owner["id"]
         lock_id = owner.get("solution_lock_group")
         require(
@@ -394,8 +405,8 @@ def validate_solution_locks(manifest: dict[str, Any]) -> dict[str, dict[str, Any
             path_declaration(f"{lock_id}.paths", path)[0] for path in lock["paths"]
         ]
         require(
-            lock_paths == [expected_path],
-            f"{lock_id} must lock exactly {expected_path}",
+            lock_paths == expected_paths,
+            f"{lock_id} must lock exactly {', '.join(expected_paths)}",
         )
         locked_paths.extend(lock_paths)
         require(

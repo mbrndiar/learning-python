@@ -40,11 +40,11 @@ By the end of the course, you will be able to:
 - The documented interpreter is CPython on Linux, macOS, or Windows. GitHub
  Actions verifies Ubuntu; platform-specific commands and project limitations
  are called out where they matter.
-- The core lesson scripts in Modules 1–14, Module 15's HTTP fundamentals
-  lesson, Module 16, and both capstones use only the standard library. Module
-  13's pytest and packaging labs, Module 15's Flask, FastAPI, `requests`, and
-  `httpx` comparisons, and the Task project use development or runtime
-  dependencies from this repository.
+- The core lesson scripts in Modules 1–15, Module 16's HTTP fundamentals
+  lesson, Module 17, and both capstones use only the standard library. Module
+  12's pytest lesson, Module 14's quality-tool and packaging labs, Module 16's
+  Flask, FastAPI, `requests`, and `httpx` comparisons, and the Task project use
+  development or runtime dependencies from this repository.
   Task runtime dependencies are declared in
   [`projects/tasks/requirements.txt`](projects/tasks/requirements.txt).
 - Install those dependencies and the development tools
@@ -123,7 +123,7 @@ PROJECT_IMPLEMENTATION=solution \
 coverage report --include="projects/tasks/solution/**/*.py"
 ```
 
-Module 13 explains what each tool checks, how to measure coverage, and how these
+Module 14 explains what each tool checks, how to measure coverage, and how these
 local commands map to
 [GitHub Actions](https://docs.github.com/en/actions). The
 [setup guide](docs/SETUP.md#optional-modern-setup-with-uv) also provides the
@@ -143,13 +143,13 @@ equivalent optional [uv](https://docs.astral.sh/uv/) workflow.
 
 Each module has a matching folder under [`exercises/`](exercises/README.md)
 with hands-on problems to implement yourself, plus reference solutions to
-check your work. After Module 15, complete the required
+check your work. After Module 16, complete the required
 [Task REST API and clients project](projects/tasks/README.md) before moving to
-Module 16.
+Module 17.
 
 ## 🏆 Capstone projects
 
-Once you've completed all 16 modules and the required applied project, build both
+Once you've completed all 17 modules and the required applied project, build both
 equally required
 [capstone projects](capstones/README.md):
 
@@ -226,41 +226,38 @@ reference to jog your memory after finishing the course.
     - [`02_collections_callables_and_generics.py`](lessons/11_typing_protocols_and_di/02_collections_callables_and_generics.py) – `Iterable`, `Sequence`, `Mapping`, `Callable`, and generic functions with `TypeVar`
     - [`03_literal_annotated_and_self.py`](lessons/11_typing_protocols_and_di/03_literal_annotated_and_self.py) – `Literal`, `Annotated`, and `Self`
     - [`04_protocols_adapters_and_dependency_injection.py`](lessons/11_typing_protocols_and_di/04_protocols_adapters_and_dependency_injection.py) – structural interfaces (`Protocol`), interchangeable implementations, and dependency injection
-12. **[Testing](lessons/08_testing/)**
-    - [`01_unittest_basics.py`](lessons/08_testing/01_unittest_basics.py) – writing and running tests with the
-      `unittest` standard-library framework
-13. **[Tooling and Debugging](lessons/09_tooling_and_debugging/)**
-    - [`01_virtual_environments_and_pip.py`](lessons/09_tooling_and_debugging/01_virtual_environments_and_pip.py) – virtual environments, `pip`,
-      and why to use them
-    - [`02_debugging_and_tracebacks.py`](lessons/09_tooling_and_debugging/02_debugging_and_tracebacks.py) – reading tracebacks, common
-      errors, and the interactive debugger
-    - [`03_command_line_arguments.py`](lessons/09_tooling_and_debugging/03_command_line_arguments.py) – `input()` and parsing CLI
-      arguments with `argparse`
-    - [`04_pytest_basics.py`](lessons/09_tooling_and_debugging/04_pytest_basics.py) – an introduction to
-      [pytest](https://docs.pytest.org/en/stable/) as an
-      alternative to `unittest`
-    - [`05_logging_and_quality_tools.py`](lessons/09_tooling_and_debugging/05_logging_and_quality_tools.py) – structured diagnostics,
-      [Ruff](https://docs.astral.sh/ruff/),
-      [mypy](https://mypy.readthedocs.io/en/stable/), and
-      [Coverage.py](https://coverage.readthedocs.io/en/stable/)
-    - [`06_os_processes_and_streams.py`](lessons/09_tooling_and_debugging/06_os_processes_and_streams.py) – environment validation, standard streams, exit statuses, and safe subprocess execution
-    - [`07_packaging_and_public_apis.py`](lessons/09_tooling_and_debugging/07_packaging_and_public_apis.py) – import packages versus distributions, `pyproject.toml`, `src/` layout, editable installs, builds, and public API documentation
-14. **[SQL and SQLite](lessons/10_sql_and_sqlite/)**
+12. **[Automated Testing](lessons/12_testing/)**
+    - [`01_testing_mental_model.py`](lessons/12_testing/01_testing_mental_model.py) – observable behavior, arrange-act-assert, and determinism
+    - [`02_unittest_lifecycle_and_assertions.py`](lessons/12_testing/02_unittest_lifecycle_and_assertions.py) – `TestCase`, the `setUp`/`tearDown` lifecycle, precise assertions, and `subTest`
+    - [`03_pytest_assertions_parameterization_and_fixtures.py`](lessons/12_testing/03_pytest_assertions_parameterization_and_fixtures.py) – plain `assert`, `pytest.raises`, `@pytest.mark.parametrize`, and fixtures such as `tmp_path`
+    - [`04_test_doubles_and_mocking.py`](lessons/12_testing/04_test_doubles_and_mocking.py) – fakes, stubs, mocks, `Mock(spec=...)`, and `patch`
+13. **[Debugging and Command-Line Interfaces](lessons/13_debugging_and_cli/)**
+    - [`01_tracebacks_and_pdb.py`](lessons/13_debugging_and_cli/01_tracebacks_and_pdb.py) – reading tracebacks, common errors, and the interactive debugger
+    - [`02_argparse_basics.py`](lessons/13_debugging_and_cli/02_argparse_basics.py) – parsing CLI arguments with `argparse` at a thin boundary
+    - [`03_subcommands_and_custom_validation.py`](lessons/13_debugging_and_cli/03_subcommands_and_custom_validation.py) – custom `type=` validators and `add_subparsers`
+    - [`04_logging_and_diagnostics.py`](lessons/13_debugging_and_cli/04_logging_and_diagnostics.py) – the `logging` module, severity levels, and choosing among `print()`, `pdb`, and `logging`
+14. **[Environments, Processes, and Packaging](lessons/14_environments_processes_and_packaging/)**
+    - [`01_virtual_environments_and_pip.py`](lessons/14_environments_processes_and_packaging/01_virtual_environments_and_pip.py) – virtual environments, `pip`, and why to use them
+    - [`02_environment_streams_and_exit_status.py`](lessons/14_environments_processes_and_packaging/02_environment_streams_and_exit_status.py) – environment configuration, standard streams, and exit status
+    - [`03_subprocess_ownership.py`](lessons/14_environments_processes_and_packaging/03_subprocess_ownership.py) – argument lists, allowlisted environments, timeouts, and the subprocess error taxonomy
+    - [`04_format_lint_type_test_coverage_ci.py`](lessons/14_environments_processes_and_packaging/04_format_lint_type_test_coverage_ci.py) – [Ruff](https://docs.astral.sh/ruff/), [mypy](https://mypy.readthedocs.io/en/stable/), [pytest](https://docs.pytest.org/en/stable/), [Coverage.py](https://coverage.readthedocs.io/en/stable/), and CI
+    - [`05_distributions_builds_and_public_apis.py`](lessons/14_environments_processes_and_packaging/05_distributions_builds_and_public_apis.py) – import packages versus distributions, `pyproject.toml`, `src/` layout, editable installs, builds, and public API documentation
+15. **[SQL and SQLite](lessons/10_sql_and_sqlite/)**
     - [`01_relational_model_and_sql.py`](lessons/10_sql_and_sqlite/01_relational_model_and_sql.py) – schemas, constraints, parameterized CRUD, filtering, ordering, limits, and row mapping
     - [`02_joins_aggregates_and_indexes.py`](lessons/10_sql_and_sqlite/02_joins_aggregates_and_indexes.py) – related tables, joins, grouped aggregates, indexes, and query plans
     - [`03_transactions_and_sqlite.py`](lessons/10_sql_and_sqlite/03_transactions_and_sqlite.py) – transactions, generated IDs, SQLite affinity, pragmas, and limitations
     - [`04_repository_pattern.py`](lessons/10_sql_and_sqlite/04_repository_pattern.py) – a small injected repository and reusable contract checks
-15. **[REST APIs and HTTP Clients](lessons/11_rest_apis_and_clients/)**
+16. **[REST APIs and HTTP Clients](lessons/11_rest_apis_and_clients/)**
     - [`01_http_fundamentals.py`](lessons/11_rest_apis_and_clients/01_http_fundamentals.py) – methods, routes, queries, headers, statuses, bytes, UTF-8, JSON, and finite timeouts
     - [`02_flask_api.py`](lessons/11_rest_apis_and_clients/02_flask_api.py) – an application factory, thin routes, injected dependencies, centralized errors, and Flask's test client
     - [`03_fastapi_api.py`](lessons/11_rest_apis_and_clients/03_fastapi_api.py) – Pydantic boundary models, dependency providers, response models, exception mapping, OpenAPI, and `TestClient`
     - [`04_http_clients.py`](lessons/11_rest_apis_and_clients/04_http_clients.py) – `urllib`, `requests`, and `httpx` transports with finite timeouts and status-first validation
     - **Required applied project:** [Task REST API and clients](projects/tasks/README.md) – implement the shared Task domain, SQLite and Markdown repositories, three server adapters, three client transports, and their contract tests
-16. **[Concurrency](lessons/12_concurrency/)**
+17. **[Concurrency](lessons/12_concurrency/)**
     - [`01_threading_and_multiprocessing.py`](lessons/12_concurrency/01_threading_and_multiprocessing.py) – threads for blocking I/O, processes for CPU-bound work, shared-state hazards, and cleanup
     - [`02_asyncio_basics.py`](lessons/12_concurrency/02_asyncio_basics.py) – cooperative concurrency, owned tasks, `async`/`await`, and `asyncio.gather`
 
-Modules 12 through 16 keep their existing `08_`-`12_` directory prefixes from
+Modules 15 through 17 keep their existing `10_`-`12_` directory prefixes from
 before this migration; the numbered list above reflects each module's
 authoritative teaching order, not its directory name.
 

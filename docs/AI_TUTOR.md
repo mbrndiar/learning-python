@@ -339,8 +339,8 @@ that accidental access as evidence or silently unlock other scopes.
 
 ## 🏁 Project and capstone milestones
 
-The required [Task project](../projects/tasks/README.md) follows Module 15 and
-precedes Module 16. The mentor always assesses the learner tree explicitly with
+The required [Task project](../projects/tasks/README.md) follows Module 16 and
+precedes Module 17. The mentor always assesses the learner tree explicitly with
 `PROJECT_IMPLEMENTATION=starter`.
 
 The milestones are domain and contracts, persistence, standard-library HTTP,
@@ -348,7 +348,7 @@ Flask, and FastAPI with parity. The mentor selects and runs each exact focused
 check from the Python learning path; you do not need to invoke the project test
 harness manually.
 
-After Module 16 and the Task project, complete both required
+After Module 17 and the Task project, complete both required
 [capstones](../capstones/README.md). The mentor always selects the starter tree
 explicitly with `CAPSTONE_IMPLEMENTATION=starter`.
 

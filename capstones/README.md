@@ -7,10 +7,10 @@ This course ends with two completed, equally required projects:
 - [`idiomatic/`](idiomatic/README.md) builds a Python-focused data-ingestion and
   reporting pipeline.
 
-Start them after Modules 1–16 and the required
+Start them after Modules 1–17 and the required
 [Task REST API and clients project](../projects/tasks/README.md). In particular,
-Module 14 supplies SQL/SQLite, Module 15 supplies HTTP boundaries, the applied
-project combines those skills, and Module 16 supplies concurrency.
+Module 15 supplies SQL/SQLite, Module 16 supplies HTTP boundaries, the applied
+project combines those skills, and Module 17 supplies concurrency.
 
 Each track has a `starter/` and a `solution/` source root with the same public
 package boundary. The shared tests choose one root with

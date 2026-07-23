@@ -21,7 +21,9 @@ from the repository root.
   documents, command working directory, and required final destinations.
 - `[[modules]]` contains one ordered teaching module. Each module declares its
   prerequisites, required outcomes, README, review-question source, exercise
-  pair, focused validation commands, and solution-lock group.
+  pair, focused validation commands, and solution-lock group. Optional
+  `solution_supplements` paths hold additional reference artifacts and must
+  appear after the primary exercise solution in the same lock group.
 - `[[modules.concepts]]` maps one stable concept ID to a runnable lesson file
   and its documented command. Concepts may be ordered with explicit
   prerequisites rather than by relying on array position.

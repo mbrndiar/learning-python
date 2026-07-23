@@ -39,12 +39,13 @@ generic storage API.
 | [Module 9: objects and data models](../../lessons/09_object_oriented_programming/README.md) | Use immutable dataclasses and cohesive application/domain objects without building a framework. |
 | [Module 10: iteration, decorators, and contexts](../../lessons/10_iteration_decorators_and_contexts/README.md) | Use iterators, generators, and decorators for streaming reports. |
 | [Module 11: typing, protocols, and dependency injection](../../lessons/11_typing_protocols_and_di/README.md) | Use strict type hints and `Protocol`-based capabilities for dependency injection. |
-| [Module 12: testing](../../lessons/08_testing/README.md) | Test normal, boundary, and failure behavior with `unittest`, fakes, and temporary resources. |
-| [Module 13: tooling and debugging](../../lessons/09_tooling_and_debugging/README.md) | Provide an `argparse` CLI, useful logging, strict mypy coverage, Ruff compliance, and measured tests. |
-| [Module 14: SQL and SQLite](../../lessons/10_sql_and_sqlite/README.md) | Use schema constraints, parameterized SQL, transactions, row mapping, and a narrow repository boundary. |
-| [Module 15: REST APIs and HTTP clients](../../lessons/11_rest_apis_and_clients/README.md) | Keep HTTP parsing and response validation behind injected boundaries, require finite timeouts, and test without public network access. |
+| [Module 12: automated testing](../../lessons/12_testing/README.md) | Test normal, boundary, and failure behavior with `unittest`, pytest, fakes, and temporary resources. |
+| [Module 13: debugging and CLIs](../../lessons/13_debugging_and_cli/README.md) | Provide an `argparse` CLI, custom validators, subcommands, and useful logging. |
+| [Module 14: environments, processes, and packaging](../../lessons/14_environments_processes_and_packaging/README.md) | Own subprocesses and streams, satisfy strict mypy coverage, Ruff compliance, and measured tests, and package a documented public API. |
+| [Module 15: SQL and SQLite](../../lessons/10_sql_and_sqlite/README.md) | Use schema constraints, parameterized SQL, transactions, row mapping, and a narrow repository boundary. |
+| [Module 16: REST APIs and HTTP clients](../../lessons/11_rest_apis_and_clients/README.md) | Keep HTTP parsing and response validation behind injected boundaries, require finite timeouts, and test without public network access. |
 | [Required Task REST API and clients project](../../projects/tasks/README.md) | Combine domain, repository, server, and client adapters while preserving dependency direction and one HTTP contract. |
-| [Module 16: concurrency](../../lessons/12_concurrency/README.md) | Fetch independent HTTP pages with bounded threads, deterministic collection, cancellation, and explicit cleanup. |
+| [Module 17: concurrency](../../lessons/12_concurrency/README.md) | Fetch independent HTTP pages with bounded threads, deterministic collection, cancellation, and explicit cleanup. |
 
 ## Normative event model
 

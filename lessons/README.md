@@ -43,21 +43,24 @@ python lessons/01_python_fundamentals/01_running_python.py
 11. [`11_typing_protocols_and_di/`](11_typing_protocols_and_di/README.md) -
     annotations and narrowing, generic collections/callables, `Literal`,
     `Annotated`, `Self`, and `Protocol`-based dependency injection
-12. [`08_testing/`](08_testing/README.md) - testing with `unittest`
-13. [`09_tooling_and_debugging/`](09_tooling_and_debugging/README.md) -
-    environments, debugging, CLI and process boundaries, packaging,
-    documentation, logging, and quality tools
-14. [`10_sql_and_sqlite/`](10_sql_and_sqlite/README.md) - relational modeling,
+12. [`12_testing/`](12_testing/README.md) - automated testing with `unittest`,
+    pytest, fixtures, parameterization, and test doubles
+13. [`13_debugging_and_cli/`](13_debugging_and_cli/README.md) - tracebacks,
+    `pdb`, `argparse` boundaries, custom validators, subcommands, and logging
+14. [`14_environments_processes_and_packaging/`](14_environments_processes_and_packaging/README.md) -
+    virtual environments, streams and exit status, subprocess ownership,
+    quality gates and CI, and packaging distributions
+15. [`10_sql_and_sqlite/`](10_sql_and_sqlite/README.md) - relational modeling,
     portable SQL fundamentals, SQLite behavior, and repository boundaries
-15. [`11_rest_apis_and_clients/`](11_rest_apis_and_clients/README.md) - HTTP,
+16. [`11_rest_apis_and_clients/`](11_rest_apis_and_clients/README.md) - HTTP,
     REST boundaries, Flask, FastAPI, `urllib`, `requests`, and `httpx`
     - Complete the required
       [Task REST API and clients project](../projects/tasks/README.md) before the
       next module.
-16. [`12_concurrency/`](12_concurrency/README.md) - threads, processes,
+17. [`12_concurrency/`](12_concurrency/README.md) - threads, processes,
     `asyncio`, bounded work, cancellation, and cleanup
 
-Modules 12 through 16 keep their existing `08_`-`12_` directory prefixes from
+Modules 15 through 17 keep their existing `10_`-`12_` directory prefixes from
 before this migration; the numbered list above reflects each module's
 authoritative teaching order, not its directory name.
 

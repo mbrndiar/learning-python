@@ -1,6 +1,6 @@
 ---
 name: python-learning-path
-description: Repository-specific Python learning path for the learning-python course. Use when a learner wants to start or resume the 13-module course, run or debug a lesson or exercise, assess Python, unittest, pytest, Ruff, mypy, or process failures, or complete the Task project or either required capstone milestone by milestone.
+description: Repository-specific Python learning path for the learning-python course. Use when a learner wants to start or resume the 17-module course, run or debug a lesson or exercise, assess Python, unittest, pytest, Ruff, mypy, or process failures, or complete the Task project or either required capstone milestone by milestone.
 ---
 
 # Python learning path
@@ -44,11 +44,11 @@ commands from the repository root, as required by the manifest schema.
   learner confirmation. One confirmation covers only that edit.
 - Do not commit or push unless the learner explicitly asks.
 
-## Navigate the 16 modules
+## Navigate the 17 modules
 
 Use module and concept IDs from the manifest, never titles or directory order as
-state keys. Respect prerequisites; the Task project is required after Module 15
-and before Module 16.
+state keys. Respect prerequisites; the Task project is required after Module 16
+and before Module 17.
 
 | Order | Stable module ID | Read | Focused exercise evaluator |
 | --- | --- | --- | --- |
@@ -63,11 +63,12 @@ and before Module 16.
 | 9 | `module.objects-and-data-models` | `lessons/09_object_oriented_programming/README.md` | `python exercises/09_object_oriented_programming/exercises.py` |
 | 10 | `module.iteration-decorators-and-contexts` | `lessons/10_iteration_decorators_and_contexts/README.md` | `python exercises/10_iteration_decorators_and_contexts/exercises.py` |
 | 11 | `module.typing-protocols-and-di` | `lessons/11_typing_protocols_and_di/README.md` | `python exercises/11_typing_protocols_and_di/exercises.py` |
-| 12 | `module.testing` | `lessons/08_testing/README.md` | `python exercises/08_testing/exercises.py` |
-| 13 | `module.tooling-and-debugging` | `lessons/09_tooling_and_debugging/README.md` | `python exercises/09_tooling_and_debugging/exercises.py` |
-| 14 | `module.sql-and-sqlite` | `lessons/10_sql_and_sqlite/README.md` | `python exercises/10_sql_and_sqlite/exercises.py` |
-| 15 | `module.rest-apis-and-clients` | `lessons/11_rest_apis_and_clients/README.md` | `python exercises/11_rest_apis_and_clients/exercises.py` |
-| 16 | `module.concurrency` | `lessons/12_concurrency/README.md` | `python exercises/12_concurrency/exercises.py` |
+| 12 | `module.automated-testing` | `lessons/12_testing/README.md` | `python exercises/12_testing/exercises.py` |
+| 13 | `module.debugging-and-cli` | `lessons/13_debugging_and_cli/README.md` | `python exercises/13_debugging_and_cli/exercises.py` |
+| 14 | `module.environments-processes-and-packaging` | `lessons/14_environments_processes_and_packaging/README.md` | `python exercises/14_environments_processes_and_packaging/exercises.py` |
+| 15 | `module.sql-and-sqlite` | `lessons/10_sql_and_sqlite/README.md` | `python exercises/10_sql_and_sqlite/exercises.py` |
+| 16 | `module.rest-apis-and-clients` | `lessons/11_rest_apis_and_clients/README.md` | `python exercises/11_rest_apis_and_clients/exercises.py` |
+| 17 | `module.concurrency` | `lessons/12_concurrency/README.md` | `python exercises/12_concurrency/exercises.py` |
 
 For one concept:
 
@@ -111,7 +112,7 @@ hint or changing state.
 
 ## Task project
 
-The required project sits between Modules 11 and 12
+The required project sits between Modules 16 and 17
 (`projects/tasks/README.md:13-35`). Read its guide and specification paths before
 tests. Work one vertical milestone at a time as described at
 `projects/tasks/README.md:69-86`.
