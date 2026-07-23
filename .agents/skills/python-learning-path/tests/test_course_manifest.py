@@ -418,8 +418,8 @@ class CourseManifestTests(unittest.TestCase):
                 "missing path",
                 (
                     (
-                        'lesson_readme = "lessons/01_basics/README.md"',
-                        'lesson_readme = "lessons/01_basics/MISSING.md"',
+                        'lesson_readme = "lessons/01_python_fundamentals/README.md"',
+                        'lesson_readme = "lessons/01_python_fundamentals/MISSING.md"',
                     ),
                 ),
                 "does not exist",
@@ -428,8 +428,8 @@ class CourseManifestTests(unittest.TestCase):
                 "duplicate ID",
                 (
                     (
-                        'id = "concept.basics.numeric-types-and-conversions"',
-                        'id = "concept.basics.hello-world"',
+                        'id = "concept.python-fundamentals.conversion-and-truthiness"',
+                        'id = "concept.python-fundamentals.running-scripts"',
                     ),
                 ),
                 "duplicate trackable IDs",
@@ -438,7 +438,7 @@ class CourseManifestTests(unittest.TestCase):
                 "dangling prerequisite",
                 (
                     (
-                        'prerequisites = ["concept.basics.hello-world"]',
+                        'prerequisites = ["concept.python-fundamentals.running-scripts"]',
                         'prerequisites = ["concept.missing"]',
                     ),
                 ),
@@ -449,7 +449,7 @@ class CourseManifestTests(unittest.TestCase):
                 (
                     (
                         "prerequisites = []",
-                        'prerequisites = ["module.control-flow"]',
+                        'prerequisites = ["module.text-and-numbers"]',
                     ),
                 ),
                 "prerequisite cycle",
@@ -458,7 +458,7 @@ class CourseManifestTests(unittest.TestCase):
                 "unknown lock",
                 (
                     (
-                        'solution_lock_group = "solutions.module.basics"',
+                        'solution_lock_group = "solutions.module.python-fundamentals"',
                         'solution_lock_group = "solutions.missing"',
                     ),
                 ),
@@ -488,8 +488,8 @@ class CourseManifestTests(unittest.TestCase):
                 "wrong module command",
                 (
                     (
-                        'validation_commands = ["python exercises/01_basics/exercises.py"]',
-                        'validation_commands = ["python exercises/01_basics/solutions.py"]',
+                        'validation_commands = ["python exercises/01_python_fundamentals/exercises.py"]',
+                        'validation_commands = ["python exercises/01_python_fundamentals/solutions.py"]',
                     ),
                 ),
                 "validation command",
@@ -500,8 +500,10 @@ class CourseManifestTests(unittest.TestCase):
                 self.assert_invalid_manifest_copy(replacements, expected_message)
 
     def test_invalid_pedagogical_outcomes_are_rejected(self) -> None:
-        first_outcome = '"Run a Python script and bind values to names.",'
-        second_outcome = '"Recognize core scalar types and convert input explicitly.",'
+        first_outcome = (
+            '"Run a Python script from the repository root and read its output.",'
+        )
+        second_outcome = '"Recognize core scalar types (str, int, float, bool, None) and their literals.",'
         first_milestone = (
             'required_outcome = "Implement Task validation, errors, '
             'service/repository contracts, and the client transport protocol."'

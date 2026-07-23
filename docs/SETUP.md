@@ -45,9 +45,9 @@ The core course remains usable, but the optional
 ## 🧪 3. Create a virtual environment
 
 A virtual environment keeps this project's Python packages isolated from
-the rest of your system. The core lesson scripts in Modules 1–10, Module 11's
-HTTP fundamentals lesson, Module 12, and both capstones use only the standard
-library. Module 9's pytest and packaging labs, Module 11's framework/client
+the rest of your system. The core lesson scripts in Modules 1–11, Module 12's
+HTTP fundamentals lesson, Module 13, and both capstones use only the standard
+library. Module 10's pytest and packaging labs, Module 12's framework/client
 comparisons, and the required Task project use project-local tools or runtime
 dependencies. A virtual environment keeps them isolated.
 
@@ -94,7 +94,7 @@ are free and beginner-friendly.
 ## ▶️ 6. Run your first lesson
 
 ```bash
-python lessons/01_basics/01_hello_world.py
+python lessons/01_python_fundamentals/01_running_python.py
 ```
 
 If you see `Hello, World!` printed, you're ready to start. Continue to the
@@ -121,7 +121,7 @@ uv python install 3.14
 uv venv --python 3.14
 uv pip install -r requirements-dev.txt
 source .venv/bin/activate
-python lessons/01_basics/01_hello_world.py
+python lessons/01_python_fundamentals/01_running_python.py
 python -m pytest lessons/09_tooling_and_debugging/04_pytest_basics.py
 ruff format .
 ruff check .
@@ -261,7 +261,7 @@ PowerShell execution policy may block `Activate.ps1`. You can still use the
 environment without activation:
 
 ```powershell
-.\.venv\Scripts\python.exe lessons\01_basics\01_hello_world.py
+.\.venv\Scripts\python.exe lessons\01_python_fundamentals\01_running_python.py
 ```
 
 Activation is a convenience; it mainly puts the environment's executables

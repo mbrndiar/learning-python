@@ -1,6 +1,6 @@
 ---
 name: python-learning-path
-description: Repository-specific Python learning path for the learning-python course. Use when a learner wants to start or resume the 12-module course, run or debug a lesson or exercise, assess Python, unittest, pytest, Ruff, mypy, or process failures, or complete the Task project or either required capstone milestone by milestone.
+description: Repository-specific Python learning path for the learning-python course. Use when a learner wants to start or resume the 13-module course, run or debug a lesson or exercise, assess Python, unittest, pytest, Ruff, mypy, or process failures, or complete the Task project or either required capstone milestone by milestone.
 ---
 
 # Python learning path
@@ -44,26 +44,27 @@ commands from the repository root, as required by the manifest schema.
   learner confirmation. One confirmation covers only that edit.
 - Do not commit or push unless the learner explicitly asks.
 
-## Navigate the 12 modules
+## Navigate the 13 modules
 
 Use module and concept IDs from the manifest, never titles or directory order as
-state keys. Respect prerequisites; the Task project is required after Module 11
-and before Module 12.
+state keys. Respect prerequisites; the Task project is required after Module 12
+and before Module 13.
 
 | Order | Stable module ID | Read | Focused exercise evaluator |
 | --- | --- | --- | --- |
-| 1 | `module.basics` | `lessons/01_basics/README.md` | `python exercises/01_basics/exercises.py` |
-| 2 | `module.control-flow` | `lessons/02_control_flow/README.md` | `python exercises/02_control_flow/exercises.py` |
-| 3 | `module.functions` | `lessons/03_functions/README.md` | `python exercises/03_functions/exercises.py` |
-| 4 | `module.data-structures` | `lessons/04_data_structures/README.md` | `python exercises/04_data_structures/exercises.py` |
-| 5 | `module.modules-and-files` | `lessons/05_modules_and_files/README.md` | `python exercises/05_modules_and_files/exercises.py` |
-| 6 | `module.object-oriented-programming` | `lessons/06_object_oriented_programming/README.md` | `python exercises/06_object_oriented_programming/exercises.py` |
-| 7 | `module.advanced-python` | `lessons/07_advanced_python/README.md` | `python exercises/07_advanced_python/exercises.py` |
-| 8 | `module.testing` | `lessons/08_testing/README.md` | `python exercises/08_testing/exercises.py` |
-| 9 | `module.tooling-and-debugging` | `lessons/09_tooling_and_debugging/README.md` | `python exercises/09_tooling_and_debugging/exercises.py` |
-| 10 | `module.sql-and-sqlite` | `lessons/10_sql_and_sqlite/README.md` | `python exercises/10_sql_and_sqlite/exercises.py` |
-| 11 | `module.rest-apis-and-clients` | `lessons/11_rest_apis_and_clients/README.md` | `python exercises/11_rest_apis_and_clients/exercises.py` |
-| 12 | `module.concurrency` | `lessons/12_concurrency/README.md` | `python exercises/12_concurrency/exercises.py` |
+| 1 | `module.python-fundamentals` | `lessons/01_python_fundamentals/README.md` | `python exercises/01_python_fundamentals/exercises.py` |
+| 2 | `module.text-and-numbers` | `lessons/02_text_and_numbers/README.md` | `python exercises/02_text_and_numbers/exercises.py` |
+| 3 | `module.collections` | `lessons/03_collections/README.md` | `python exercises/03_collections/exercises.py` |
+| 4 | `module.flow-and-iteration` | `lessons/04_control_flow/README.md` | `python exercises/04_control_flow/exercises.py` |
+| 5 | `module.function-contracts-and-scope` | `lessons/05_functions/README.md` | `python exercises/05_functions/exercises.py` |
+| 6 | `module.modules-and-files` | `lessons/05_modules_and_files/README.md` | `python exercises/05_modules_and_files/exercises.py` |
+| 7 | `module.object-oriented-programming` | `lessons/06_object_oriented_programming/README.md` | `python exercises/06_object_oriented_programming/exercises.py` |
+| 8 | `module.advanced-python` | `lessons/07_advanced_python/README.md` | `python exercises/07_advanced_python/exercises.py` |
+| 9 | `module.testing` | `lessons/08_testing/README.md` | `python exercises/08_testing/exercises.py` |
+| 10 | `module.tooling-and-debugging` | `lessons/09_tooling_and_debugging/README.md` | `python exercises/09_tooling_and_debugging/exercises.py` |
+| 11 | `module.sql-and-sqlite` | `lessons/10_sql_and_sqlite/README.md` | `python exercises/10_sql_and_sqlite/exercises.py` |
+| 12 | `module.rest-apis-and-clients` | `lessons/11_rest_apis_and_clients/README.md` | `python exercises/11_rest_apis_and_clients/exercises.py` |
+| 13 | `module.concurrency` | `lessons/12_concurrency/README.md` | `python exercises/12_concurrency/exercises.py` |
 
 For one concept:
 

@@ -7,7 +7,6 @@ select = ["E4", "E7", "E9", "F", "I", "UP"]
 
 [tool.ruff.lint.per-file-ignores]
 "exercises/*/exercises.py" = ["F401"]
-"lessons/03_functions/02_lambdas_closures_and_recursion.py" = ["E731"]
 
 [tool.mypy]
 python_version = "3.11"

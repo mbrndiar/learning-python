@@ -40,9 +40,9 @@ By the end of the course, you will be able to:
 - The documented interpreter is CPython on Linux, macOS, or Windows. GitHub
  Actions verifies Ubuntu; platform-specific commands and project limitations
  are called out where they matter.
-- The core lesson scripts in Modules 1–10, Module 11's HTTP fundamentals
-  lesson, Module 12, and both capstones use only the standard library. Module
-  9's pytest and packaging labs, Module 11's Flask, FastAPI, `requests`, and
+- The core lesson scripts in Modules 1–11, Module 12's HTTP fundamentals
+  lesson, Module 13, and both capstones use only the standard library. Module
+  10's pytest and packaging labs, Module 12's Flask, FastAPI, `requests`, and
   `httpx` comparisons, and the Task project use development or runtime
   dependencies from this repository.
   Task runtime dependencies are declared in
@@ -64,7 +64,7 @@ environment, and choosing an editor.
 From the repository root, run any lesson file with:
 
 ```bash
-python lessons/01_basics/01_hello_world.py
+python lessons/01_python_fundamentals/01_running_python.py
 ```
 
 Do not only run the files. For each module:
@@ -123,7 +123,7 @@ PROJECT_IMPLEMENTATION=solution \
 coverage report --include="projects/tasks/solution/**/*.py"
 ```
 
-Module 9 explains what each tool checks, how to measure coverage, and how these
+Module 10 explains what each tool checks, how to measure coverage, and how these
 local commands map to
 [GitHub Actions](https://docs.github.com/en/actions). The
 [setup guide](docs/SETUP.md#optional-modern-setup-with-uv) also provides the
@@ -143,13 +143,13 @@ equivalent optional [uv](https://docs.astral.sh/uv/) workflow.
 
 Each module has a matching folder under [`exercises/`](exercises/README.md)
 with hands-on problems to implement yourself, plus reference solutions to
-check your work. After Module 11, complete the required
+check your work. After Module 12, complete the required
 [Task REST API and clients project](projects/tasks/README.md) before moving to
-Module 12.
+Module 13.
 
 ## 🏆 Capstone projects
 
-Once you've completed all 12 modules and the required applied project, build both
+Once you've completed all 13 modules and the required applied project, build both
 equally required
 [capstone projects](capstones/README.md):
 
@@ -173,28 +173,32 @@ reference to jog your memory after finishing the course.
 
 ## 🗺️ Course outline
 
-1. **[Basics](lessons/01_basics/)**
-   - [`01_hello_world.py`](lessons/01_basics/01_hello_world.py) – printing your first message
-   - [`02_variables_and_types.py`](lessons/01_basics/02_variables_and_types.py) – variables and basic data types
-   - [`03_operators.py`](lessons/01_basics/03_operators.py) – arithmetic, comparison and logical operators
-   - [`04_strings.py`](lessons/01_basics/04_strings.py) – working with strings
-   - [`05_text_and_binary_data.py`](lessons/01_basics/05_text_and_binary_data.py) – Unicode text, UTF-8, `bytes`, `bytearray`, and `memoryview`
-   - [`06_numeric_types_and_conversions.py`](lessons/01_basics/06_numeric_types_and_conversions.py) – explicit conversions, float precision, `Decimal`, `Fraction`, and `complex`
-2. **[Control Flow](lessons/02_control_flow/)**
-   - [`01_conditionals.py`](lessons/02_control_flow/01_conditionals.py) – `if` / `elif` / `else`
-   - [`02_loops.py`](lessons/02_control_flow/02_loops.py) – `for` and `while` loops
-3. **[Functions](lessons/03_functions/)**
-   - [`01_functions.py`](lessons/03_functions/01_functions.py) – defining and calling functions, positional-only/keyword-only
-     parameters, defaults, argument unpacking, binding, `*args`, `**kwargs`, and return values
-   - [`02_lambdas_closures_and_recursion.py`](lessons/03_functions/02_lambdas_closures_and_recursion.py) – lambda expressions, closures
-     (including `nonlocal`) and recursive functions
-4. **[Data Structures](lessons/04_data_structures/)**
-   - [`01_lists_and_tuples.py`](lessons/04_data_structures/01_lists_and_tuples.py) – lists, tuples and list comprehensions
-   - [`02_dictionaries_and_sets.py`](lessons/04_data_structures/02_dictionaries_and_sets.py) – dictionaries and sets
-   - [`03_comprehensions_and_collections.py`](lessons/04_data_structures/03_comprehensions_and_collections.py) – list/dict/set/generator
-     comprehensions and the `collections` module (`Counter`, `defaultdict`,
-     `namedtuple`, `OrderedDict`)
-5. **[Modules and Files](lessons/05_modules_and_files/)**
+1. **[Python Fundamentals](lessons/01_python_fundamentals/)**
+   - [`01_running_python.py`](lessons/01_python_fundamentals/01_running_python.py) – running scripts, comments, and `print`
+   - [`02_values_names_and_types.py`](lessons/01_python_fundamentals/02_values_names_and_types.py) – names, assignment, and core scalar types (`str`, `int`, `float`, `bool`, `None`)
+   - [`03_conversion_and_truthiness.py`](lessons/01_python_fundamentals/03_conversion_and_truthiness.py) – explicit conversion, comparisons, and truthiness
+2. **[Text and Numbers](lessons/02_text_and_numbers/)**
+   - [`01_operators_and_expressions.py`](lessons/02_text_and_numbers/01_operators_and_expressions.py) – arithmetic, comparison, and logical operators
+   - [`02_strings_and_formatting.py`](lessons/02_text_and_numbers/02_strings_and_formatting.py) – string operations, slicing, and f-string formatting
+   - [`03_unicode_text_and_bytes.py`](lessons/02_text_and_numbers/03_unicode_text_and_bytes.py) – Unicode text, UTF-8, `bytes`, and `bytearray`
+   - [`04_numeric_representations.py`](lessons/02_text_and_numbers/04_numeric_representations.py) – rounding, explicit conversions, `Decimal`, and `Fraction`
+3. **[Collections](lessons/03_collections/)**
+   - [`01_lists_and_tuples.py`](lessons/03_collections/01_lists_and_tuples.py) – creating, indexing, slicing, and mutating lists and tuples
+   - [`02_dictionaries_and_sets.py`](lessons/03_collections/02_dictionaries_and_sets.py) – dict/set construction, lookup, update, and membership
+   - [`03_references_mutation_and_copying.py`](lessons/03_collections/03_references_mutation_and_copying.py) – aliasing, in-place mutation, and shallow copying
+4. **[Flow and Iteration](lessons/04_control_flow/)**
+   - [`01_conditions_and_truthiness.py`](lessons/04_control_flow/01_conditions_and_truthiness.py) – `if`/`elif`/`else` in depth and truthiness
+   - [`02_loops_and_iteration_control.py`](lessons/04_control_flow/02_loops_and_iteration_control.py) – `for`/`while`, `range`, `enumerate`, `zip`, `break`, `continue`, and loop `else`
+   - [`03_accumulators_and_specialized_collections.py`](lessons/04_control_flow/03_accumulators_and_specialized_collections.py) – accumulator patterns, then `Counter` and `defaultdict`
+   - [`04_comprehensions.py`](lessons/04_control_flow/04_comprehensions.py) – list/set/dict comprehensions derived from equivalent loops
+5. **[Function Contracts and Scope](lessons/05_functions/)**
+   - [`01_function_contracts.py`](lessons/05_functions/01_function_contracts.py) – defining and calling functions, return values, and basic type hints
+   - [`02_parameter_kinds_and_unpacking.py`](lessons/05_functions/02_parameter_kinds_and_unpacking.py) – defaults, positional-only/keyword-only
+     parameters, `*args`, `**kwargs`, and call-site unpacking
+   - [`03_scope_closures_and_higher_order.py`](lessons/05_functions/03_scope_closures_and_higher_order.py) – LEGB scope, closures
+     (including `nonlocal`), functions as values, and lambdas
+   - [`04_recursion.py`](lessons/05_functions/04_recursion.py) – base cases, stack frames, and when iteration is clearer
+6. **[Modules and Files](lessons/05_modules_and_files/)**
    - [`01_modules.py`](lessons/05_modules_and_files/01_modules.py) – using the standard library (`math`, `random`, `datetime`)
    - [`02_packages.py`](lessons/05_modules_and_files/02_packages.py) – modules vs. packages, absolute/relative imports,
      `__init__.py` re-exports and `__all__`
@@ -204,7 +208,7 @@ reference to jog your memory after finishing the course.
    - [`05_json_and_structured_data.py`](lessons/05_modules_and_files/05_json_and_structured_data.py) – serializing structured data with JSON
    - [`06_directories_and_paths.py`](lessons/05_modules_and_files/06_directories_and_paths.py) – directory creation/traversal, metadata, deterministic globbing, copy/move, and path boundaries
    - [`07_dates_and_times.py`](lessons/05_modules_and_files/07_dates_and_times.py) – dates, times, durations, aware/naive datetimes, UTC, IANA zones, timestamps, DST, and monotonic clocks
-6. **[Object-Oriented Programming](lessons/06_object_oriented_programming/)**
+7. **[Object-Oriented Programming](lessons/06_object_oriented_programming/)**
    - [`01_classes_and_objects.py`](lessons/06_object_oriented_programming/01_classes_and_objects.py) – classes, attributes, bound/class/static methods, and properties
    - [`02_inheritance_and_polymorphism.py`](lessons/06_object_oriented_programming/02_inheritance_and_polymorphism.py) – inheritance, `super()` and
      polymorphism
@@ -212,7 +216,7 @@ reference to jog your memory after finishing the course.
      and dunder methods (`__repr__`, `__eq__`, `__add__`, etc.)
    - [`04_abstract_classes_and_dataclasses.py`](lessons/06_object_oriented_programming/04_abstract_classes_and_dataclasses.py) – abstract base classes,
      `@dataclass` and `enum.Enum`
-7. **[Advanced Python](lessons/07_advanced_python/)**
+8. **[Advanced Python](lessons/07_advanced_python/)**
    - [`01_decorators.py`](lessons/07_advanced_python/01_decorators.py) – function decorators, decorator factories and
      `functools.wraps`
    - [`02_generators_and_iterators.py`](lessons/07_advanced_python/02_generators_and_iterators.py) – `yield`, generator expressions and
@@ -221,39 +225,43 @@ reference to jog your memory after finishing the course.
      modern Python type syntax
    - [`04_protocols_and_dependency_injection.py`](lessons/07_advanced_python/04_protocols_and_dependency_injection.py) – structural interfaces,
      dependency injection and adapters
-8. **[Testing](lessons/08_testing/)**
+9. **[Testing](lessons/08_testing/)**
    - [`01_unittest_basics.py`](lessons/08_testing/01_unittest_basics.py) – writing and running tests with the
      `unittest` standard-library framework
-9. **[Tooling and Debugging](lessons/09_tooling_and_debugging/)**
-   - [`01_virtual_environments_and_pip.py`](lessons/09_tooling_and_debugging/01_virtual_environments_and_pip.py) – virtual environments, `pip`,
-     and why to use them
-   - [`02_debugging_and_tracebacks.py`](lessons/09_tooling_and_debugging/02_debugging_and_tracebacks.py) – reading tracebacks, common
-     errors, and the interactive debugger
-   - [`03_command_line_arguments.py`](lessons/09_tooling_and_debugging/03_command_line_arguments.py) – `input()` and parsing CLI
-     arguments with `argparse`
-   - [`04_pytest_basics.py`](lessons/09_tooling_and_debugging/04_pytest_basics.py) – an introduction to
-     [pytest](https://docs.pytest.org/en/stable/) as an
-     alternative to `unittest`
-   - [`05_logging_and_quality_tools.py`](lessons/09_tooling_and_debugging/05_logging_and_quality_tools.py) – structured diagnostics,
-     [Ruff](https://docs.astral.sh/ruff/),
-     [mypy](https://mypy.readthedocs.io/en/stable/), and
-     [Coverage.py](https://coverage.readthedocs.io/en/stable/)
-   - [`06_os_processes_and_streams.py`](lessons/09_tooling_and_debugging/06_os_processes_and_streams.py) – environment validation, standard streams, exit statuses, and safe subprocess execution
-   - [`07_packaging_and_public_apis.py`](lessons/09_tooling_and_debugging/07_packaging_and_public_apis.py) – import packages versus distributions, `pyproject.toml`, `src/` layout, editable installs, builds, and public API documentation
-10. **[SQL and SQLite](lessons/10_sql_and_sqlite/)**
+10. **[Tooling and Debugging](lessons/09_tooling_and_debugging/)**
+    - [`01_virtual_environments_and_pip.py`](lessons/09_tooling_and_debugging/01_virtual_environments_and_pip.py) – virtual environments, `pip`,
+      and why to use them
+    - [`02_debugging_and_tracebacks.py`](lessons/09_tooling_and_debugging/02_debugging_and_tracebacks.py) – reading tracebacks, common
+      errors, and the interactive debugger
+    - [`03_command_line_arguments.py`](lessons/09_tooling_and_debugging/03_command_line_arguments.py) – `input()` and parsing CLI
+      arguments with `argparse`
+    - [`04_pytest_basics.py`](lessons/09_tooling_and_debugging/04_pytest_basics.py) – an introduction to
+      [pytest](https://docs.pytest.org/en/stable/) as an
+      alternative to `unittest`
+    - [`05_logging_and_quality_tools.py`](lessons/09_tooling_and_debugging/05_logging_and_quality_tools.py) – structured diagnostics,
+      [Ruff](https://docs.astral.sh/ruff/),
+      [mypy](https://mypy.readthedocs.io/en/stable/), and
+      [Coverage.py](https://coverage.readthedocs.io/en/stable/)
+    - [`06_os_processes_and_streams.py`](lessons/09_tooling_and_debugging/06_os_processes_and_streams.py) – environment validation, standard streams, exit statuses, and safe subprocess execution
+    - [`07_packaging_and_public_apis.py`](lessons/09_tooling_and_debugging/07_packaging_and_public_apis.py) – import packages versus distributions, `pyproject.toml`, `src/` layout, editable installs, builds, and public API documentation
+11. **[SQL and SQLite](lessons/10_sql_and_sqlite/)**
     - [`01_relational_model_and_sql.py`](lessons/10_sql_and_sqlite/01_relational_model_and_sql.py) – schemas, constraints, parameterized CRUD, filtering, ordering, limits, and row mapping
     - [`02_joins_aggregates_and_indexes.py`](lessons/10_sql_and_sqlite/02_joins_aggregates_and_indexes.py) – related tables, joins, grouped aggregates, indexes, and query plans
     - [`03_transactions_and_sqlite.py`](lessons/10_sql_and_sqlite/03_transactions_and_sqlite.py) – transactions, generated IDs, SQLite affinity, pragmas, and limitations
     - [`04_repository_pattern.py`](lessons/10_sql_and_sqlite/04_repository_pattern.py) – a small injected repository and reusable contract checks
-11. **[REST APIs and HTTP Clients](lessons/11_rest_apis_and_clients/)**
+12. **[REST APIs and HTTP Clients](lessons/11_rest_apis_and_clients/)**
     - [`01_http_fundamentals.py`](lessons/11_rest_apis_and_clients/01_http_fundamentals.py) – methods, routes, queries, headers, statuses, bytes, UTF-8, JSON, and finite timeouts
     - [`02_flask_api.py`](lessons/11_rest_apis_and_clients/02_flask_api.py) – an application factory, thin routes, injected dependencies, centralized errors, and Flask's test client
     - [`03_fastapi_api.py`](lessons/11_rest_apis_and_clients/03_fastapi_api.py) – Pydantic boundary models, dependency providers, response models, exception mapping, OpenAPI, and `TestClient`
     - [`04_http_clients.py`](lessons/11_rest_apis_and_clients/04_http_clients.py) – `urllib`, `requests`, and `httpx` transports with finite timeouts and status-first validation
     - **Required applied project:** [Task REST API and clients](projects/tasks/README.md) – implement the shared Task domain, SQLite and Markdown repositories, three server adapters, three client transports, and their contract tests
-12. **[Concurrency](lessons/12_concurrency/)**
+13. **[Concurrency](lessons/12_concurrency/)**
     - [`01_threading_and_multiprocessing.py`](lessons/12_concurrency/01_threading_and_multiprocessing.py) – threads for blocking I/O, processes for CPU-bound work, shared-state hazards, and cleanup
     - [`02_asyncio_basics.py`](lessons/12_concurrency/02_asyncio_basics.py) – cooperative concurrency, owned tasks, `async`/`await`, and `asyncio.gather`
+
+Modules 6 through 13 keep their existing `05_`-`12_` directory prefixes from
+before this migration; the numbered list above reflects each module's
+authoritative teaching order, not its directory name.
 
 Work through the lessons in order, read the comments, then try modifying the
 code to experiment with the concepts. After each module, complete the
@@ -265,7 +273,7 @@ you learned.
 When something fails, read the final line of the traceback first: it names the
 exception and usually explains the immediate cause. Then inspect the referenced
 line in your code and work upward through the traceback. Search this repository
-for the exception or concept before consulting another source. Module 9 gives a
+for the exception or concept before consulting another source. Module 10 gives a
 systematic debugging process.
 
 Solutions are examples, not the only correct answers. Compare behavior,

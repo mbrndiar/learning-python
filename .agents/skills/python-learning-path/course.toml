@@ -20,171 +20,226 @@ final_destinations = [
 ]
 
 [[modules]]
-id = "module.basics"
+id = "module.python-fundamentals"
 ordinal = 1
-title = "Basics"
+title = "Python Fundamentals"
 prerequisites = []
-lesson_readme = "lessons/01_basics/README.md"
-review_questions = { path = "lessons/01_basics/README.md", heading = "❓ Review questions" }
-exercise_starter = "exercises/01_basics/exercises.py"
-exercise_solution = "exercises/01_basics/solutions.py"
-validation_commands = ["python exercises/01_basics/exercises.py"]
-solution_lock_group = "solutions.module.basics"
+lesson_readme = "lessons/01_python_fundamentals/README.md"
+review_questions = { path = "lessons/01_python_fundamentals/README.md", heading = "❓ Review questions (closed notes)" }
+exercise_starter = "exercises/01_python_fundamentals/exercises.py"
+exercise_solution = "exercises/01_python_fundamentals/solutions.py"
+validation_commands = ["python exercises/01_python_fundamentals/exercises.py"]
+solution_lock_group = "solutions.module.python-fundamentals"
 required_outcomes = [
-  "Run a Python script and bind values to names.",
-  "Recognize core scalar types and convert input explicitly.",
-  "Choose suitable numeric representations and perform calculations.",
-  "Compare values and cross between Unicode text and encoded bytes.",
+  "Run a Python script from the repository root and read its output.",
+  "Bind names to values and explain what rebinding does and does not affect.",
+  "Recognize core scalar types (str, int, float, bool, None) and their literals.",
+  "Convert between types explicitly and reason about truthiness in a condition.",
 ]
 
 [[modules.concepts]]
-id = "concept.basics.hello-world"
-title = "Running scripts and printing"
+id = "concept.python-fundamentals.running-scripts"
+title = "Running scripts, comments, and print"
 prerequisites = []
-lesson_file = "lessons/01_basics/01_hello_world.py"
-run_command = "python lessons/01_basics/01_hello_world.py"
+lesson_file = "lessons/01_python_fundamentals/01_running_python.py"
+run_command = "python lessons/01_python_fundamentals/01_running_python.py"
 
 [[modules.concepts]]
-id = "concept.basics.variables-and-types"
-title = "Variables and core scalar types"
-prerequisites = ["concept.basics.hello-world"]
-lesson_file = "lessons/01_basics/02_variables_and_types.py"
-run_command = "python lessons/01_basics/02_variables_and_types.py"
+id = "concept.python-fundamentals.values-names-and-types"
+title = "Values, names, assignment, and core scalar types"
+prerequisites = ["concept.python-fundamentals.running-scripts"]
+lesson_file = "lessons/01_python_fundamentals/02_values_names_and_types.py"
+run_command = "python lessons/01_python_fundamentals/02_values_names_and_types.py"
 
 [[modules.concepts]]
-id = "concept.basics.operators"
-title = "Arithmetic, comparison, and logical operators"
-prerequisites = ["concept.basics.variables-and-types"]
-lesson_file = "lessons/01_basics/03_operators.py"
-run_command = "python lessons/01_basics/03_operators.py"
-
-[[modules.concepts]]
-id = "concept.basics.strings"
-title = "String operations"
-prerequisites = ["concept.basics.operators"]
-lesson_file = "lessons/01_basics/04_strings.py"
-run_command = "python lessons/01_basics/04_strings.py"
-
-[[modules.concepts]]
-id = "concept.basics.text-and-binary-data"
-title = "Unicode text and binary data"
-prerequisites = ["concept.basics.strings"]
-lesson_file = "lessons/01_basics/05_text_and_binary_data.py"
-run_command = "python lessons/01_basics/05_text_and_binary_data.py"
-
-[[modules.concepts]]
-id = "concept.basics.numeric-types-and-conversions"
-title = "Numeric representations and explicit conversions"
-prerequisites = ["concept.basics.text-and-binary-data"]
-lesson_file = "lessons/01_basics/06_numeric_types_and_conversions.py"
-run_command = "python lessons/01_basics/06_numeric_types_and_conversions.py"
+id = "concept.python-fundamentals.conversion-and-truthiness"
+title = "Explicit conversion, comparisons, and truthiness"
+prerequisites = ["concept.python-fundamentals.values-names-and-types"]
+lesson_file = "lessons/01_python_fundamentals/03_conversion_and_truthiness.py"
+run_command = "python lessons/01_python_fundamentals/03_conversion_and_truthiness.py"
 
 [[modules]]
-id = "module.control-flow"
+id = "module.text-and-numbers"
 ordinal = 2
-title = "Control Flow"
-prerequisites = ["module.basics"]
-lesson_readme = "lessons/02_control_flow/README.md"
-review_questions = { path = "lessons/02_control_flow/README.md", heading = "❓ Review questions" }
-exercise_starter = "exercises/02_control_flow/exercises.py"
-exercise_solution = "exercises/02_control_flow/solutions.py"
-validation_commands = ["python exercises/02_control_flow/exercises.py"]
-solution_lock_group = "solutions.module.control-flow"
+title = "Text and Numbers"
+prerequisites = ["module.python-fundamentals"]
+lesson_readme = "lessons/02_text_and_numbers/README.md"
+review_questions = { path = "lessons/02_text_and_numbers/README.md", heading = "❓ Review questions (closed notes)" }
+exercise_starter = "exercises/02_text_and_numbers/exercises.py"
+exercise_solution = "exercises/02_text_and_numbers/solutions.py"
+validation_commands = ["python exercises/02_text_and_numbers/exercises.py"]
+solution_lock_group = "solutions.module.text-and-numbers"
 required_outcomes = [
-  "Express decisions with conditional branches and truthiness.",
-  "Repeat work over iterables with for and while loops.",
-  "Stop or skip iterations and identify loops that cannot terminate.",
+  "Use arithmetic, comparison, and logical operators with correct precedence.",
+  "Build and slice strings, and interpolate values with f-strings.",
+  "Cross between Unicode text and encoded bytes deliberately.",
+  "Choose suitable numeric representations and round or convert them explicitly.",
 ]
 
 [[modules.concepts]]
-id = "concept.control-flow.conditionals"
-title = "Conditionals and truthiness"
+id = "concept.text-and-numbers.operators-and-expressions"
+title = "Operators and expressions"
 prerequisites = []
-lesson_file = "lessons/02_control_flow/01_conditionals.py"
-run_command = "python lessons/02_control_flow/01_conditionals.py"
+lesson_file = "lessons/02_text_and_numbers/01_operators_and_expressions.py"
+run_command = "python lessons/02_text_and_numbers/01_operators_and_expressions.py"
 
 [[modules.concepts]]
-id = "concept.control-flow.loops"
-title = "Iteration and loop control"
-prerequisites = ["concept.control-flow.conditionals"]
-lesson_file = "lessons/02_control_flow/02_loops.py"
-run_command = "python lessons/02_control_flow/02_loops.py"
+id = "concept.text-and-numbers.strings-and-formatting"
+title = "Strings, slicing, and formatting"
+prerequisites = ["concept.text-and-numbers.operators-and-expressions"]
+lesson_file = "lessons/02_text_and_numbers/02_strings_and_formatting.py"
+run_command = "python lessons/02_text_and_numbers/02_strings_and_formatting.py"
+
+[[modules.concepts]]
+id = "concept.text-and-numbers.unicode-text-and-bytes"
+title = "Unicode text and bytes"
+prerequisites = ["concept.text-and-numbers.strings-and-formatting"]
+lesson_file = "lessons/02_text_and_numbers/03_unicode_text_and_bytes.py"
+run_command = "python lessons/02_text_and_numbers/03_unicode_text_and_bytes.py"
+
+[[modules.concepts]]
+id = "concept.text-and-numbers.numeric-representations"
+title = "Numeric representations and conversions"
+prerequisites = ["concept.text-and-numbers.unicode-text-and-bytes"]
+lesson_file = "lessons/02_text_and_numbers/04_numeric_representations.py"
+run_command = "python lessons/02_text_and_numbers/04_numeric_representations.py"
 
 [[modules]]
-id = "module.functions"
+id = "module.collections"
 ordinal = 3
-title = "Functions"
-prerequisites = ["module.control-flow"]
-lesson_readme = "lessons/03_functions/README.md"
-review_questions = { path = "lessons/03_functions/README.md", heading = "❓ Review questions" }
-exercise_starter = "exercises/03_functions/exercises.py"
-exercise_solution = "exercises/03_functions/solutions.py"
-validation_commands = ["python exercises/03_functions/exercises.py"]
-solution_lock_group = "solutions.module.functions"
+title = "Collections"
+prerequisites = ["module.text-and-numbers"]
+lesson_readme = "lessons/03_collections/README.md"
+review_questions = { path = "lessons/03_collections/README.md", heading = "❓ Review questions (closed notes)" }
+exercise_starter = "exercises/03_collections/exercises.py"
+exercise_solution = "exercises/03_collections/solutions.py"
+validation_commands = ["python exercises/03_collections/exercises.py"]
+solution_lock_group = "solutions.module.collections"
 required_outcomes = [
-  "Define focused functions with explicit call contracts.",
-  "Pass arguments, return results, and explain mutation versus rebinding.",
-  "Reason about scope, closures, lambdas, and terminating recursion.",
+  "Create, access, and mutate lists, tuples, dicts, and sets.",
+  "Test membership and choose a collection type by its semantics.",
+  "Explain aliasing, in-place mutation, and shallow copying.",
 ]
 
 [[modules.concepts]]
-id = "concept.functions.call-contracts"
-title = "Function definitions, calls, binding, and returns"
-prerequisites = []
-lesson_file = "lessons/03_functions/01_functions.py"
-run_command = "python lessons/03_functions/01_functions.py"
-
-[[modules.concepts]]
-id = "concept.functions.lambdas-closures-recursion"
-title = "Lambdas, closures, and recursion"
-prerequisites = ["concept.functions.call-contracts"]
-lesson_file = "lessons/03_functions/02_lambdas_closures_and_recursion.py"
-run_command = "python lessons/03_functions/02_lambdas_closures_and_recursion.py"
-
-[[modules]]
-id = "module.data-structures"
-ordinal = 4
-title = "Data Structures"
-prerequisites = ["module.functions"]
-lesson_readme = "lessons/04_data_structures/README.md"
-review_questions = { path = "lessons/04_data_structures/README.md", heading = "❓ Review questions" }
-exercise_starter = "exercises/04_data_structures/exercises.py"
-exercise_solution = "exercises/04_data_structures/solutions.py"
-validation_commands = ["python exercises/04_data_structures/exercises.py"]
-solution_lock_group = "solutions.module.data-structures"
-required_outcomes = [
-  "Select a collection by its semantics.",
-  "Copy and mutate collections intentionally.",
-  "Iterate through mappings and write readable comprehensions.",
-  "Use specialized collections when they clarify intent.",
-]
-
-[[modules.concepts]]
-id = "concept.data-structures.lists-and-tuples"
+id = "concept.collections.lists-and-tuples"
 title = "Lists and tuples"
 prerequisites = []
-lesson_file = "lessons/04_data_structures/01_lists_and_tuples.py"
-run_command = "python lessons/04_data_structures/01_lists_and_tuples.py"
+lesson_file = "lessons/03_collections/01_lists_and_tuples.py"
+run_command = "python lessons/03_collections/01_lists_and_tuples.py"
 
 [[modules.concepts]]
-id = "concept.data-structures.dictionaries-and-sets"
+id = "concept.collections.dictionaries-and-sets"
 title = "Dictionaries and sets"
-prerequisites = ["concept.data-structures.lists-and-tuples"]
-lesson_file = "lessons/04_data_structures/02_dictionaries_and_sets.py"
-run_command = "python lessons/04_data_structures/02_dictionaries_and_sets.py"
+prerequisites = ["concept.collections.lists-and-tuples"]
+lesson_file = "lessons/03_collections/02_dictionaries_and_sets.py"
+run_command = "python lessons/03_collections/02_dictionaries_and_sets.py"
 
 [[modules.concepts]]
-id = "concept.data-structures.comprehensions-and-collections"
-title = "Comprehensions and specialized collections"
-prerequisites = ["concept.data-structures.dictionaries-and-sets"]
-lesson_file = "lessons/04_data_structures/03_comprehensions_and_collections.py"
-run_command = "python lessons/04_data_structures/03_comprehensions_and_collections.py"
+id = "concept.collections.references-mutation-and-copying"
+title = "References, mutation, and copying"
+prerequisites = ["concept.collections.dictionaries-and-sets"]
+lesson_file = "lessons/03_collections/03_references_mutation_and_copying.py"
+run_command = "python lessons/03_collections/03_references_mutation_and_copying.py"
+
+[[modules]]
+id = "module.flow-and-iteration"
+ordinal = 4
+title = "Flow and Iteration"
+prerequisites = ["module.collections"]
+lesson_readme = "lessons/04_control_flow/README.md"
+review_questions = { path = "lessons/04_control_flow/README.md", heading = "❓ Review questions (closed notes)" }
+exercise_starter = "exercises/04_control_flow/exercises.py"
+exercise_solution = "exercises/04_control_flow/solutions.py"
+validation_commands = ["python exercises/04_control_flow/exercises.py"]
+solution_lock_group = "solutions.module.flow-and-iteration"
+required_outcomes = [
+  "Express decisions with if/elif/else and reason about truthiness.",
+  "Repeat work with for and while loops, range, enumerate, and zip.",
+  "Use break, continue, and a loop's else clause correctly.",
+  "Build accumulator patterns and derive comprehensions from equivalent loops.",
+]
+
+[[modules.concepts]]
+id = "concept.flow-and-iteration.conditions-and-truthiness"
+title = "Conditions and truthiness"
+prerequisites = []
+lesson_file = "lessons/04_control_flow/01_conditions_and_truthiness.py"
+run_command = "python lessons/04_control_flow/01_conditions_and_truthiness.py"
+
+[[modules.concepts]]
+id = "concept.flow-and-iteration.loops-and-iteration-control"
+title = "Loops and iteration control"
+prerequisites = ["concept.flow-and-iteration.conditions-and-truthiness"]
+lesson_file = "lessons/04_control_flow/02_loops_and_iteration_control.py"
+run_command = "python lessons/04_control_flow/02_loops_and_iteration_control.py"
+
+[[modules.concepts]]
+id = "concept.flow-and-iteration.accumulators-and-specialized-collections"
+title = "Accumulators and specialized collections"
+prerequisites = ["concept.flow-and-iteration.loops-and-iteration-control"]
+lesson_file = "lessons/04_control_flow/03_accumulators_and_specialized_collections.py"
+run_command = "python lessons/04_control_flow/03_accumulators_and_specialized_collections.py"
+
+[[modules.concepts]]
+id = "concept.flow-and-iteration.comprehensions"
+title = "Comprehensions"
+prerequisites = ["concept.flow-and-iteration.accumulators-and-specialized-collections"]
+lesson_file = "lessons/04_control_flow/04_comprehensions.py"
+run_command = "python lessons/04_control_flow/04_comprehensions.py"
+
+[[modules]]
+id = "module.function-contracts-and-scope"
+ordinal = 5
+title = "Function Contracts and Scope"
+prerequisites = ["module.flow-and-iteration"]
+lesson_readme = "lessons/05_functions/README.md"
+review_questions = { path = "lessons/05_functions/README.md", heading = "❓ Review questions (closed notes)" }
+exercise_starter = "exercises/05_functions/exercises.py"
+exercise_solution = "exercises/05_functions/solutions.py"
+validation_commands = ["python exercises/05_functions/exercises.py"]
+solution_lock_group = "solutions.module.function-contracts-and-scope"
+required_outcomes = [
+  "Define focused functions with explicit call contracts and basic annotations.",
+  "Use default, positional-only, keyword-only, *args, and **kwargs parameters.",
+  "Reason about LEGB scope, closures, and mutation versus rebinding.",
+  "Pass functions as values and write a correctly terminating recursive function.",
+]
+
+[[modules.concepts]]
+id = "concept.function-contracts-and-scope.function-contracts"
+title = "Function definitions, calls, and returns"
+prerequisites = []
+lesson_file = "lessons/05_functions/01_function_contracts.py"
+run_command = "python lessons/05_functions/01_function_contracts.py"
+
+[[modules.concepts]]
+id = "concept.function-contracts-and-scope.parameter-kinds-and-unpacking"
+title = "Parameter kinds and call-site unpacking"
+prerequisites = ["concept.function-contracts-and-scope.function-contracts"]
+lesson_file = "lessons/05_functions/02_parameter_kinds_and_unpacking.py"
+run_command = "python lessons/05_functions/02_parameter_kinds_and_unpacking.py"
+
+[[modules.concepts]]
+id = "concept.function-contracts-and-scope.scope-closures-and-higher-order"
+title = "Scope, closures, and higher-order functions"
+prerequisites = ["concept.function-contracts-and-scope.parameter-kinds-and-unpacking"]
+lesson_file = "lessons/05_functions/03_scope_closures_and_higher_order.py"
+run_command = "python lessons/05_functions/03_scope_closures_and_higher_order.py"
+
+[[modules.concepts]]
+id = "concept.function-contracts-and-scope.recursion"
+title = "Recursion"
+prerequisites = ["concept.function-contracts-and-scope.scope-closures-and-higher-order"]
+lesson_file = "lessons/05_functions/04_recursion.py"
+run_command = "python lessons/05_functions/04_recursion.py"
+
 
 [[modules]]
 id = "module.modules-and-files"
-ordinal = 5
+ordinal = 6
 title = "Modules and Files"
-prerequisites = ["module.data-structures"]
+prerequisites = ["module.function-contracts-and-scope"]
 lesson_readme = "lessons/05_modules_and_files/README.md"
 review_questions = { path = "lessons/05_modules_and_files/README.md", heading = "❓ Review questions" }
 exercise_starter = "exercises/05_modules_and_files/exercises.py"
@@ -251,7 +306,7 @@ run_command = "python lessons/05_modules_and_files/07_dates_and_times.py"
 
 [[modules]]
 id = "module.object-oriented-programming"
-ordinal = 6
+ordinal = 7
 title = "Object-Oriented Programming"
 prerequisites = ["module.modules-and-files"]
 lesson_readme = "lessons/06_object_oriented_programming/README.md"
@@ -297,7 +352,7 @@ run_command = "python lessons/06_object_oriented_programming/04_abstract_classes
 
 [[modules]]
 id = "module.advanced-python"
-ordinal = 7
+ordinal = 8
 title = "Advanced Python"
 prerequisites = ["module.object-oriented-programming"]
 lesson_readme = "lessons/07_advanced_python/README.md"
@@ -344,7 +399,7 @@ run_command = "python lessons/07_advanced_python/04_protocols_and_dependency_inj
 
 [[modules]]
 id = "module.testing"
-ordinal = 8
+ordinal = 9
 title = "Testing"
 prerequisites = ["module.advanced-python"]
 lesson_readme = "lessons/08_testing/README.md"
@@ -369,7 +424,7 @@ run_command = "python lessons/08_testing/01_unittest_basics.py"
 
 [[modules]]
 id = "module.tooling-and-debugging"
-ordinal = 9
+ordinal = 10
 title = "Tooling and Debugging"
 prerequisites = ["module.testing"]
 lesson_readme = "lessons/09_tooling_and_debugging/README.md"
@@ -439,7 +494,7 @@ run_command = "python lessons/09_tooling_and_debugging/07_packaging_and_public_a
 
 [[modules]]
 id = "module.sql-and-sqlite"
-ordinal = 10
+ordinal = 11
 title = "SQL and SQLite"
 prerequisites = ["module.tooling-and-debugging"]
 lesson_readme = "lessons/10_sql_and_sqlite/README.md"
@@ -488,7 +543,7 @@ run_command = "python lessons/10_sql_and_sqlite/04_repository_pattern.py"
 
 [[modules]]
 id = "module.rest-apis-and-clients"
-ordinal = 11
+ordinal = 12
 title = "REST APIs and HTTP Clients"
 prerequisites = ["module.sql-and-sqlite"]
 lesson_readme = "lessons/11_rest_apis_and_clients/README.md"
@@ -536,7 +591,7 @@ run_command = "python lessons/11_rest_apis_and_clients/04_http_clients.py"
 
 [[modules]]
 id = "module.concurrency"
-ordinal = 12
+ordinal = 13
 title = "Concurrency"
 prerequisites = ["project.tasks-rest-api-clients"]
 lesson_readme = "lessons/12_concurrency/README.md"
@@ -788,26 +843,32 @@ required_outcome = "Implement bounded page fetching, ordered collection, cancell
 test_command = "CAPSTONE_IMPLEMENTATION=starter python -m unittest discover -s capstones/idiomatic/tests -p 'test_m5_*.py' -v"
 
 [[solution_lock_groups]]
-id = "solutions.module.basics"
-paths = ["exercises/01_basics/solutions.py"]
+id = "solutions.module.python-fundamentals"
+paths = ["exercises/01_python_fundamentals/solutions.py"]
 unlock_policy = "after-unit-validation"
 solution_unlock_after = 1
 
 [[solution_lock_groups]]
-id = "solutions.module.control-flow"
-paths = ["exercises/02_control_flow/solutions.py"]
+id = "solutions.module.text-and-numbers"
+paths = ["exercises/02_text_and_numbers/solutions.py"]
 unlock_policy = "after-unit-validation"
 solution_unlock_after = 1
 
 [[solution_lock_groups]]
-id = "solutions.module.functions"
-paths = ["exercises/03_functions/solutions.py"]
+id = "solutions.module.collections"
+paths = ["exercises/03_collections/solutions.py"]
 unlock_policy = "after-unit-validation"
 solution_unlock_after = 1
 
 [[solution_lock_groups]]
-id = "solutions.module.data-structures"
-paths = ["exercises/04_data_structures/solutions.py"]
+id = "solutions.module.flow-and-iteration"
+paths = ["exercises/04_control_flow/solutions.py"]
+unlock_policy = "after-unit-validation"
+solution_unlock_after = 1
+
+[[solution_lock_groups]]
+id = "solutions.module.function-contracts-and-scope"
+paths = ["exercises/05_functions/solutions.py"]
 unlock_policy = "after-unit-validation"
 solution_unlock_after = 1
 

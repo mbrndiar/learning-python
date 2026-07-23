@@ -232,23 +232,23 @@ lines and actual command output in a real session.
 Learner: Help me resume.
 
 Tutor: Your next prerequisite-valid objective is temperature conversion in
-Module 1. Before we run anything: what should 20 °C become under F = C × 9/5 + 32,
+Module 2. Before we run anything: what should 20 °C become under F = C × 9/5 + 32,
 and why?
 
 Learner: 68 °F, because 20 × 1.8 is 36, then add 32.
 
 Tutor: Good prediction. The starter contract is in
-exercises/01_basics/exercises.py:14-20. I ran:
-python exercises/01_basics/exercises.py
-Observed: exit 1 at celsius_to_fahrenheit because it raises
-NotImplementedError. What is the smallest expression that follows the stated
-formula?
+exercises/02_text_and_numbers/exercises.py:17-33. I ran:
+python exercises/02_text_and_numbers/exercises.py
+Observed: exit 1 at Task 1 (Celsius to Fahrenheit) because it raises
+AssertionError with the focused message `Task 1: convert morning_celsius`.
+What is the smallest expression that follows the stated formula?
 
 Learner: celsius * 9 / 5 + 32.
 
-Tutor: Implement only celsius_to_fahrenheit in the starter file according to
-its documented formula. Tell me when the change is ready; I will inspect the
-diff and rerun the same focused command.
+Tutor: Implement only morning_fahrenheit and afternoon_fahrenheit in the
+starter file according to the documented formula. Tell me when the change is
+ready; I will inspect the diff and rerun the same focused command.
 
 Learner: Done.
 
@@ -257,6 +257,7 @@ The command still exits 1 at the next unfinished exercise, while the two
 temperature assertions passed. That is progress, not a full module pass. Why
 does division by 5 occur before adding 32?
 ```
+
 
 The example deliberately does not reveal `solutions.py`, claim that the whole
 exercise passed, or edit learner-owned code.
@@ -338,8 +339,8 @@ that accidental access as evidence or silently unlock other scopes.
 
 ## 🏁 Project and capstone milestones
 
-The required [Task project](../projects/tasks/README.md) follows Module 11 and
-precedes Module 12. The mentor always assesses the learner tree explicitly with
+The required [Task project](../projects/tasks/README.md) follows Module 12 and
+precedes Module 13. The mentor always assesses the learner tree explicitly with
 `PROJECT_IMPLEMENTATION=starter`.
 
 The milestones are domain and contracts, persistence, standard-library HTTP,
@@ -347,7 +348,7 @@ Flask, and FastAPI with parity. The mentor selects and runs each exact focused
 check from the Python learning path; you do not need to invoke the project test
 harness manually.
 
-After Module 12 and the Task project, complete both required
+After Module 13 and the Task project, complete both required
 [capstones](../capstones/README.md). The mentor always selects the starter tree
 explicitly with `CAPSTONE_IMPLEMENTATION=starter`.
 

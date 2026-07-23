@@ -9,22 +9,23 @@ Git and is never treated as course progress or evaluator input.
 
 Every module folder contains a primary pair:
 
-- `exercises.py` - function/class stubs or tests to implement yourself. TODO
-  comments describe the missing behavior, and most unfinished functions raise
-  `NotImplementedError`. Fill in the requested parts, then run the file:
+- `exercises.py` - top-level tasks (Chapters 1-4) or function/class stubs
+  (from Chapter 5 onward) to implement yourself. TODO comments describe the
+  missing behavior, and focused assertions identify the next unfinished task.
+  Fill in the requested parts, then run the file:
 
   ```bash
-  python exercises/01_basics/exercises.py
+  python exercises/01_python_fundamentals/exercises.py
   ```
 
-  The bottom of the file runs checks and prints `All checks passed!` once the
-  requested behavior is implemented correctly. The testing module instead
-  refuses to report success until all requested test methods exist.
+  The file stops at the first unfinished task and prints `All checks passed!`
+  once every requested behavior is implemented correctly. The testing module
+  instead refuses to report success until all requested test methods exist.
 
 - `solutions.py` - a reference implementation, in case you get stuck or
   want to compare approaches. Try to solve each exercise yourself first!
 
-## 🧭 Modules 10–12 and the applied project
+## 🧭 Modules 11–13 and the applied project
 
 Complete the advanced sequence in this order:
 
@@ -69,7 +70,7 @@ assert double(4) == 8
 ```
 
 Add your own assertions for empty values, zero, negative values, mixed case,
-and other boundaries when they make sense. Modules 8 and 9 turn this habit
+and other boundaries when they make sense. Modules 9 and 10 turn this habit
 into structured automated testing.
 
 ## 🔍 Using reference solutions well
