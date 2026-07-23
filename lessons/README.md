@@ -50,8 +50,9 @@ python lessons/01_python_fundamentals/01_running_python.py
 14. [`14_environments_processes_and_packaging/`](14_environments_processes_and_packaging/README.md) -
     virtual environments, streams and exit status, subprocess ownership,
     quality gates and CI, and packaging distributions
-15. [`10_sql_and_sqlite/`](10_sql_and_sqlite/README.md) - relational modeling,
-    portable SQL fundamentals, SQLite behavior, and repository boundaries
+15. [`15_sql_and_sqlite/`](15_sql_and_sqlite/README.md) - connection/cursor
+    ownership, relational SQL, SQLite transactions and behavior, and repository
+    contract tests
 16. [`11_rest_apis_and_clients/`](11_rest_apis_and_clients/README.md) - HTTP,
     REST boundaries, Flask, FastAPI, `urllib`, `requests`, and `httpx`
     - Complete the required
@@ -60,9 +61,9 @@ python lessons/01_python_fundamentals/01_running_python.py
 17. [`12_concurrency/`](12_concurrency/README.md) - threads, processes,
     `asyncio`, bounded work, cancellation, and cleanup
 
-Modules 15 through 17 keep their existing `10_`-`12_` directory prefixes from
-before this migration; the numbered list above reflects each module's
-authoritative teaching order, not its directory name.
+Modules 16 and 17 temporarily keep their existing `11_` and `12_` directory
+prefixes from before this migration; the numbered list above reflects each
+module's authoritative teaching order, not its directory name.
 
 ## ▶️ How to use a module
 

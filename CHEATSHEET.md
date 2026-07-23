@@ -414,7 +414,7 @@ mypy
 
 ## 🚀 Advanced course sequence
 
-1. [Module 15: SQL and SQLite](lessons/10_sql_and_sqlite/README.md)
+1. [Module 15: SQL and SQLite](lessons/15_sql_and_sqlite/README.md)
 2. [Module 16: REST APIs and HTTP Clients](lessons/11_rest_apis_and_clients/README.md)
 3. Required [Task REST API and clients project](projects/tasks/README.md)
 4. [Module 17: Concurrency](lessons/12_concurrency/README.md)

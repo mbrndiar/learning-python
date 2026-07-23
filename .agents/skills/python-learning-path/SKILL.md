@@ -66,7 +66,7 @@ and before Module 17.
 | 12 | `module.automated-testing` | `lessons/12_testing/README.md` | `python exercises/12_testing/exercises.py` |
 | 13 | `module.debugging-and-cli` | `lessons/13_debugging_and_cli/README.md` | `python exercises/13_debugging_and_cli/exercises.py` |
 | 14 | `module.environments-processes-and-packaging` | `lessons/14_environments_processes_and_packaging/README.md` | `python exercises/14_environments_processes_and_packaging/exercises.py` |
-| 15 | `module.sql-and-sqlite` | `lessons/10_sql_and_sqlite/README.md` | `python exercises/10_sql_and_sqlite/exercises.py` |
+| 15 | `module.sql-and-sqlite` | `lessons/15_sql_and_sqlite/README.md` | `python exercises/15_sql_and_sqlite/exercises.py` |
 | 16 | `module.rest-apis-and-clients` | `lessons/11_rest_apis_and_clients/README.md` | `python exercises/11_rest_apis_and_clients/exercises.py` |
 | 17 | `module.concurrency` | `lessons/12_concurrency/README.md` | `python exercises/12_concurrency/exercises.py` |
 

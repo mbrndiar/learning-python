@@ -29,7 +29,7 @@ Every module folder contains a primary pair:
 
 Complete the advanced sequence in this order:
 
-1. [`10_sql_and_sqlite/`](10_sql_and_sqlite/README.md);
+1. [`15_sql_and_sqlite/`](15_sql_and_sqlite/README.md);
 2. [`11_rest_apis_and_clients/`](11_rest_apis_and_clients/README.md);
 3. the required
    [Task REST API and clients project](../projects/tasks/README.md); and

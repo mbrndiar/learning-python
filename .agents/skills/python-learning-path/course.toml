@@ -652,49 +652,55 @@ id = "module.sql-and-sqlite"
 ordinal = 15
 title = "SQL and SQLite"
 prerequisites = ["module.environments-processes-and-packaging"]
-lesson_readme = "lessons/10_sql_and_sqlite/README.md"
-review_questions = { path = "lessons/10_sql_and_sqlite/README.md", heading = "❓ Review questions" }
-exercise_starter = "exercises/10_sql_and_sqlite/exercises.py"
-exercise_solution = "exercises/10_sql_and_sqlite/solutions.py"
-validation_commands = ["python exercises/10_sql_and_sqlite/exercises.py"]
+lesson_readme = "lessons/15_sql_and_sqlite/README.md"
+review_questions = { path = "lessons/15_sql_and_sqlite/README.md", heading = "❓ Review questions (closed notes)" }
+exercise_starter = "exercises/15_sql_and_sqlite/exercises.py"
+exercise_solution = "exercises/15_sql_and_sqlite/solutions.py"
+validation_commands = ["python exercises/15_sql_and_sqlite/exercises.py"]
 solution_lock_group = "solutions.module.sql-and-sqlite"
 required_outcomes = [
+  "Own a sqlite3 Connection, use Cursor result APIs correctly, and map sqlite3.Row values into domain types.",
   "Model related data with tables, keys, foreign keys, and constraints.",
-  "Use parameterized CRUD, filtering, ordering, joins, grouping, and aggregates.",
-  "Convert database rows into validated domain values.",
-  "Treat transactions as atomic units and distinguish commit from rollback.",
-  "Explain SQLite generated IDs, affinity, pragmas, and AUTOINCREMENT.",
-  "Use indexes and inspect query plans without assuming optimizer choices.",
-  "Place SQL behind a small repository boundary when it earns its cost.",
+  "Use parameterized CRUD, executemany, filtering, deterministic ordering, joins, grouping, and HAVING.",
+  "Treat transactions as atomic units and explain SQLite foreign keys, generated IDs, affinity, and write concurrency.",
+  "Add an index and inspect EXPLAIN QUERY PLAN without depending on optimizer wording or choices.",
+  "Run one repository contract against in-memory and SQLite adapters while the caller owns the connection.",
 ]
 
 [[modules.concepts]]
-id = "concept.sql-and-sqlite.relational-model-and-sql"
-title = "Relational schemas and parameterized CRUD"
+id = "concept.sql-and-sqlite.connection-cursor-and-rows"
+title = "SQLite connection, cursor, and rows"
 prerequisites = []
-lesson_file = "lessons/10_sql_and_sqlite/01_relational_model_and_sql.py"
-run_command = "python lessons/10_sql_and_sqlite/01_relational_model_and_sql.py"
+lesson_file = "lessons/15_sql_and_sqlite/01_sqlite_connection_cursor_and_rows.py"
+run_command = "python lessons/15_sql_and_sqlite/01_sqlite_connection_cursor_and_rows.py"
+
+[[modules.concepts]]
+id = "concept.sql-and-sqlite.relational-model-and-sql"
+title = "Relational schema and parameterized CRUD"
+prerequisites = ["concept.sql-and-sqlite.connection-cursor-and-rows"]
+lesson_file = "lessons/15_sql_and_sqlite/02_relational_schema_and_crud.py"
+run_command = "python lessons/15_sql_and_sqlite/02_relational_schema_and_crud.py"
 
 [[modules.concepts]]
 id = "concept.sql-and-sqlite.joins-aggregates-indexes"
 title = "Joins, aggregates, indexes, and query plans"
 prerequisites = ["concept.sql-and-sqlite.relational-model-and-sql"]
-lesson_file = "lessons/10_sql_and_sqlite/02_joins_aggregates_and_indexes.py"
-run_command = "python lessons/10_sql_and_sqlite/02_joins_aggregates_and_indexes.py"
+lesson_file = "lessons/15_sql_and_sqlite/03_joins_aggregates_indexes_and_plans.py"
+run_command = "python lessons/15_sql_and_sqlite/03_joins_aggregates_indexes_and_plans.py"
 
 [[modules.concepts]]
 id = "concept.sql-and-sqlite.transactions-and-sqlite"
 title = "Transactions and SQLite-specific behavior"
 prerequisites = ["concept.sql-and-sqlite.joins-aggregates-indexes"]
-lesson_file = "lessons/10_sql_and_sqlite/03_transactions_and_sqlite.py"
-run_command = "python lessons/10_sql_and_sqlite/03_transactions_and_sqlite.py"
+lesson_file = "lessons/15_sql_and_sqlite/04_transactions_and_sqlite_behavior.py"
+run_command = "python lessons/15_sql_and_sqlite/04_transactions_and_sqlite_behavior.py"
 
 [[modules.concepts]]
 id = "concept.sql-and-sqlite.repository-pattern"
 title = "Repository boundaries and contract checks"
 prerequisites = ["concept.sql-and-sqlite.transactions-and-sqlite"]
-lesson_file = "lessons/10_sql_and_sqlite/04_repository_pattern.py"
-run_command = "python lessons/10_sql_and_sqlite/04_repository_pattern.py"
+lesson_file = "lessons/15_sql_and_sqlite/05_repository_and_contract_tests.py"
+run_command = "python lessons/15_sql_and_sqlite/05_repository_and_contract_tests.py"
 
 [[modules]]
 id = "module.rest-apis-and-clients"
@@ -1086,7 +1092,7 @@ solution_unlock_after = 1
 
 [[solution_lock_groups]]
 id = "solutions.module.sql-and-sqlite"
-paths = ["exercises/10_sql_and_sqlite/solutions.py"]
+paths = ["exercises/15_sql_and_sqlite/solutions.py"]
 unlock_policy = "after-unit-validation"
 solution_unlock_after = 1
 

@@ -242,11 +242,12 @@ reference to jog your memory after finishing the course.
     - [`03_subprocess_ownership.py`](lessons/14_environments_processes_and_packaging/03_subprocess_ownership.py) – argument lists, allowlisted environments, timeouts, and the subprocess error taxonomy
     - [`04_format_lint_type_test_coverage_ci.py`](lessons/14_environments_processes_and_packaging/04_format_lint_type_test_coverage_ci.py) – [Ruff](https://docs.astral.sh/ruff/), [mypy](https://mypy.readthedocs.io/en/stable/), [pytest](https://docs.pytest.org/en/stable/), [Coverage.py](https://coverage.readthedocs.io/en/stable/), and CI
     - [`05_distributions_builds_and_public_apis.py`](lessons/14_environments_processes_and_packaging/05_distributions_builds_and_public_apis.py) – import packages versus distributions, `pyproject.toml`, `src/` layout, editable installs, builds, and public API documentation
-15. **[SQL and SQLite](lessons/10_sql_and_sqlite/)**
-    - [`01_relational_model_and_sql.py`](lessons/10_sql_and_sqlite/01_relational_model_and_sql.py) – schemas, constraints, parameterized CRUD, filtering, ordering, limits, and row mapping
-    - [`02_joins_aggregates_and_indexes.py`](lessons/10_sql_and_sqlite/02_joins_aggregates_and_indexes.py) – related tables, joins, grouped aggregates, indexes, and query plans
-    - [`03_transactions_and_sqlite.py`](lessons/10_sql_and_sqlite/03_transactions_and_sqlite.py) – transactions, generated IDs, SQLite affinity, pragmas, and limitations
-    - [`04_repository_pattern.py`](lessons/10_sql_and_sqlite/04_repository_pattern.py) – a small injected repository and reusable contract checks
+15. **[SQL and SQLite](lessons/15_sql_and_sqlite/)**
+    - [`01_sqlite_connection_cursor_and_rows.py`](lessons/15_sql_and_sqlite/01_sqlite_connection_cursor_and_rows.py) – connection ownership, cursor results, batch execution, fetching, row factories, and row mapping
+    - [`02_relational_schema_and_crud.py`](lessons/15_sql_and_sqlite/02_relational_schema_and_crud.py) – relational constraints, value parameters, deterministic CRUD, and missing update/delete paths
+    - [`03_joins_aggregates_indexes_and_plans.py`](lessons/15_sql_and_sqlite/03_joins_aggregates_indexes_and_plans.py) – inner/left joins, parameterized aggregates, indexes, and version-sensitive query plans
+    - [`04_transactions_and_sqlite_behavior.py`](lessons/15_sql_and_sqlite/04_transactions_and_sqlite_behavior.py) – explicit and context-managed transactions, affinity, generated IDs, and concurrency boundaries
+    - [`05_repository_and_contract_tests.py`](lessons/15_sql_and_sqlite/05_repository_and_contract_tests.py) – one protocol and behavior contract shared by in-memory and SQLite adapters
 16. **[REST APIs and HTTP Clients](lessons/11_rest_apis_and_clients/)**
     - [`01_http_fundamentals.py`](lessons/11_rest_apis_and_clients/01_http_fundamentals.py) – methods, routes, queries, headers, statuses, bytes, UTF-8, JSON, and finite timeouts
     - [`02_flask_api.py`](lessons/11_rest_apis_and_clients/02_flask_api.py) – an application factory, thin routes, injected dependencies, centralized errors, and Flask's test client
@@ -257,9 +258,9 @@ reference to jog your memory after finishing the course.
     - [`01_threading_and_multiprocessing.py`](lessons/12_concurrency/01_threading_and_multiprocessing.py) – threads for blocking I/O, processes for CPU-bound work, shared-state hazards, and cleanup
     - [`02_asyncio_basics.py`](lessons/12_concurrency/02_asyncio_basics.py) – cooperative concurrency, owned tasks, `async`/`await`, and `asyncio.gather`
 
-Modules 15 through 17 keep their existing `10_`-`12_` directory prefixes from
-before this migration; the numbered list above reflects each module's
-authoritative teaching order, not its directory name.
+Modules 16 and 17 temporarily keep their existing `11_` and `12_` directory
+prefixes from before this migration; the numbered list above reflects each
+module's authoritative teaching order, not its directory name.
 
 Work through the lessons in order, read the comments, then try modifying the
 code to experiment with the concepts. After each module, complete the
