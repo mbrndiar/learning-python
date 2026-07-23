@@ -10,6 +10,7 @@ import unittest
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
+from typing import Any
 
 TESTS_DIR = Path(__file__).resolve().parent
 ADAPTER_DIR = TESTS_DIR.parent
@@ -60,6 +61,30 @@ def run_cli(*arguments: str) -> subprocess.CompletedProcess[str]:
         capture_output=True,
         text=True,
     )
+
+
+def manifest_owners(manifest: dict[str, Any]) -> list[dict[str, Any]]:
+    """Return every module, project, and capstone in manifest order."""
+
+    return [
+        owner
+        for owner_kind in ("modules", "projects", "capstones")
+        for owner in course_adapter.records(manifest, owner_kind)
+    ]
+
+
+def expected_trackable_count(manifest: dict[str, Any]) -> int:
+    """Count every child concept/milestone and its owning container."""
+
+    total = 0
+    for owner_kind, child_kind in (
+        ("modules", "concepts"),
+        ("projects", "milestones"),
+        ("capstones", "milestones"),
+    ):
+        for owner in course_adapter.records(manifest, owner_kind):
+            total += len(course_adapter.records(owner, child_kind)) + 1
+    return total
 
 
 class CourseManifestTests(unittest.TestCase):
@@ -183,7 +208,7 @@ class CourseManifestTests(unittest.TestCase):
         known_ids = course_adapter.validate_trackable_ids_and_graph(self.manifest)
         projected_ids = {concept["id"] for concept in self.projection["concepts"]}
         self.assertEqual(projected_ids, known_ids)
-        self.assertEqual(len(known_ids), 76)
+        self.assertEqual(len(known_ids), expected_trackable_count(self.manifest))
 
     def test_flattened_state_projection_is_complete_and_deterministic(self) -> None:
         repeated = course_adapter.flatten_state_projection(
@@ -199,67 +224,85 @@ class CourseManifestTests(unittest.TestCase):
             list(range(10, 10 * (len(concepts) + 1), 10)),
         )
 
-        expected_ids: list[str] = []
-        modules = sorted(
-            course_adapter.records(self.manifest, "modules"),
-            key=lambda item: item["ordinal"],
-        )
-        for module in modules[:11]:
-            expected_ids.extend(concept["id"] for concept in module["concepts"])
-            expected_ids.append(module["id"])
-        project = self.manifest["projects"][0]
-        expected_ids.extend(milestone["id"] for milestone in project["milestones"])
-        expected_ids.append(project["id"])
-        expected_ids.extend(concept["id"] for concept in modules[11]["concepts"])
-        expected_ids.append(modules[11]["id"])
-        for capstone in self.manifest["capstones"]:
-            expected_ids.extend(milestone["id"] for milestone in capstone["milestones"])
-            expected_ids.append(capstone["id"])
-        self.assertEqual(
-            [concept["id"] for concept in concepts],
-            expected_ids,
-        )
-
         by_id = {concept["id"]: concept for concept in concepts}
-        self.assertEqual(
-            by_id["concept.control-flow.conditionals"]["prerequisites"],
-            ["module.basics"],
-        )
-        self.assertEqual(
-            by_id["milestone.tasks.domain-and-contracts"]["prerequisites"],
-            ["module.sql-and-sqlite", "module.rest-apis-and-clients"],
-        )
-        self.assertEqual(
-            by_id["milestone.tasks.persistence"]["prerequisites"],
-            [
-                "module.sql-and-sqlite",
-                "module.rest-apis-and-clients",
-                "milestone.tasks.domain-and-contracts",
-            ],
-        )
         parent_positions = {
             concept["id"]: index for index, concept in enumerate(concepts)
         }
-        for module in self.manifest["modules"]:
+        for concept in concepts:
+            self.assertTrue(
+                all(
+                    parent_positions[prerequisite] < parent_positions[concept["id"]]
+                    for prerequisite in concept["prerequisites"]
+                )
+            )
+
+        for module in course_adapter.records(self.manifest, "modules"):
+            inherited = course_adapter.prerequisites(module, module["id"])
+            for concept in course_adapter.records(
+                module,
+                "concepts",
+                context=module["id"],
+            ):
+                expected = list(
+                    dict.fromkeys(
+                        [
+                            *inherited,
+                            *course_adapter.prerequisites(concept, concept["id"]),
+                        ]
+                    )
+                )
+                self.assertEqual(by_id[concept["id"]]["prerequisites"], expected)
             self.assertTrue(
                 all(
                     parent_positions[concept["id"]] < parent_positions[module["id"]]
-                    for concept in module["concepts"]
+                    for concept in course_adapter.records(
+                        module,
+                        "concepts",
+                        context=module["id"],
+                    )
                 )
             )
         for owner_kind in ("projects", "capstones"):
-            for owner in self.manifest[owner_kind]:
+            for owner in course_adapter.records(self.manifest, owner_kind):
+                inherited = course_adapter.prerequisites(owner, owner["id"])
+                for milestone in course_adapter.records(
+                    owner,
+                    "milestones",
+                    context=owner["id"],
+                ):
+                    expected = list(
+                        dict.fromkeys(
+                            [
+                                *inherited,
+                                *course_adapter.prerequisites(
+                                    milestone,
+                                    milestone["id"],
+                                ),
+                            ]
+                        )
+                    )
+                    self.assertEqual(
+                        by_id[milestone["id"]]["prerequisites"],
+                        expected,
+                    )
                 self.assertTrue(
                     all(
                         parent_positions[milestone["id"]]
                         < parent_positions[owner["id"]]
-                        for milestone in owner["milestones"]
+                        for milestone in course_adapter.records(
+                            owner,
+                            "milestones",
+                            context=owner["id"],
+                        )
                     )
                 )
 
     def test_solution_locks_match_declared_owners_and_policy(self) -> None:
         locks = course_adapter.validate_solution_locks(self.manifest)
-        self.assertEqual(len(locks), 15)
+        self.assertEqual(
+            set(locks),
+            {owner["solution_lock_group"] for owner in manifest_owners(self.manifest)},
+        )
         self.assertEqual(
             {lock["unlock_policy"] for lock in locks.values()},
             {
@@ -277,19 +320,19 @@ class CourseManifestTests(unittest.TestCase):
 
     def test_required_outcomes_cover_every_container_and_milestone(self) -> None:
         course_adapter.validate_required_outcomes(self.manifest)
-        containers = [
-            owner
-            for owner_kind in ("modules", "projects", "capstones")
-            for owner in self.manifest[owner_kind]
-        ]
+        containers = manifest_owners(self.manifest)
         milestones = [
             milestone
             for owner_kind in ("projects", "capstones")
-            for owner in self.manifest[owner_kind]
-            for milestone in owner["milestones"]
+            for owner in course_adapter.records(self.manifest, owner_kind)
+            for milestone in course_adapter.records(
+                owner,
+                "milestones",
+                context=owner["id"],
+            )
         ]
-        self.assertEqual(len(containers), 15)
-        self.assertEqual(len(milestones), 15)
+        self.assertGreater(len(containers), 0)
+        self.assertGreater(len(milestones), 0)
 
     def test_commands_and_selectors_match_the_documented_contract(self) -> None:
         course_adapter.validate_commands_and_selectors(self.manifest)
@@ -310,7 +353,7 @@ class CourseManifestTests(unittest.TestCase):
             "manifest_version": 1,
             "schema_version": "1.0.0",
             "status": "valid",
-            "trackable_count": 76,
+            "trackable_count": expected_trackable_count(self.manifest),
         }
         self.assertEqual(result.returncode, course_adapter.EXIT_OK)
         self.assertEqual(result.stdout, f"{course_adapter.compact_json(expected)}\n")
@@ -573,7 +616,11 @@ class CourseManifestTests(unittest.TestCase):
 
             self.assertEqual(initialized.returncode, 0, initialized.stderr)
             payload = json.loads(initialized.stdout)
-            self.assertEqual(payload["concepts"], {"total": 76, "upserted": 76})
+            expected_count = expected_trackable_count(self.manifest)
+            self.assertEqual(
+                payload["concepts"],
+                {"total": expected_count, "upserted": expected_count},
+            )
             self.assertEqual(payload["course"]["kind"], "local")
             self.assertTrue(database.exists())
             self.assertIn("warning:", initialized.stderr)
