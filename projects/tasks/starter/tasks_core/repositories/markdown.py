@@ -11,7 +11,7 @@ _path_locks: dict[Path, RLock] = {}
 
 
 def _lock_for(path: Path) -> RLock:
-    """Provide the process-local coordination scaffold taught in Module 17."""
+    """Provide the process-local coordination scaffold taught in Chapter 19."""
 
     key = path.absolute()
     with _locks_guard:
@@ -35,7 +35,7 @@ class MarkdownTaskRepository:
 
     def __init__(self, document_path: str | Path) -> None:
         self.document_path = Path(document_path)
-        # The lock registry is supplied because this project precedes Module 17.
+        # The lock registry is supplied because this project precedes Chapter 19.
         # TODO(milestone 2): hold this lock across each complete load/use cycle.
         self._lock = _lock_for(self.document_path)
 

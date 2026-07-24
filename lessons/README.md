@@ -53,17 +53,21 @@ python lessons/01_python_fundamentals/01_running_python.py
 15. [`15_sql_and_sqlite/`](15_sql_and_sqlite/README.md) - connection/cursor
     ownership, relational SQL, SQLite transactions and behavior, and repository
     contract tests
-16. [`11_rest_apis_and_clients/`](11_rest_apis_and_clients/README.md) - HTTP,
-    REST boundaries, Flask, FastAPI, `urllib`, `requests`, and `httpx`
+16. [`16_http_fundamentals_and_stdlib/`](16_http_fundamentals_and_stdlib/README.md) -
+    the HTTP request/response lifecycle, URL parsing and routing, and a
+    standard-library `http.server` adapter
+17. [`17_web_apis_with_flask_and_fastapi/`](17_web_apis_with_flask_and_fastapi/README.md) -
+    minimal Flask apps and test clients, application factories, centralized
+    errors, Pydantic boundary models, and FastAPI dependencies, responses, and
+    OpenAPI
+18. [`18_http_clients_and_transports/`](18_http_clients_and_transports/README.md) -
+    `urllib.request`, status and JSON validation, error shapes, `requests`
+    sessions, `httpx` clients, and one shared transport contract
     - Complete the required
       [Task REST API and clients project](../projects/tasks/README.md) before the
-      next module.
-17. [`12_concurrency/`](12_concurrency/README.md) - threads, processes,
+      next chapter.
+19. [`12_concurrency/`](12_concurrency/README.md) - threads, processes,
     `asyncio`, bounded work, cancellation, and cleanup
-
-Modules 16 and 17 temporarily keep their existing `11_` and `12_` directory
-prefixes from before this migration; the numbered list above reflects each
-module's authoritative teaching order, not its directory name.
 
 ## ▶️ How to use a module
 
@@ -109,13 +113,13 @@ This distinction becomes important when modules are imported in module 6.
 - After module 5, build a text analyzer using functions and collections.
 - After modules 6–7, model and persist a small collection of objects.
 - After modules 8–10, add annotations, tests, logging, and a CLI.
-- After module 11, replace file persistence with a constrained SQLite schema
+- After chapter 15, replace file persistence with a constrained SQLite schema
   and parameterized repository operations.
-- After module 12, build and test one small HTTP/JSON boundary with injected
+- After chapters 16–18, build and test one small HTTP/JSON boundary with injected
   dependencies and finite client timeouts.
 - Complete the required Task project, preserving one domain and contract across
   its persistence, server, and client adapters.
-- After module 13, explain which concurrency model—if any—fits the program.
+- After chapter 19, explain which concurrency model—if any—fits the program.
 
 These checkpoints are deliberately open-ended. Define expected inputs and
 outputs first, split the work into functions, and test important edge cases.

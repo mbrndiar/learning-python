@@ -43,9 +43,11 @@ generic storage API.
 | [Module 13: debugging and CLIs](../../lessons/13_debugging_and_cli/README.md) | Provide an `argparse` CLI, custom validators, subcommands, and useful logging. |
 | [Module 14: environments, processes, and packaging](../../lessons/14_environments_processes_and_packaging/README.md) | Own subprocesses and streams, satisfy strict mypy coverage, Ruff compliance, and measured tests, and package a documented public API. |
 | [Module 15: SQL and SQLite](../../lessons/15_sql_and_sqlite/README.md) | Own connections, use schema constraints and parameterized SQL, map rows, control transactions, and satisfy one repository contract with multiple adapters. |
-| [Module 16: REST APIs and HTTP clients](../../lessons/11_rest_apis_and_clients/README.md) | Keep HTTP parsing and response validation behind injected boundaries, require finite timeouts, and test without public network access. |
+| [Chapter 16: HTTP fundamentals and the standard library](../../lessons/16_http_fundamentals_and_stdlib/README.md) | Model the HTTP request/response boundary and route by method and path with a standard-library server adapter. |
+| [Chapter 17: Web APIs with Flask and FastAPI](../../lessons/17_web_apis_with_flask_and_fastapi/README.md) | Build testable Flask and FastAPI boundaries with injected dependencies and Pydantic boundary models. |
+| [Chapter 18: HTTP clients and transports](../../lessons/18_http_clients_and_transports/README.md) | Keep HTTP parsing and response validation behind injected boundaries, require finite timeouts, and test without public network access. |
 | [Required Task REST API and clients project](../../projects/tasks/README.md) | Combine domain, repository, server, and client adapters while preserving dependency direction and one HTTP contract. |
-| [Module 17: concurrency](../../lessons/12_concurrency/README.md) | Fetch independent HTTP pages with bounded threads, deterministic collection, cancellation, and explicit cleanup. |
+| [Chapter 19: concurrency](../../lessons/12_concurrency/README.md) | Fetch independent HTTP pages with bounded threads, deterministic collection, cancellation, and explicit cleanup. |
 
 ## Normative event model
 

@@ -1,6 +1,6 @@
 ---
 name: python-learning-path
-description: Repository-specific Python learning path for the learning-python course. Use when a learner wants to start or resume the 17-module course, run or debug a lesson or exercise, assess Python, unittest, pytest, Ruff, mypy, or process failures, or complete the Task project or either required capstone milestone by milestone.
+description: Repository-specific Python learning path for the learning-python course. Use when a learner wants to start or resume the 19-module course, run or debug a lesson or exercise, assess Python, unittest, pytest, Ruff, mypy, or process failures, or complete the Task project or either required capstone milestone by milestone.
 ---
 
 # Python learning path
@@ -44,11 +44,11 @@ commands from the repository root, as required by the manifest schema.
   learner confirmation. One confirmation covers only that edit.
 - Do not commit or push unless the learner explicitly asks.
 
-## Navigate the 17 modules
+## Navigate the 19 modules
 
 Use module and concept IDs from the manifest, never titles or directory order as
-state keys. Respect prerequisites; the Task project is required after Module 16
-and before Module 17.
+state keys. Respect prerequisites; the Task project is required after Chapter 18
+and before Chapter 19.
 
 | Order | Stable module ID | Read | Focused exercise evaluator |
 | --- | --- | --- | --- |
@@ -67,8 +67,10 @@ and before Module 17.
 | 13 | `module.debugging-and-cli` | `lessons/13_debugging_and_cli/README.md` | `python exercises/13_debugging_and_cli/exercises.py` |
 | 14 | `module.environments-processes-and-packaging` | `lessons/14_environments_processes_and_packaging/README.md` | `python exercises/14_environments_processes_and_packaging/exercises.py` |
 | 15 | `module.sql-and-sqlite` | `lessons/15_sql_and_sqlite/README.md` | `python exercises/15_sql_and_sqlite/exercises.py` |
-| 16 | `module.rest-apis-and-clients` | `lessons/11_rest_apis_and_clients/README.md` | `python exercises/11_rest_apis_and_clients/exercises.py` |
-| 17 | `module.concurrency` | `lessons/12_concurrency/README.md` | `python exercises/12_concurrency/exercises.py` |
+| 16 | `module.http-fundamentals-and-stdlib` | `lessons/16_http_fundamentals_and_stdlib/README.md` | `python exercises/16_http_fundamentals_and_stdlib/exercises.py` |
+| 17 | `module.web-apis-with-flask-and-fastapi` | `lessons/17_web_apis_with_flask_and_fastapi/README.md` | `python exercises/17_web_apis_with_flask_and_fastapi/exercises.py` |
+| 18 | `module.http-clients-and-transports` | `lessons/18_http_clients_and_transports/README.md` | `python exercises/18_http_clients_and_transports/exercises.py` |
+| 19 | `module.concurrency` | `lessons/12_concurrency/README.md` | `python exercises/12_concurrency/exercises.py` |
 
 For one concept:
 
@@ -112,7 +114,7 @@ hint or changing state.
 
 ## Task project
 
-The required project sits between Modules 16 and 17
+The required project sits between Chapters 18 and 19
 (`projects/tasks/README.md:13-35`). Read its guide and specification paths before
 tests. Work one vertical milestone at a time as described at
 `projects/tasks/README.md:69-86`.

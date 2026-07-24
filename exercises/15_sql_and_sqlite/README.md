@@ -63,4 +63,4 @@ connection-private `:memory:` databases, use deterministic ordering, and close
 every connection.
 
 Continue to
-[Chapter 16: REST APIs and HTTP Clients](../../lessons/11_rest_apis_and_clients/README.md).
+[Chapter 16: HTTP Fundamentals and the Standard Library](../../lessons/16_http_fundamentals_and_stdlib/README.md).

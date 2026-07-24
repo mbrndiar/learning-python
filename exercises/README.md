@@ -25,18 +25,24 @@ Every module folder contains a primary pair:
 - `solutions.py` - a reference implementation, in case you get stuck or
   want to compare approaches. Try to solve each exercise yourself first!
 
-## 🧭 Modules 15–17 and the applied project
+## 🧭 Chapters 15–19 and the applied project
 
 Complete the advanced sequence in this order:
 
 1. [`15_sql_and_sqlite/`](15_sql_and_sqlite/README.md);
-2. [`11_rest_apis_and_clients/`](11_rest_apis_and_clients/README.md);
-3. the required
+2. [`16_http_fundamentals_and_stdlib/`](16_http_fundamentals_and_stdlib/README.md);
+3. [`17_web_apis_with_flask_and_fastapi/`](17_web_apis_with_flask_and_fastapi/README.md);
+4. [`18_http_clients_and_transports/`](18_http_clients_and_transports/README.md);
+5. the required
    [Task REST API and clients project](../projects/tasks/README.md); and
-4. [`12_concurrency/`](12_concurrency/README.md).
+6. [`12_concurrency/`](12_concurrency/README.md).
 
-The REST exercises practice request mapping, exact query parsing, error/status
-mapping, injected HTTP transports, and malformed-response validation.
+The Chapter 16 exercises practice request/response modeling, exact query
+parsing, method/route dispatch, and a standard-library handler adapter. The
+Chapter 17 exercises practice Pydantic boundary models plus Flask and FastAPI
+factories tested without a live server. The Chapter 18 exercises practice
+`urllib`, `requests`, and `httpx` transports with finite timeouts, status-first
+validation, and one shared transport contract.
 
 ## ▶️ How to work through an exercise
 

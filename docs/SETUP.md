@@ -45,12 +45,12 @@ The core course remains usable, but the optional
 ## 🧪 3. Create a virtual environment
 
 A virtual environment keeps this project's Python packages isolated from
-the rest of your system. The core lesson scripts in Modules 1–15, Module 16's
-HTTP fundamentals lesson, Module 17, and both capstones use only the standard
-library. Module 12's pytest lesson, Module 14's quality-tool and packaging labs,
-Module 16's framework/client comparisons, and the required Task project use
-project-local tools or runtime dependencies. A virtual environment keeps them
-isolated.
+the rest of your system. The core lesson scripts in Chapters 1–15, Chapter 16,
+Chapter 18's `urllib` lessons, Chapter 19, and both capstones use only the standard
+library. Chapter 12's pytest lesson, Chapter 14's quality-tool and packaging labs,
+Chapter 17's Flask and FastAPI apps, Chapter 18's `requests` and `httpx` clients,
+and the required Task project use project-local tools or runtime dependencies. A
+virtual environment keeps them isolated.
 
 ```bash
 # Create the environment (creates a .venv/ folder)
@@ -101,9 +101,9 @@ python lessons/01_python_fundamentals/01_running_python.py
 If you see `Hello, World!` printed, you're ready to start. Continue to the
 [course guide in the README](../README.md).
 
-Near the end of the course, follow the required order: Module 15 SQL/SQLite,
-Module 16 REST APIs and clients, the
-[Task REST API and clients project](../projects/tasks/README.md), Module 17
+Near the end of the course, follow the required order: Chapter 15 SQL/SQLite,
+Chapters 16–18 HTTP fundamentals, web APIs, and clients, the
+[Task REST API and clients project](../projects/tasks/README.md), Chapter 19
 concurrency, then both capstones.
 
 ## ⚡ Optional modern setup with uv

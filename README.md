@@ -40,11 +40,12 @@ By the end of the course, you will be able to:
 - The documented interpreter is CPython on Linux, macOS, or Windows. GitHub
  Actions verifies Ubuntu; platform-specific commands and project limitations
  are called out where they matter.
-- The core lesson scripts in Modules 1–15, Module 16's HTTP fundamentals
-  lesson, Module 17, and both capstones use only the standard library. Module
-  12's pytest lesson, Module 14's quality-tool and packaging labs, Module 16's
-  Flask, FastAPI, `requests`, and `httpx` comparisons, and the Task project use
-  development or runtime dependencies from this repository.
+- The core lesson scripts in Chapters 1–15, Chapter 16, Chapter 18's `urllib`
+  lessons, Chapter 19, and both capstones use only the standard library. Chapter
+  12's pytest lesson, Chapter 14's quality-tool and packaging labs, Chapter 17's
+  Flask, FastAPI, and Pydantic APIs, Chapter 18's `requests` and `httpx` clients,
+  and the Task project use development or runtime dependencies from this
+  repository.
   Task runtime dependencies are declared in
   [`projects/tasks/requirements.txt`](projects/tasks/requirements.txt).
 - Install those dependencies and the development tools
@@ -143,13 +144,13 @@ equivalent optional [uv](https://docs.astral.sh/uv/) workflow.
 
 Each module has a matching folder under [`exercises/`](exercises/README.md)
 with hands-on problems to implement yourself, plus reference solutions to
-check your work. After Module 16, complete the required
+check your work. After Chapter 18, complete the required
 [Task REST API and clients project](projects/tasks/README.md) before moving to
-Module 17.
+Chapter 19.
 
 ## 🏆 Capstone projects
 
-Once you've completed all 17 modules and the required applied project, build both
+Once you've completed all 19 modules and the required applied project, build both
 equally required
 [capstone projects](capstones/README.md):
 
@@ -248,19 +249,26 @@ reference to jog your memory after finishing the course.
     - [`03_joins_aggregates_indexes_and_plans.py`](lessons/15_sql_and_sqlite/03_joins_aggregates_indexes_and_plans.py) – inner/left joins, parameterized aggregates, indexes, and version-sensitive query plans
     - [`04_transactions_and_sqlite_behavior.py`](lessons/15_sql_and_sqlite/04_transactions_and_sqlite_behavior.py) – explicit and context-managed transactions, affinity, generated IDs, and concurrency boundaries
     - [`05_repository_and_contract_tests.py`](lessons/15_sql_and_sqlite/05_repository_and_contract_tests.py) – one protocol and behavior contract shared by in-memory and SQLite adapters
-16. **[REST APIs and HTTP Clients](lessons/11_rest_apis_and_clients/)**
-    - [`01_http_fundamentals.py`](lessons/11_rest_apis_and_clients/01_http_fundamentals.py) – methods, routes, queries, headers, statuses, bytes, UTF-8, JSON, and finite timeouts
-    - [`02_flask_api.py`](lessons/11_rest_apis_and_clients/02_flask_api.py) – an application factory, thin routes, injected dependencies, centralized errors, and Flask's test client
-    - [`03_fastapi_api.py`](lessons/11_rest_apis_and_clients/03_fastapi_api.py) – Pydantic boundary models, dependency providers, response models, exception mapping, OpenAPI, and `TestClient`
-    - [`04_http_clients.py`](lessons/11_rest_apis_and_clients/04_http_clients.py) – `urllib`, `requests`, and `httpx` transports with finite timeouts and status-first validation
+16. **[HTTP Fundamentals and the Standard Library](lessons/16_http_fundamentals_and_stdlib/)**
+    - [`01_http_request_response_lifecycle.py`](lessons/16_http_fundamentals_and_stdlib/01_http_request_response_lifecycle.py) – methods, request targets, headers, body bytes, statuses, UTF-8, JSON, and Content-Length
+    - [`02_urls_queries_and_routing.py`](lessons/16_http_fundamentals_and_stdlib/02_urls_queries_and_routing.py) – URL components, query parsing, and routing by method and path with deliberate 400/404/405 responses
+    - [`03_stdlib_http_server.py`](lessons/16_http_fundamentals_and_stdlib/03_stdlib_http_server.py) – a `BaseHTTPRequestHandler` adapter over a pure boundary with explicit server ownership
+17. **[Web APIs with Flask and FastAPI](lessons/17_web_apis_with_flask_and_fastapi/)**
+    - [`01_flask_minimal_app_and_test_client.py`](lessons/17_web_apis_with_flask_and_fastapi/01_flask_minimal_app_and_test_client.py) – a minimal Flask app, the `request` proxy, and testing without a live server
+    - [`02_flask_factory_errors_and_dependencies.py`](lessons/17_web_apis_with_flask_and_fastapi/02_flask_factory_errors_and_dependencies.py) – application factories, injected dependencies, and centralized error handlers
+    - [`03_pydantic_boundary_models.py`](lessons/17_web_apis_with_flask_and_fastapi/03_pydantic_boundary_models.py) – strict Pydantic models with `ConfigDict`, `Field`, `Annotated`, `Literal`, and `model_dump()`
+    - [`04_fastapi_dependencies_responses_and_openapi.py`](lessons/17_web_apis_with_flask_and_fastapi/04_fastapi_dependencies_responses_and_openapi.py) – synchronous `Depends`, `app.state`, `response_model`, exception overrides, `TestClient`, and generated OpenAPI
+18. **[HTTP Clients and Transports](lessons/18_http_clients_and_transports/)**
+    - [`01_urls_queries_and_urllib_request.py`](lessons/18_http_clients_and_transports/01_urls_queries_and_urllib_request.py) – build URLs, encode queries, and construct a `urllib.request.Request` with a finite timeout
+    - [`02_status_content_type_and_json_validation.py`](lessons/18_http_clients_and_transports/02_status_content_type_and_json_validation.py) – branch on status first, read content type case-insensitively, and validate decoded JSON strictly
+    - [`03_urllib_responses_and_errors.py`](lessons/18_http_clients_and_transports/03_urllib_responses_and_errors.py) – `HTTPError` as a response versus `URLError` as no response, distinguishing timeouts
+    - [`04_requests_sessions.py`](lessons/18_http_clients_and_transports/04_requests_sessions.py) – owned `requests.Session`, `params`/`json` helpers, raw bytes, and exception families
+    - [`05_httpx_clients.py`](lessons/18_http_clients_and_transports/05_httpx_clients.py) – owned `httpx.Client`, explicit timeouts, and its exception families
+    - [`06_transport_contract_and_client_policy.py`](lessons/18_http_clients_and_transports/06_transport_contract_and_client_policy.py) – one small transport `Protocol` and a client policy that validates timeouts and performs one attempt per call
     - **Required applied project:** [Task REST API and clients](projects/tasks/README.md) – implement the shared Task domain, SQLite and Markdown repositories, three server adapters, three client transports, and their contract tests
-17. **[Concurrency](lessons/12_concurrency/)**
+19. **[Concurrency](lessons/12_concurrency/)**
     - [`01_threading_and_multiprocessing.py`](lessons/12_concurrency/01_threading_and_multiprocessing.py) – threads for blocking I/O, processes for CPU-bound work, shared-state hazards, and cleanup
     - [`02_asyncio_basics.py`](lessons/12_concurrency/02_asyncio_basics.py) – cooperative concurrency, owned tasks, `async`/`await`, and `asyncio.gather`
-
-Modules 16 and 17 temporarily keep their existing `11_` and `12_` directory
-prefixes from before this migration; the numbered list above reflects each
-module's authoritative teaching order, not its directory name.
 
 Work through the lessons in order, read the comments, then try modifying the
 code to experiment with the concepts. After each module, complete the

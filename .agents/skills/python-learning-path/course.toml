@@ -703,56 +703,160 @@ lesson_file = "lessons/15_sql_and_sqlite/05_repository_and_contract_tests.py"
 run_command = "python lessons/15_sql_and_sqlite/05_repository_and_contract_tests.py"
 
 [[modules]]
-id = "module.rest-apis-and-clients"
+id = "module.http-fundamentals-and-stdlib"
 ordinal = 16
-title = "REST APIs and HTTP Clients"
+title = "HTTP Fundamentals and the Standard Library"
 prerequisites = ["module.sql-and-sqlite"]
-lesson_readme = "lessons/11_rest_apis_and_clients/README.md"
-review_questions = { path = "lessons/11_rest_apis_and_clients/README.md", heading = "❓ Review questions" }
-exercise_starter = "exercises/11_rest_apis_and_clients/exercises.py"
-exercise_solution = "exercises/11_rest_apis_and_clients/solutions.py"
-validation_commands = ["python exercises/11_rest_apis_and_clients/exercises.py"]
-solution_lock_group = "solutions.module.rest-apis-and-clients"
+lesson_readme = "lessons/16_http_fundamentals_and_stdlib/README.md"
+review_questions = { path = "lessons/16_http_fundamentals_and_stdlib/README.md", heading = "❓ Review questions (closed notes)" }
+exercise_starter = "exercises/16_http_fundamentals_and_stdlib/exercises.py"
+exercise_solution = "exercises/16_http_fundamentals_and_stdlib/solutions.py"
+validation_commands = ["python exercises/16_http_fundamentals_and_stdlib/exercises.py"]
+solution_lock_group = "solutions.module.http-fundamentals-and-stdlib"
 required_outcomes = [
-  "Distinguish HTTP methods, routes, values, headers, statuses, bytes, text, and JSON.",
-  "Keep HTTP and framework objects outside domain and repository code.",
-  "Build testable Flask and FastAPI boundaries with injected dependencies.",
-  "Map validation, not-found, protocol, malformed-response, and connection failures.",
-  "Set positive finite timeouts and validate status before response bodies.",
-  "Compare generated OpenAPI with a checked-in behavioral contract.",
+  "Identify the method, request target, headers, body bytes, status, and response headers in one HTTP exchange.",
+  "Distinguish URL paths, segments, query strings, and fragments, and parse query values without treating them as path or JSON values.",
+  "Route a request by method and path and return deliberate 200, 400, 404, and 405 responses.",
+  "Construct UTF-8 JSON responses with accurate Content-Type and Content-Length headers.",
+  "Explain how BaseHTTPRequestHandler dispatches to do_GET() and exposes command, path, headers, rfile, and wfile.",
+  "Keep protocol mapping separate from domain behavior and server ownership.",
 ]
 
 [[modules.concepts]]
-id = "concept.rest-apis-and-clients.http-fundamentals"
-title = "HTTP and JSON boundary fundamentals"
+id = "concept.http-fundamentals-and-stdlib.http-request-response-lifecycle"
+title = "HTTP request and response lifecycle"
 prerequisites = []
-lesson_file = "lessons/11_rest_apis_and_clients/01_http_fundamentals.py"
-run_command = "python lessons/11_rest_apis_and_clients/01_http_fundamentals.py"
+lesson_file = "lessons/16_http_fundamentals_and_stdlib/01_http_request_response_lifecycle.py"
+run_command = "python lessons/16_http_fundamentals_and_stdlib/01_http_request_response_lifecycle.py"
 
 [[modules.concepts]]
-id = "concept.rest-apis-and-clients.flask-api"
-title = "Flask application boundaries"
-prerequisites = ["concept.rest-apis-and-clients.http-fundamentals"]
-lesson_file = "lessons/11_rest_apis_and_clients/02_flask_api.py"
-run_command = "python lessons/11_rest_apis_and_clients/02_flask_api.py"
+id = "concept.http-fundamentals-and-stdlib.urls-queries-and-routing"
+title = "URLs, queries, and routing"
+prerequisites = ["concept.http-fundamentals-and-stdlib.http-request-response-lifecycle"]
+lesson_file = "lessons/16_http_fundamentals_and_stdlib/02_urls_queries_and_routing.py"
+run_command = "python lessons/16_http_fundamentals_and_stdlib/02_urls_queries_and_routing.py"
 
 [[modules.concepts]]
-id = "concept.rest-apis-and-clients.fastapi-api"
-title = "FastAPI application boundaries"
-prerequisites = ["concept.rest-apis-and-clients.flask-api"]
-lesson_file = "lessons/11_rest_apis_and_clients/03_fastapi_api.py"
-run_command = "python lessons/11_rest_apis_and_clients/03_fastapi_api.py"
+id = "concept.http-fundamentals-and-stdlib.stdlib-http-server"
+title = "Standard-library HTTP server adapter"
+prerequisites = ["concept.http-fundamentals-and-stdlib.urls-queries-and-routing"]
+lesson_file = "lessons/16_http_fundamentals_and_stdlib/03_stdlib_http_server.py"
+run_command = "python lessons/16_http_fundamentals_and_stdlib/03_stdlib_http_server.py"
+
+[[modules]]
+id = "module.web-apis-with-flask-and-fastapi"
+ordinal = 17
+title = "Web APIs with Flask and FastAPI"
+prerequisites = ["module.http-fundamentals-and-stdlib"]
+lesson_readme = "lessons/17_web_apis_with_flask_and_fastapi/README.md"
+review_questions = { path = "lessons/17_web_apis_with_flask_and_fastapi/README.md", heading = "❓ Review questions (closed notes)" }
+exercise_starter = "exercises/17_web_apis_with_flask_and_fastapi/exercises.py"
+exercise_solution = "exercises/17_web_apis_with_flask_and_fastapi/solutions.py"
+validation_commands = ["python exercises/17_web_apis_with_flask_and_fastapi/exercises.py"]
+solution_lock_group = "solutions.module.web-apis-with-flask-and-fastapi"
+required_outcomes = [
+  "Create a minimal Flask application, bind paths and methods, and test it without a live server.",
+  "Explain Flask's request proxy and request-context lifetime.",
+  "Construct dependencies once in an application factory and map domain and Werkzeug exceptions through centralized error handlers.",
+  "Define strict Pydantic boundary models with ConfigDict, Field, Annotated, Literal, and model_dump().",
+  "Inject a service into synchronous FastAPI handlers with Depends and store application-owned dependencies in app.state.",
+  "Constrain output with response_model, override request/domain/HTTP exception handlers deliberately, and test with TestClient.",
+  "Inspect generated OpenAPI without treating it as the sole behavioral contract.",
+]
 
 [[modules.concepts]]
-id = "concept.rest-apis-and-clients.http-clients"
-title = "Urllib, requests, and httpx transports"
-prerequisites = ["concept.rest-apis-and-clients.fastapi-api"]
-lesson_file = "lessons/11_rest_apis_and_clients/04_http_clients.py"
-run_command = "python lessons/11_rest_apis_and_clients/04_http_clients.py"
+id = "concept.web-apis-with-flask-and-fastapi.flask-minimal-app-and-test-client"
+title = "Minimal Flask app and test client"
+prerequisites = []
+lesson_file = "lessons/17_web_apis_with_flask_and_fastapi/01_flask_minimal_app_and_test_client.py"
+run_command = "python lessons/17_web_apis_with_flask_and_fastapi/01_flask_minimal_app_and_test_client.py"
+
+[[modules.concepts]]
+id = "concept.web-apis-with-flask-and-fastapi.flask-factory-errors-and-dependencies"
+title = "Flask factory, errors, and dependencies"
+prerequisites = ["concept.web-apis-with-flask-and-fastapi.flask-minimal-app-and-test-client"]
+lesson_file = "lessons/17_web_apis_with_flask_and_fastapi/02_flask_factory_errors_and_dependencies.py"
+run_command = "python lessons/17_web_apis_with_flask_and_fastapi/02_flask_factory_errors_and_dependencies.py"
+
+[[modules.concepts]]
+id = "concept.web-apis-with-flask-and-fastapi.pydantic-boundary-models"
+title = "Pydantic boundary models"
+prerequisites = ["concept.web-apis-with-flask-and-fastapi.flask-factory-errors-and-dependencies"]
+lesson_file = "lessons/17_web_apis_with_flask_and_fastapi/03_pydantic_boundary_models.py"
+run_command = "python lessons/17_web_apis_with_flask_and_fastapi/03_pydantic_boundary_models.py"
+
+[[modules.concepts]]
+id = "concept.web-apis-with-flask-and-fastapi.fastapi-dependencies-responses-and-openapi"
+title = "FastAPI dependencies, responses, and OpenAPI"
+prerequisites = ["concept.web-apis-with-flask-and-fastapi.pydantic-boundary-models"]
+lesson_file = "lessons/17_web_apis_with_flask_and_fastapi/04_fastapi_dependencies_responses_and_openapi.py"
+run_command = "python lessons/17_web_apis_with_flask_and_fastapi/04_fastapi_dependencies_responses_and_openapi.py"
+
+[[modules]]
+id = "module.http-clients-and-transports"
+ordinal = 18
+title = "HTTP Clients and Transports"
+prerequisites = ["module.web-apis-with-flask-and-fastapi"]
+lesson_readme = "lessons/18_http_clients_and_transports/README.md"
+review_questions = { path = "lessons/18_http_clients_and_transports/README.md", heading = "❓ Review questions (closed notes)" }
+exercise_starter = "exercises/18_http_clients_and_transports/exercises.py"
+exercise_solution = "exercises/18_http_clients_and_transports/solutions.py"
+validation_commands = ["python exercises/18_http_clients_and_transports/exercises.py"]
+solution_lock_group = "solutions.module.http-clients-and-transports"
+required_outcomes = [
+  "Build a URL, encode a query with urllib.parse, and construct a urllib.request.Request.",
+  "Open a request through an opener with a finite timeout and own the response lifetime with a context manager.",
+  "Branch on status first, read the content type case-insensitively, decode UTF-8 JSON, and validate a response shape and values strictly.",
+  "Treat HTTPError as a response-bearing object and URLError as no response, distinguishing a timeout from other connection failures.",
+  "Own a requests.Session and an httpx.Client, use their params/json helpers, read raw bytes, set explicit timeouts, and classify their exception families.",
+  "Define one small transport Protocol and a client policy that validates the timeout and performs exactly one attempt per call.",
+]
+
+[[modules.concepts]]
+id = "concept.http-clients-and-transports.urls-queries-and-urllib-request"
+title = "URLs, queries, and urllib.request"
+prerequisites = []
+lesson_file = "lessons/18_http_clients_and_transports/01_urls_queries_and_urllib_request.py"
+run_command = "python lessons/18_http_clients_and_transports/01_urls_queries_and_urllib_request.py"
+
+[[modules.concepts]]
+id = "concept.http-clients-and-transports.status-content-type-and-json-validation"
+title = "Status, content type, and JSON validation"
+prerequisites = ["concept.http-clients-and-transports.urls-queries-and-urllib-request"]
+lesson_file = "lessons/18_http_clients_and_transports/02_status_content_type_and_json_validation.py"
+run_command = "python lessons/18_http_clients_and_transports/02_status_content_type_and_json_validation.py"
+
+[[modules.concepts]]
+id = "concept.http-clients-and-transports.urllib-responses-and-errors"
+title = "urllib responses and errors"
+prerequisites = ["concept.http-clients-and-transports.status-content-type-and-json-validation"]
+lesson_file = "lessons/18_http_clients_and_transports/03_urllib_responses_and_errors.py"
+run_command = "python lessons/18_http_clients_and_transports/03_urllib_responses_and_errors.py"
+
+[[modules.concepts]]
+id = "concept.http-clients-and-transports.requests-sessions"
+title = "Requests sessions"
+prerequisites = ["concept.http-clients-and-transports.urllib-responses-and-errors"]
+lesson_file = "lessons/18_http_clients_and_transports/04_requests_sessions.py"
+run_command = "python lessons/18_http_clients_and_transports/04_requests_sessions.py"
+
+[[modules.concepts]]
+id = "concept.http-clients-and-transports.httpx-clients"
+title = "HTTPX clients"
+prerequisites = ["concept.http-clients-and-transports.requests-sessions"]
+lesson_file = "lessons/18_http_clients_and_transports/05_httpx_clients.py"
+run_command = "python lessons/18_http_clients_and_transports/05_httpx_clients.py"
+
+[[modules.concepts]]
+id = "concept.http-clients-and-transports.transport-contract-and-client-policy"
+title = "Transport contract and client policy"
+prerequisites = ["concept.http-clients-and-transports.httpx-clients"]
+lesson_file = "lessons/18_http_clients_and_transports/06_transport_contract_and_client_policy.py"
+run_command = "python lessons/18_http_clients_and_transports/06_transport_contract_and_client_policy.py"
 
 [[modules]]
 id = "module.concurrency"
-ordinal = 17
+ordinal = 19
 title = "Concurrency"
 prerequisites = ["project.tasks-rest-api-clients"]
 lesson_readme = "lessons/12_concurrency/README.md"
@@ -786,7 +890,7 @@ run_command = "python lessons/12_concurrency/02_asyncio_basics.py"
 id = "project.tasks-rest-api-clients"
 title = "Task REST API and clients"
 required = true
-prerequisites = ["module.sql-and-sqlite", "module.rest-apis-and-clients"]
+prerequisites = ["module.sql-and-sqlite", "module.http-fundamentals-and-stdlib", "module.web-apis-with-flask-and-fastapi", "module.http-clients-and-transports"]
 guide_path = "projects/tasks/README.md"
 specification_paths = [
   "projects/tasks/docs/SPEC.md",
@@ -1097,8 +1201,20 @@ unlock_policy = "after-unit-validation"
 solution_unlock_after = 1
 
 [[solution_lock_groups]]
-id = "solutions.module.rest-apis-and-clients"
-paths = ["exercises/11_rest_apis_and_clients/solutions.py"]
+id = "solutions.module.http-fundamentals-and-stdlib"
+paths = ["exercises/16_http_fundamentals_and_stdlib/solutions.py"]
+unlock_policy = "after-unit-validation"
+solution_unlock_after = 1
+
+[[solution_lock_groups]]
+id = "solutions.module.web-apis-with-flask-and-fastapi"
+paths = ["exercises/17_web_apis_with_flask_and_fastapi/solutions.py"]
+unlock_policy = "after-unit-validation"
+solution_unlock_after = 1
+
+[[solution_lock_groups]]
+id = "solutions.module.http-clients-and-transports"
+paths = ["exercises/18_http_clients_and_transports/solutions.py"]
 unlock_policy = "after-unit-validation"
 solution_unlock_after = 1
 

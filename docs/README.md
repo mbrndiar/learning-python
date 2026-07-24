@@ -12,7 +12,7 @@ themselves.
   Mentor in GitHub Copilot CLI, OpenAI Codex, or Claude Code, including
   start/resume state, solution locks, reviews, and milestone coaching.
 - [`../projects/tasks/`](../projects/tasks/README.md) - the current required
-  applied project between Module 16 REST APIs/clients and Module 17 concurrency.
+  applied project between Chapter 18 HTTP clients and Chapter 19 concurrency.
 
 Core teaching material lives in each module's `README.md` and runnable lesson
 files. Start from the repository's [main course guide](../README.md), not this
