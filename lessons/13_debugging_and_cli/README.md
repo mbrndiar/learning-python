@@ -55,81 +55,252 @@ log record is a deliberate, filterable diagnostic with a severity level.
 Libraries create a named logger and emit records; the *application* decides
 once, at its boundary, what level to show and where records go.
 
-## 🧩 Progressive syntax and mechanism
+## 1️⃣ Tracebacks and interactive debugging with pdb
 
-1. **Reading a traceback.** The final line is `ExceptionType: message`.
-   The frames above are the call stack, deepest last. Find the first frame
-   in *your* code and inspect the values there.
-2. **Common exceptions.** `ValueError`, `IndexError`, `KeyError`, and
-   `AttributeError` cover most everyday failures; the message tells you
-   which assumption broke.
-3. **`pdb`.** Run `python -m pdb script.py`, then at the `(Pdb)` prompt use
-   `break func`, `continue`, `p expr`, `where`, `next`, `step`, `list`, and
-   `quit`. `breakpoint()` pauses from inside code; never leave it committed.
-4. **Core-behavior function.** Keep the real logic in a plain function that
-   does not print, read `argv`, or exit.
-5. **`argparse.ArgumentParser`.** Each `add_argument` declares one input: a
-   positional argument, an option (`--count`) with `type=`/`default=`, or a
-   boolean flag with `action="store_true"`. `--help` and usage text are
-   generated for you.
-6. **Parsing at the boundary.** `parser.parse_args(argv)` returns a
-   `Namespace`. Passing `argv` explicitly keeps the boundary testable;
-   `None` reads the real process command line.
-7. **Custom validators.** A `type=` callable converts one string and raises
-   `argparse.ArgumentTypeError` on bad input, so argparse prints your
-   precise validation message and exits with status 2. It also catches
-   `ValueError`/`TypeError`, but reports only a generic "invalid value".
-8. **Subcommands.** `parser.add_subparsers(dest="command", required=True)`
-   creates a command slot; each `add_parser("name")` defines that command's
-   own arguments.
-9. **`logging`.** A library module calls `logging.getLogger(__name__)` and
-   emits records with lazy `%`-style formatting (`logger.info("total %d",
-   n)`). The application calls `logging.basicConfig(...)` once to choose the
-   level, format, and destination. Log identifiers and context, never
-   secrets.
+The final traceback line is always `ExceptionType: message` -- read it
+first. The frames above are the call stack, deepest last; find the first
+one in *your* code and inspect the values there instead of guessing.
+`ValueError`, `IndexError`, `KeyError`, and `AttributeError` cover most
+everyday failures, and each message names exactly which assumption broke.
+`pdb` lets you pause a running program and ask it what it actually
+believes, rather than reasoning only from the source.
 
-## 📖 Read-predict-run-modify workflow
+```python
+def average(numbers: list[float]) -> float:
+    """Deliberately buggy for numbers=[] to produce a traceback."""
+    return sum(numbers) / len(numbers)
 
-Read each file top to bottom, predict its output, then run it:
+
+def demo_traceback() -> None:
+    try:
+        average([])
+    except ZeroDivisionError:
+        traceback.print_exc(file=sys.stdout)
+```
+
+```text
+Traceback (most recent call last):
+  File ".../01_tracebacks_and_pdb.py", line 32, in demo_traceback
+    average([])
+  File ".../01_tracebacks_and_pdb.py", line 24, in average
+    return sum(numbers) / len(numbers)
+           ~~~~~~~~~~~~~^~~~~~~~~~~~~~
+ZeroDivisionError: division by zero
+```
+
+This lesson **never launches the interactive debugger for you** -- it
+only prints the exact `pdb` commands to try, so running it as a plain
+script stays deterministic and non-blocking:
 
 ```bash
 python lessons/13_debugging_and_cli/01_tracebacks_and_pdb.py
+```
+
+See [`01_tracebacks_and_pdb.py`](01_tracebacks_and_pdb.py) for the full
+sequence, including `demo_common_errors`, which catches `ValueError`,
+`IndexError`, `KeyError`, and `AttributeError` from four small, deliberate
+mistakes and prints each real message.
+
+> **Try one change (a separate, manual shell/tool session -- not
+> something the lesson script runs for you):**
+>
+> ```bash
+> python -m pdb lessons/13_debugging_and_cli/01_tracebacks_and_pdb.py
+> ```
+>
+> At the `(Pdb)` prompt: `break average`, `continue`, `p numbers`,
+> `p len(numbers)`, `where`, then `quit`. This confirms the buggy
+> assumption (`numbers` is empty) interactively. Because you launch and
+> quit this session yourself, it stays bounded; treat any `breakpoint()`
+> the same way -- a manual, temporary aid you remove before committing,
+> never something left in committed code.
+
+## 2️⃣ Command-line argument parsing at the boundary
+
+`argparse` turns raw `sys.argv` strings into a validated `Namespace` at
+the program's boundary, while the real behavior stays in a plain function
+that takes ordinary arguments and knows nothing about argv, printing, or
+exit codes -- exactly the separation that keeps it directly testable.
+Each `add_argument` call declares one input: a positional argument, an
+option with a value (`type=`, `default=`), or a boolean flag
+(`action="store_true"`).
+
+```python
+def build_greeting(name: str, *, shout: bool = False) -> str:
+    message = f"Hello, {name}!"
+    return message.upper() if shout else message
+
+
+def run(argv: Sequence[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
+    for _ in range(args.count):
+        print(build_greeting(args.name, shout=args.shout))
+    return 0
+```
+
+```text
+Fixed example (['Ada', '--count', '2', '--shout']):
+HELLO, ADA!
+HELLO, ADA!
+
+`input()` reads one typed line; it is commented out so this
+lesson runs non-interactively. Try it locally by uncommenting:
+
+Now parsing the real command line (if you passed any):
+Hello, World!
+```
+
+`parser.parse_args(argv)` returns the `Namespace`; passing `argv`
+explicitly (as the fixed example does) keeps that call testable, while
+`None` reads the real process command line (the second block above, run
+with no arguments, so it falls back to the positional default
+`"World"`).
+
+Run the complete companion (a runnable script that also parses the real
+command line after its fixed example):
+
+```bash
 python lessons/13_debugging_and_cli/02_argparse_basics.py
+```
+
+See [`02_argparse_basics.py`](02_argparse_basics.py) for the full
+sequence, including `build_parser`, which wires the positional argument,
+`--count`, and `--shout` together.
+
+> **Try one change:** run the same script with your own arguments, e.g.
+> `python lessons/13_debugging_and_cli/02_argparse_basics.py Grace
+> --count 1`. Predict the result: only the second, real-argv section
+> changes to `Hello, Grace!`; the fixed example's two `HELLO, ADA!` lines
+> are unaffected, because they call `run([...])` with an explicit list,
+> not the real command line.
+
+## 3️⃣ Subcommands and custom validation
+
+A `type=` callable converts and validates one string argument; raising
+`argparse.ArgumentTypeError("must be positive")` gives argparse a precise
+usage message. argparse also catches a plain `ValueError`/`TypeError` from
+a validator, but downgrades it to a generic "invalid value" -- use
+`ArgumentTypeError` when the message itself matters.
+`parser.add_subparsers(dest="command", required=True)` creates a command
+slot, and each `commands.add_parser("name")` defines that subcommand's own
+arguments independently.
+
+```python
+def positive_int(text: str) -> int:
+    try:
+        value = int(text)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError("must be an integer") from error
+    if value <= 0:
+        raise argparse.ArgumentTypeError("must be positive")
+    return value
+
+
+commands = parser.add_subparsers(dest="command", required=True)
+add_parser = commands.add_parser("add", help="Add a note")
+add_parser.add_argument("--priority", type=positive_int, default=1, ...)
+```
+
+```text
+Example: add a note with a valid priority
+add: text='Read argparse docs' priority=3
+
+Example: list with a flag
+list: pending_only=True
+
+Example: an invalid priority is rejected at the boundary
+argparse exited with status 2 (2 means usage error)
+```
+
+An invalid value at this boundary makes `parse_args` call `sys.exit(2)`
+-- status 2 is argparse's usage-error convention. The companion's own
+`try`/`except SystemExit` block around the last example is what lets the
+lesson keep running afterward and print that final line.
+
+Run the complete companion:
+
+```bash
 python lessons/13_debugging_and_cli/03_subcommands_and_custom_validation.py
+```
+
+See
+[`03_subcommands_and_custom_validation.py`](03_subcommands_and_custom_validation.py)
+for the full sequence, including the `list` subcommand's independent
+`--pending-only` flag.
+
+> **Try one change:** pass an invalid priority to the parser yourself,
+> without the companion's `try`/`except` safety net, to see the raw usage
+> error and process exit status directly:
+>
+> ```bash
+> python -c "
+> import sys; sys.path.insert(0, 'lessons/13_debugging_and_cli')
+> mod = __import__('03_subcommands_and_custom_validation')
+> mod.build_parser().parse_args(['add', 'x', '--priority', '0'])
+> "; echo "exit status: $?"
+> ```
+>
+> Predict the result: argparse prints its own usage text to stderr, and
+> the exit status is `2` -- the exact code the companion's internal
+> example already reports, now observed directly instead of caught.
+
+## 4️⃣ Logging and diagnostics
+
+A module creates its own logger with `logging.getLogger(__name__)` and
+never configures handlers or the global level itself -- **the application
+owns that configuration**, once, at its entry point. `logger.debug("...
+%d ...", value)` uses lazy `%`-style formatting: the message is only
+built if the level is enabled, so a disabled debug call costs almost
+nothing. Log identifiers and context, never secret values.
+
+```python
+logger = logging.getLogger(__name__)
+
+
+def calculate_total(prices: list[float]) -> float:
+    logger.debug("calculating total for %d prices", len(prices))
+    total = sum(prices)
+    logger.info("calculated total %.2f", total)
+    return total
+
+
+def main() -> None:
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(levelname)s %(name)s: %(message)s",
+    )
+```
+
+```text
+DEBUG __main__: calculating total for 3 prices
+INFO __main__: calculated total 20.00
+INFO __main__: authenticating user ada
+INFO __main__: authenticating user grace
+WARNING __main__: missing token for user grace
+```
+
+Because `main()` -- the application's boundary, not `calculate_total` or
+`authenticate` -- calls `basicConfig(level=logging.DEBUG, ...)`, both
+`DEBUG` and `INFO` records appear here; `authenticate` logs the username
+but never the token value, even when it is missing.
+
+Run the complete companion:
+
+```bash
 python lessons/13_debugging_and_cli/04_logging_and_diagnostics.py
 ```
 
-### Expected output highlights
+See
+[`04_logging_and_diagnostics.py`](04_logging_and_diagnostics.py) for the
+full sequence, including the printed comparison of `print()`, `pdb`, and
+`logging`.
 
-- `01_tracebacks_and_pdb.py`: prints one caught example traceback, a table
-  of common exceptions and their messages, and the exact `pdb` commands to
-  try. It never launches the interactive debugger for you, so it stays
-  deterministic; the debugger session is a hands-on lab you run yourself.
-- `02_argparse_basics.py`: runs a fixed example
-  (`['Ada', '--count', '2', '--shout']`) that prints `HELLO, ADA!` twice,
-  then parses any real arguments you pass.
-- `03_subcommands_and_custom_validation.py`: shows the `add` and `list`
-  subcommands and demonstrates that `--priority 0` is rejected at the
-  boundary with exit status 2.
-- `04_logging_and_diagnostics.py`: configures logging once, prints DEBUG and
-  INFO records for a total calculation, a WARNING when a token is missing,
-  and a summary of when to use `print()`, `pdb`, or `logging`.
-
-### Try the pdb lab yourself
-
-Lesson 1 is deterministic on purpose, but debugging is a skill you learn by
-doing. Run the guided session and confirm the buggy assumption:
-
-```bash
-python -m pdb lessons/13_debugging_and_cli/01_tracebacks_and_pdb.py
-```
-
-At the `(Pdb)` prompt: `break average`, `continue`, `p numbers`,
-`p len(numbers)`, `where`, then `quit`.
-
-Then modify something and predict the new result: change a `parametrize`-style
-example in the argparse lesson, or add a `logger.debug(...)` call and confirm
-it only appears because the application set `level=logging.DEBUG`.
+> **Try one change:** predict which lines disappear if `main()`'s
+> `basicConfig(level=logging.DEBUG, ...)` were changed to
+> `level=logging.WARNING`. Both `logger.debug` and `logger.info` calls
+> stop appearing (their level is below the new threshold), while
+> `logger.warning("missing token for user %s", "grace")` still prints --
+> only the application's configured level changed, not any call site.
 
 ## 🔁 Transition ahead
 

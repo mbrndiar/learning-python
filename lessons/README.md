@@ -1,10 +1,13 @@
 # 🎓 Lessons
 
-This is the main course content: small, self-contained, runnable scripts that
-teach Python from the ground up. Each module builds on the ones before it, so
-work through them in order.
+This is the main course content. Each module combines a self-contained,
+textbook-style `README.md` chapter with small runnable `.py` companions. The
+chapter teaches the concept and explains its examples; the companions let you
+observe the complete mechanism and safely vary one assumption. Modules build on
+the ones before them, so work through them in order.
 
-Run any lesson file from the repository root, for example:
+Open a module below and read its chapter first. Run its companion commands from
+the repository root, for example:
 
 ```bash
 python lessons/01_python_fundamentals/01_running_python.py
@@ -71,10 +74,14 @@ python lessons/01_python_fundamentals/01_running_python.py
 
 ## ▶️ How to use a module
 
-1. Open the lesson file(s) in order and read the docstrings and comments.
-2. Run the file to see the output.
-3. Tweak the code and re-run it to check your understanding.
-4. Complete the matching exercises in
+1. Read the module `README.md` one numbered concept section at a time.
+2. Follow that section's link to its runnable companion and read the docstring
+   and `Step` comments.
+3. Predict the output, then run the exact command shown in the chapter.
+4. Make the bounded experiment suggested by the chapter and explain the
+   observed change.
+5. Answer the closed-notes review questions and complete the matching exercises
+   in
    [`exercises/`](../exercises/README.md) before moving to the next module.
 
 ## 🔁 Recommended study loop
@@ -94,10 +101,13 @@ Close the lesson and rebuild a small example from memory before moving on.
 
 ## 🧱 How the examples are structured
 
-Each `.py` file starts with a module docstring describing its topic. Inline
-comments explain the reason for an operation rather than merely repeating the
-code. Most demonstrations execute when the file is run. Files containing
-reusable functions commonly protect demonstrations with:
+Each module `README.md` is independently readable and includes small authentic
+fragments, but does not duplicate an entire program. Its `.py` companions
+contain the complete runnable demonstrations. Each companion starts with a
+module docstring describing its topic, while inline comments explain the reason
+for an operation rather than merely repeating the code. Most demonstrations
+execute when the file is run. Files containing reusable functions commonly
+protect demonstrations with:
 
 ```python
 if __name__ == "__main__":

@@ -49,65 +49,442 @@ means every file operation in this chapter can be explained in terms of a
 mechanism you already understand, instead of introducing `try`/`except`
 as an afterthought bolted onto file-handling examples.
 
-## 🧩 Progressive syntax and mechanism
+## 1️⃣ Traceback propagation, narrow except, else, finally, and chaining
 
-1. **Propagation.** Raising an exception unwinds the call stack, frame by
-   frame, until a matching `except` is found; `error.__traceback__` records
-   every frame it passed through.
-2. **Narrow `except`.** Name the specific exception type(s) a handler can
-   recover from; a bare `except:` or `except Exception:` also hides
-   unrelated bugs instead of letting them surface.
-3. **`else` and `finally`.** `else` runs only if the `try` block raised
-   nothing; `finally` runs unconditionally, for cleanup that must always
-   happen.
-4. **Bare `raise` and chaining.** A bare `raise` inside an `except` block
-   re-raises the exception being handled, unchanged; `raise NewError(...)
-   from original` attaches `original` as `__cause__`, documenting a
-   deliberate translation.
-5. **`Path` values.** `pathlib.Path` represents a location without
-   touching the filesystem until you call a method; `/` joins segments;
-   relative paths resolve against `Path.cwd()` unless anchored to
-   `__file__`.
-6. **Directory iteration and metadata.** `iterdir()` lists immediate
-   children; `glob()`/`rglob()` match patterns non-recursively/recursively;
-   `stat()` exposes size and timestamps; a missing path raises
-   `FileNotFoundError` rather than returning a placeholder.
-7. **Files, modes, and ownership.** `open(path, mode, encoding=...)` for
-   text, `"rb"`/`"wb"` for binary (no encoding); explicit `try`/`finally`
-   closes a file by hand before `with` automates the same guarantee.
-8. **Newlines.** Text mode translates platform line endings to `"\n"` on
-   read (and back on write) unless `newline=""` disables that translation.
-9. **`with`, `__enter__`/`__exit__`, and `closing`.** `with` guarantees
-   `__exit__` (or `close()`, via `contextlib.closing`) runs whether the
-   block succeeded or raised; an active `memoryview` keeps its exporter
-   alive and blocks resizing until `release()`.
+Raising an exception immediately stops normal execution and unwinds the
+call stack, one frame at a time, until a matching `except` is found:
 
-## 📖 Read-predict-run-modify workflow
+```python
+import traceback
 
-Work through the four lesson files in order, predicting each output
-before running:
+
+def inner():
+    raise ValueError("something inner went wrong")
+
+
+def middle():
+    inner()  # no try here -- ValueError simply keeps propagating outward
+
+
+def outer():
+    try:
+        middle()
+    except ValueError as error:
+        frames = traceback.extract_tb(error.__traceback__)
+        print("Frames the exception passed through:", [frame.name for frame in frames])
+
+
+outer()
+```
+
+```text
+Frames the exception passed through: ['outer', 'middle', 'inner']
+```
+
+`error.__traceback__` records every frame the exception passed through on
+its way up -- `middle` and `inner` both appear, even though `outer` is the
+only place with a `try`/`except`.
+
+### A narrow `except` names exactly what it can recover from
+
+```python
+def safe_divide(a, b):
+    try:
+        return a / b
+    except ZeroDivisionError:
+        return None
+
+
+print(safe_divide(10, 2))
+print(safe_divide(10, 0))
+```
+
+```text
+5.0
+None
+```
+
+This handler recovers from exactly `ZeroDivisionError`. Any other
+exception -- a `TypeError` from a non-numeric argument, say -- still
+propagates normally. A bare `except:` (or `except Exception:`) would also
+swallow those unrelated bugs, letting them fail silently instead of
+surfacing as real defects.
+
+### `else` runs only on success; `finally` always runs
+
+```python
+try:
+    result = 10 / 2
+except ZeroDivisionError:
+    print("division by zero")
+else:
+    print(f"= {result}")
+finally:
+    print("(checked)")
+```
+
+```text
+= 5.0
+(checked)
+```
+
+`else` runs only if the `try` block raised nothing -- code that should run
+on success, but that should not itself be caught by the `except` clauses,
+belongs here. `finally` runs unconditionally, after whichever branch ran,
+for cleanup that must always happen (even if a `return` occurs inside the
+`try` or `except` block).
+
+### Bare `raise` re-raises; `raise ... from ...` chains
+
+```python
+def parse_amount(text):
+    try:
+        return int(text)
+    except ValueError as error:
+        raise ValueError(f"amount must be a whole number: {text!r}") from error
+
+
+try:
+    parse_amount("many")
+except ValueError as error:
+    print("Translated error:", error)
+    print("original cause:", type(error.__cause__).__name__, "-", error.__cause__)
+```
+
+```text
+Translated error: amount must be a whole number: 'many'
+original cause: ValueError - invalid literal for int() with base 10: 'many'
+```
+
+A bare `raise` inside an `except` block (used for logging or partial
+cleanup) re-raises the exception being handled, unchanged, with its
+original traceback intact. `raise NewError(...) from original` instead
+attaches `original` as `__cause__`, so readers see both the translated
+error raised on purpose and the low-level error that triggered it.
+
+Run the complete companion:
 
 ```bash
 python lessons/07_exceptions_files_and_paths/01_exception_flow.py
+```
+
+See [`01_exception_flow.py`](01_exception_flow.py) for the full sequence,
+including multiple `except` clauses handling distinct failures distinctly.
+
+> **Try one change:** in `parse_amount`, change `raise ValueError(...) from
+> error` to plain `raise ValueError(...)` (no `from`). Predict what
+> `error.__cause__` becomes; Python still records the earlier exception as
+> `__context__` automatically, but only `from` promotes it to an explicit
+> `__cause__`.
+
+## 2️⃣ `Path`, relative and absolute paths, iteration, and metadata
+
+`pathlib.Path` represents a filesystem location as a value. Building one
+does not touch the filesystem or change the process's working directory:
+
+```python
+from pathlib import Path
+
+relative_path = Path("project") / "data" / "report.txt"
+print(relative_path.as_posix())
+print(relative_path.is_absolute())
+```
+
+```text
+project/data/report.txt
+False
+```
+
+`/` between `Path` segments joins them, unrelated to numeric division. A
+relative path used for I/O resolves against `Path.cwd()` (wherever the
+caller started Python) unless anchored to `__file__` (this script's own
+location) instead -- `Path.cwd() / relative_path` and
+`Path(__file__).resolve().parent / relative_path` are both absolute, but
+for different reasons.
+
+### Metadata: `exists`, `is_dir`, `is_file`, `stat`
+
+```python
+draft = data / "draft.txt"
+draft.write_text("alpha\n", encoding="utf-8")
+
+print(draft.is_file())
+print(draft.stat().st_size)
+```
+
+```text
+True
+6
+```
+
+`stat()` exposes details such as `st_size` (byte count) and timestamps.
+A missing path raises `FileNotFoundError` from `.stat()`, the same
+exception vocabulary Section 1 covered -- `Path` never silently returns a
+placeholder for something that is not there.
+
+### Iteration: `iterdir`, `glob`, `rglob`
+
+```python
+children = sorted(path.name for path in project.iterdir())
+direct_text = sorted(path.name for path in data.glob("*.txt"))
+```
+
+```text
+['data', 'notes.md']
+['draft.txt']
+```
+
+`iterdir()` lists immediate children only; `glob()` matches a pattern in
+one directory; `rglob()` matches the same pattern recursively. Filesystems
+make no ordering promise, so this lesson sorts wherever output or
+comparisons need a deterministic order.
+
+### Everything here runs inside a cleaned-up temporary directory
+
+```python
+import tempfile
+
+temporary = tempfile.TemporaryDirectory(prefix="paths_lesson_")
+try:
+    root = Path(temporary.name)
+    ...
+finally:
+    temporary.cleanup()
+
+print("Temporary tree removed:", not root.exists())
+```
+
+```text
+Temporary tree removed: True
+```
+
+`cleanup()` removes the directory and everything inside it; the `finally`
+clause (Section 1) guarantees that cleanup runs even if an earlier step in
+the `try` block had failed.
+
+Run the complete companion:
+
+```bash
 python lessons/07_exceptions_files_and_paths/02_paths_and_directories.py
+```
+
+See
+[`02_paths_and_directories.py`](02_paths_and_directories.py) for the full
+sequence, including the missing-path `FileNotFoundError` check.
+
+> **Try one change:** change `data.glob("*.txt")` to `data.glob("*.csv")`
+> and predict the new sorted list. `glob()` only matches the given
+> directory; `rglob()` would also find a same-named file nested deeper.
+
+## 3️⃣ Open modes, encodings, newline behavior, and bytes
+
+`open()` returns a file object that must be closed to release the
+underlying OS resource and guarantee buffered writes reach disk. Before
+`with` (Section 4), that is the caller's job:
+
+```python
+file = open(manual_path, "w", encoding="utf-8")
+try:
+    file.write("Opened and closed by hand.\n")
+finally:
+    file.close()
+print("File closed manually:", file.closed)
+```
+
+```text
+File closed manually: True
+```
+
+This explicit `try`/`finally` is the same pattern Section 1 used for
+`finally` -- `with` in Section 4 is a convenience over it, not unrelated
+magic. `"w"` creates or truncates a file; `"a"` appends; `"r"` (the
+default) reads.
+
+### Newline translation applies to text mode only
+
+```python
+mixed_path.write_bytes(b"first\r\nsecond\nthird\r")
+
+handle = open(mixed_path, encoding="utf-8")
+translated = handle.read()
+handle.close()
+
+handle = open(mixed_path, encoding="utf-8", newline="")
+untranslated = handle.read()
+handle.close()
+
+print(translated.splitlines())
+print(repr(untranslated))
+```
+
+```text
+['first', 'second', 'third']
+'first\r\nsecond\nthird\r'
+```
+
+Text mode translates `"\r\n"`, `"\n"`, and `"\r"` to `"\n"` on read by
+default. `newline=""` disables that translation, so `read()` preserves the
+exact line-ending sequences found on disk -- it still decodes bytes to
+`str` using the given encoding; only the newline handling changes.
+
+### Binary mode transfers bytes unchanged
+
+```python
+binary_payload = b"\x00Python\xff"
+handle = open(binary_path, "wb")
+handle.write(binary_payload)
+handle.close()
+
+handle = open(binary_path, "rb")
+binary_contents = handle.read()
+handle.close()
+
+print(binary_contents)
+assert binary_contents == binary_payload
+```
+
+```text
+b'\x00Python\xff'
+```
+
+No `encoding` parameter exists for `"wb"`/`"rb"`, because there is no text
+to decode -- bytes go in and the identical bytes come back out.
+
+Run the complete companion:
+
+```bash
 python lessons/07_exceptions_files_and_paths/03_text_and_binary_files.py
+```
+
+See [`03_text_and_binary_files.py`](03_text_and_binary_files.py) for the
+full sequence, including writing, appending, and rereading a text file.
+
+> **Try one change:** remove `newline=""` from the `untranslated` read
+> above and predict how `repr(untranslated)` changes. The file on disk
+> does not change; only what `read()` hands back changes.
+
+## 4️⃣ `with`, `__enter__`/`__exit__`, `closing`, and memoryview lifetime
+
+`with` replaces the manual `try`/`finally` from Section 3 with one
+guarantee: the object following `with` has its cleanup method called when
+the block ends, whether it ended normally or by raising.
+
+```python
+with open(sample_path, "w", encoding="utf-8") as handle:
+    handle.write("first line\n")
+print("File closed after the with block:", handle.closed)
+```
+
+```text
+File closed after the with block: True
+```
+
+### A class becomes usable with `with` via `__enter__`/`__exit__`
+
+Chapter 9 teaches classes, `self`, and `__init__` in depth. Here they are a
+bounded preview used only to hand-write the two methods required by the `with`
+protocol.
+
+```python
+class ManagedFile:
+    def __init__(self, path, mode):
+        self.path = path
+        self.mode = mode
+        self.file = None
+
+    def __enter__(self):
+        self.file = open(self.path, self.mode, encoding="utf-8")
+        return self.file
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if self.file:
+            self.file.close()
+        return False
+```
+
+`__enter__` runs at the start of the block and returns the value bound by
+`as`; `__exit__` runs at the end -- on success and on failure alike.
+Returning a truthy value from `__exit__` would suppress an active
+exception; returning `False` (or `None`) preserves it after cleanup runs.
+
+### `__exit__` runs even when the block raises
+
+```python
+try:
+    with ManagedFile(sample_path, "a") as handle:
+        handle.write("third line\n")
+        raise RuntimeError("simulated failure inside the block")
+except RuntimeError as error:
+    print("Caught after cleanup already ran:", error)
+print("ManagedFile closed even after an error:", handle.closed)
+```
+
+```text
+Caught after cleanup already ran: simulated failure inside the block
+ManagedFile closed even after an error: True
+```
+
+`handle.closed` is `True` even though the `with` block raised on purpose:
+`__exit__` ran and closed the file before the exception reached the
+`except` clause outside it.
+
+### `contextlib.closing` adapts a `.close()`-only object
+
+```python
+from contextlib import closing
+
+legacy = LegacyResource()  # only defines .close(), no __enter__/__exit__
+with closing(legacy):
+    print("closed inside the block?", legacy.closed)
+print("closed after the block:", legacy.closed)
+```
+
+```text
+closed inside the block? False
+closed after the block: True
+```
+
+`closing()` guarantees `close()` runs at the end of the block for any
+object that offers `.close()` but does not implement the context manager
+protocol itself.
+
+### An active `memoryview` blocks resizing its exporter
+
+```python
+payload = bytearray(b"binary-data")
+view = memoryview(payload)
+try:
+    payload.extend(b"!")
+except BufferError:
+    print("Resize blocked while memoryview is active")
+
+view.release()
+payload.extend(b"!")
+```
+
+```text
+Resize blocked while memoryview is active
+```
+
+A `memoryview` exposes another object's buffer without copying it, keeping
+that exporter alive; resizing the buffer while a view is active raises
+`BufferError`. Releasing the view ends the exported reference and permits
+resizing again.
+
+Run the complete companion:
+
+```bash
 python lessons/07_exceptions_files_and_paths/04_context_managers_and_resource_lifetimes.py
 ```
 
-### Expected output highlights
+See
+[`04_context_managers_and_resource_lifetimes.py`](04_context_managers_and_resource_lifetimes.py)
+for the full sequence.
 
-- `01_exception_flow.py`: the frames the exception passed through print as
-  `['outer', 'middle', 'inner']` -- the traceback records the full path,
-  not just where it was caught.
-- `02_paths_and_directories.py`: `Temporary tree removed: True` at the end
-  confirms the whole directory was cleaned up automatically.
-- `03_text_and_binary_files.py`: `Translated newlines` collapses every
-  line ending to `"\n"`, while the `newline=""` read preserves the exact
-  line-ending sequences (`\r\n`, `\n`, `\r`) in the returned text.
-- `04_context_managers_and_resource_lifetimes.py`: `handle.closed` is
-  `True` even in Step 3, where the `with` block raised on purpose --
-  `__exit__` still ran before the exception reached the `except` clause
-  outside it.
+> **Try one change:** in the `ManagedFile` example, remove the
+> `raise RuntimeError(...)` line and predict whether `handle.closed` still
+> prints `True`. `__exit__` runs at the end of every `with` block, not only
+> when an exception occurs.
 
 ## 🔁 Transition to Chapter 8
 

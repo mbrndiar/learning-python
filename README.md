@@ -60,9 +60,14 @@ New to Python or setting up for the first time? See
 [`docs/SETUP.md`](docs/SETUP.md) for installing Python, creating a virtual
 environment, and choosing an editor.
 
-## ▶️ How to run a lesson
+## ▶️ How to study and run a lesson
 
-From the repository root, run any lesson file with:
+Start with the chapter `README.md`: it is the self-contained textbook lesson,
+with the concept's purpose, syntax, mechanism, small examples, expected
+observations, and common mistakes. Each section then links to a detailed
+runnable `.py` companion.
+
+Run companion commands from the repository root. For example:
 
 ```bash
 python lessons/01_python_fundamentals/01_running_python.py
@@ -70,9 +75,12 @@ python lessons/01_python_fundamentals/01_running_python.py
 
 Do not only run the files. For each module:
 
-1. Read its `README.md`, including the examples and common mistakes.
-2. Predict a lesson script's output before running it.
-3. Run the script, then change values and observe what changes.
+1. Read its `README.md` concept section, including the examples and common
+   mistakes.
+2. Follow its link to the matching lesson script and predict the output before
+   running it.
+3. Run the exact companion command, then make the section's bounded change and
+   observe what changes.
 4. Answer the module's review questions without looking back.
 5. Complete its exercises before reading `solutions.py`.
 6. Revisit anything you could not explain in your own words.
