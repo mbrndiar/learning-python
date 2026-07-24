@@ -14,7 +14,7 @@ servers and clients, the shared contracts, and the interoperability matrix.
 
 This is the required applied project between
 [Chapter 18: HTTP Clients and Transports](../../lessons/18_http_clients_and_transports/README.md)
-and [Chapter 19: Concurrency](../../lessons/12_concurrency/README.md). Chapter 15's
+and [Chapter 19: Concurrent execution](../../lessons/19_concurrency/README.md). Chapter 15's
 SQL/SQLite material and Chapters 16–18's HTTP boundaries are prerequisites. Complete
 all five milestones before moving to concurrency and the final capstones.
 

@@ -47,7 +47,7 @@ generic storage API.
 | [Chapter 17: Web APIs with Flask and FastAPI](../../lessons/17_web_apis_with_flask_and_fastapi/README.md) | Build testable Flask and FastAPI boundaries with injected dependencies and Pydantic boundary models. |
 | [Chapter 18: HTTP clients and transports](../../lessons/18_http_clients_and_transports/README.md) | Keep HTTP parsing and response validation behind injected boundaries, require finite timeouts, and test without public network access. |
 | [Required Task REST API and clients project](../../projects/tasks/README.md) | Combine domain, repository, server, and client adapters while preserving dependency direction and one HTTP contract. |
-| [Chapter 19: concurrency](../../lessons/12_concurrency/README.md) | Fetch independent HTTP pages with bounded threads, deterministic collection, cancellation, and explicit cleanup. |
+| [Chapter 19: concurrency](../../lessons/19_concurrency/README.md) | Fetch independent HTTP pages with bounded threads, deterministic collection, cancellation, and explicit cleanup. |
 
 ## Normative event model
 

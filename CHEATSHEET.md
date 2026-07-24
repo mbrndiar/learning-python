@@ -73,17 +73,20 @@ for item in [1, 2, 3]:
 while x > 0:
     x -= 1
 
+
 # Functions
 def greet(name, /, greeting="Hello", *, uppercase=False):
     if uppercase:
         greeting = greeting.upper()
     return f"{greeting}, {name}!"
 
+
 # Lists, dicts, sets, comprehensions
 numbers = [1, 2, 3]
 squares = [n * n for n in numbers]
 lookup = {n: n * n for n in numbers}
 unique = {1, 2, 2, 3}
+
 
 # Classes
 class Animal:
@@ -97,6 +100,7 @@ class Animal:
 class Dog(Animal):
     def speak(self):
         return f"{self.name} says Woof!"
+
 
 # Exceptions
 try:
@@ -142,9 +146,7 @@ with closing(sqlite3.connect(":memory:")) as connection:
             "INSERT INTO tasks (title) VALUES (?)",
             ("Use parameters",),
         )
-    rows = connection.execute(
-        "SELECT id, title FROM tasks ORDER BY id"
-    ).fetchall()
+    rows = connection.execute("SELECT id, title FROM tasks ORDER BY id").fetchall()
 
 # HTTP client boundary
 from urllib.request import Request, urlopen
@@ -167,7 +169,9 @@ def logged(func):
     def wrapper(*args, **kwargs):
         print(f"Calling {func.__name__}")
         return func(*args, **kwargs)
+
     return wrapper
+
 
 # Generators
 def countdown(n):
@@ -175,9 +179,11 @@ def countdown(n):
         yield n
         n -= 1
 
+
 # Type hints
 def add(a: int, b: int) -> int:
     return a + b
+
 
 def find_name(user_id: int, names: dict[int, str]) -> str | None:
     return names.get(user_id)
@@ -203,16 +209,16 @@ def find_name(user_id: int, names: dict[int, str]) -> str | None:
 ```python
 items.append(value)
 items.extend(more_items)
-items.pop()                    # remove and return final item
+items.pop()  # remove and return final item
 
 mapping.get(key, default)
-mapping.items()                # dynamic (key, value) view
+mapping.items()  # dynamic (key, value) view
 mapping.setdefault(key, value)
 
 unique.add(value)
-left | right                   # union
-left & right                   # intersection
-left - right                   # difference
+left | right  # union
+left & right  # intersection
+left - right  # difference
 ```
 
 Most methods that mutate a collection return `None`. `list.sort()` mutates;
@@ -225,15 +231,15 @@ import math
 from decimal import Decimal
 from fractions import Fraction
 
-price = Decimal("19.99")          # construct exact decimal input from text
-ratio = Fraction(3, 4)            # exact rational value
+price = Decimal("19.99")  # construct exact decimal input from text
+ratio = Fraction(3, 4)  # exact rational value
 close_enough = math.isclose(0.1 + 0.2, 0.3)
 
 text = "café"
-payload = text.encode("utf-8")    # str -> bytes
-decoded = payload.decode("utf-8") # bytes -> str
+payload = text.encode("utf-8")  # str -> bytes
+decoded = payload.decode("utf-8")  # bytes -> str
 mutable = bytearray(payload)
-view = memoryview(mutable)        # view without copying the buffer
+view = memoryview(mutable)  # view without copying the buffer
 ```
 
 Binary `float` is appropriate for measurements and approximate computation.
@@ -246,6 +252,7 @@ float when the original decimal text is available.
 ```python
 def connect(host, /, port=443, *, timeout=5.0):
     return host, port, timeout
+
 
 positionals = ("example.com", 8443)
 options = {"timeout": 2.0}
@@ -264,11 +271,11 @@ Assignment binds another name to the same object:
 
 ```python
 alias = original
-shallow = original.copy()      # nested values may remain shared
+shallow = original.copy()  # nested values may remain shared
 
-left == right                  # equivalent values
-left is right                  # the same object
-value is None                  # canonical identity check
+left == right  # equivalent values
+left is right  # the same object
+value is None  # canonical identity check
 ```
 
 Use `copy.deepcopy()` only when an independent recursive copy is required.
@@ -350,6 +357,7 @@ exit status when a CLI cannot complete its request.
 ```python
 import unittest
 
+
 class TestExample(unittest.TestCase):
     def test_result(self):
         self.assertEqual(calculate(2), 4)
@@ -419,7 +427,7 @@ mypy
 3. [Chapter 17: Web APIs with Flask and FastAPI](lessons/17_web_apis_with_flask_and_fastapi/README.md)
 4. [Chapter 18: HTTP Clients and Transports](lessons/18_http_clients_and_transports/README.md)
 5. Required [Task REST API and clients project](projects/tasks/README.md)
-6. [Chapter 19: Concurrency](lessons/12_concurrency/README.md)
+6. [Chapter 19: Concurrent Execution](lessons/19_concurrency/README.md)
 7. Both required [capstones](capstones/README.md)
 
 ## 🧭 Where to go next

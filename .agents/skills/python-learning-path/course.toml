@@ -4,7 +4,7 @@ schema_document = ".agents/skills/python-learning-path/references/course-schema.
 
 [course]
 id = "learning-python"
-version = "1.0.0"
+version = "2.0.0"
 title = "Learning Python"
 description = "A hands-on introduction to Python with lessons, exercises, one applied project, and two required capstones."
 language = "python"
@@ -855,36 +855,58 @@ lesson_file = "lessons/18_http_clients_and_transports/06_transport_contract_and_
 run_command = "python lessons/18_http_clients_and_transports/06_transport_contract_and_client_policy.py"
 
 [[modules]]
-id = "module.concurrency"
+id = "module.concurrent-execution"
 ordinal = 19
-title = "Concurrency"
+title = "Concurrent Execution"
 prerequisites = ["project.tasks-rest-api-clients"]
-lesson_readme = "lessons/12_concurrency/README.md"
-review_questions = { path = "lessons/12_concurrency/README.md", heading = "❓ Review questions" }
-exercise_starter = "exercises/12_concurrency/exercises.py"
-exercise_solution = "exercises/12_concurrency/solutions.py"
-validation_commands = ["python exercises/12_concurrency/exercises.py"]
-solution_lock_group = "solutions.module.concurrency"
+lesson_readme = "lessons/19_concurrency/README.md"
+review_questions = { path = "lessons/19_concurrency/README.md", heading = "❓ Review questions (closed notes)" }
+exercise_starter = "exercises/19_concurrency/exercises.py"
+exercise_solution = "exercises/19_concurrency/solutions.py"
+validation_commands = ["python exercises/19_concurrency/exercises.py"]
+solution_lock_group = "solutions.module.concurrent-execution"
 required_outcomes = [
-  "Distinguish concurrency from parallelism.",
-  "Identify I/O-bound and CPU-bound workloads.",
-  "Select threads, processes, asyncio, or no concurrency deliberately.",
-  "Recognize shared-state, cancellation, cleanup, and blocking hazards.",
+  "Distinguish sequential, concurrent, and parallel execution and choose a model from a workload, keeping sequential as the default.",
+  "Own threads start-all then join-all, capture worker exceptions, and protect a complete invariant with a lock rather than the GIL.",
+  "Map CPU-bound work across an owned spawn process pool with importable workers, a __main__ guard, and input-ordered results.",
+  "Explain coroutine functions versus objects, await, asyncio.run, and create_task ownership, plus gather's ordering and failure boundary.",
+  "Bound fan-out with a semaphore, cancel a task as an awaited request, and guarantee cleanup in finally.",
 ]
 
 [[modules.concepts]]
-id = "concept.concurrency.threads-and-processes"
-title = "Threading and multiprocessing"
+id = "concept.concurrent-execution.concurrency-parallelism-and-workloads"
+title = "Concurrency, parallelism, and workloads"
 prerequisites = []
-lesson_file = "lessons/12_concurrency/01_threading_and_multiprocessing.py"
-run_command = "python lessons/12_concurrency/01_threading_and_multiprocessing.py"
+lesson_file = "lessons/19_concurrency/01_concurrency_parallelism_and_workloads.py"
+run_command = "python lessons/19_concurrency/01_concurrency_parallelism_and_workloads.py"
 
 [[modules.concepts]]
-id = "concept.concurrency.asyncio"
-title = "Asyncio and cooperative concurrency"
-prerequisites = ["concept.concurrency.threads-and-processes"]
-lesson_file = "lessons/12_concurrency/02_asyncio_basics.py"
-run_command = "python lessons/12_concurrency/02_asyncio_basics.py"
+id = "concept.concurrent-execution.threads-shared-state-and-locks"
+title = "Threads, shared state, and locks"
+prerequisites = ["concept.concurrent-execution.concurrency-parallelism-and-workloads"]
+lesson_file = "lessons/19_concurrency/02_threads_shared_state_and_locks.py"
+run_command = "python lessons/19_concurrency/02_threads_shared_state_and_locks.py"
+
+[[modules.concepts]]
+id = "concept.concurrent-execution.processes-serialization-and-pools"
+title = "Processes, serialization, and pools"
+prerequisites = ["concept.concurrent-execution.threads-shared-state-and-locks"]
+lesson_file = "lessons/19_concurrency/03_processes_serialization_and_pools.py"
+run_command = "python lessons/19_concurrency/03_processes_serialization_and_pools.py"
+
+[[modules.concepts]]
+id = "concept.concurrent-execution.asyncio-coroutines-tasks-and-scheduling"
+title = "Asyncio coroutines, tasks, and scheduling"
+prerequisites = ["concept.concurrent-execution.processes-serialization-and-pools"]
+lesson_file = "lessons/19_concurrency/04_asyncio_coroutines_tasks_and_scheduling.py"
+run_command = "python lessons/19_concurrency/04_asyncio_coroutines_tasks_and_scheduling.py"
+
+[[modules.concepts]]
+id = "concept.concurrent-execution.bounded-work-cancellation-and-cleanup"
+title = "Bounded work, cancellation, and cleanup"
+prerequisites = ["concept.concurrent-execution.asyncio-coroutines-tasks-and-scheduling"]
+lesson_file = "lessons/19_concurrency/05_bounded_work_cancellation_and_cleanup.py"
+run_command = "python lessons/19_concurrency/05_bounded_work_cancellation_and_cleanup.py"
 
 [[projects]]
 id = "project.tasks-rest-api-clients"
@@ -966,7 +988,7 @@ test_command = "PROJECT_IMPLEMENTATION=starter python -m pytest projects/tasks/t
 id = "capstone.comparative-kv"
 title = "Comparative versioned configuration store"
 required = true
-prerequisites = ["module.concurrency", "project.tasks-rest-api-clients"]
+prerequisites = ["module.concurrent-execution", "project.tasks-rest-api-clients"]
 guide_path = "capstones/comparative/README.md"
 specification_paths = [
   "capstones/comparative/spec/SPEC.md",
@@ -1041,7 +1063,7 @@ test_command = "CAPSTONE_IMPLEMENTATION=starter python -m unittest discover -s c
 id = "capstone.idiomatic-ingest-report"
 title = "Idiomatic ingestion and reporting pipeline"
 required = true
-prerequisites = ["module.concurrency", "project.tasks-rest-api-clients"]
+prerequisites = ["module.concurrent-execution", "project.tasks-rest-api-clients"]
 guide_path = "capstones/idiomatic/README.md"
 specification_paths = ["capstones/idiomatic/SPEC.md"]
 starter_root = "capstones/idiomatic/starter"
@@ -1219,8 +1241,8 @@ unlock_policy = "after-unit-validation"
 solution_unlock_after = 1
 
 [[solution_lock_groups]]
-id = "solutions.module.concurrency"
-paths = ["exercises/12_concurrency/solutions.py"]
+id = "solutions.module.concurrent-execution"
+paths = ["exercises/19_concurrency/solutions.py"]
 unlock_policy = "after-unit-validation"
 solution_unlock_after = 1
 

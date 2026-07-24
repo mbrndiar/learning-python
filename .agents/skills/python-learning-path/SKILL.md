@@ -70,7 +70,7 @@ and before Chapter 19.
 | 16 | `module.http-fundamentals-and-stdlib` | `lessons/16_http_fundamentals_and_stdlib/README.md` | `python exercises/16_http_fundamentals_and_stdlib/exercises.py` |
 | 17 | `module.web-apis-with-flask-and-fastapi` | `lessons/17_web_apis_with_flask_and_fastapi/README.md` | `python exercises/17_web_apis_with_flask_and_fastapi/exercises.py` |
 | 18 | `module.http-clients-and-transports` | `lessons/18_http_clients_and_transports/README.md` | `python exercises/18_http_clients_and_transports/exercises.py` |
-| 19 | `module.concurrency` | `lessons/12_concurrency/README.md` | `python exercises/12_concurrency/exercises.py` |
+| 19 | `module.concurrent-execution` | `lessons/19_concurrency/README.md` | `python exercises/19_concurrency/exercises.py` |
 
 For one concept:
 

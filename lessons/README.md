@@ -66,7 +66,7 @@ python lessons/01_python_fundamentals/01_running_python.py
     - Complete the required
       [Task REST API and clients project](../projects/tasks/README.md) before the
       next chapter.
-19. [`12_concurrency/`](12_concurrency/README.md) - threads, processes,
+19. [`19_concurrency/`](19_concurrency/README.md) - threads, processes,
     `asyncio`, bounded work, cancellation, and cleanup
 
 ## ▶️ How to use a module

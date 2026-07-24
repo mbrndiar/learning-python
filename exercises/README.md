@@ -35,7 +35,7 @@ Complete the advanced sequence in this order:
 4. [`18_http_clients_and_transports/`](18_http_clients_and_transports/README.md);
 5. the required
    [Task REST API and clients project](../projects/tasks/README.md); and
-6. [`12_concurrency/`](12_concurrency/README.md).
+6. [`19_concurrency/`](19_concurrency/README.md).
 
 The Chapter 16 exercises practice request/response modeling, exact query
 parsing, method/route dispatch, and a standard-library handler adapter. The

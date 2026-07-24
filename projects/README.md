@@ -14,7 +14,7 @@ choices.
 The Task project is required and intentionally smaller than a capstone. Work
 through it after
 [Chapter 18](../lessons/18_http_clients_and_transports/README.md), then continue to
-[Chapter 19](../lessons/12_concurrency/README.md). Complete its
+[Chapter 19](../lessons/19_concurrency/README.md). Complete its
 five milestones in order, run the shared contract tests after each milestone,
 and compare the framework implementations only after you understand the
 standard-library version.

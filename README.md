@@ -266,9 +266,12 @@ reference to jog your memory after finishing the course.
     - [`05_httpx_clients.py`](lessons/18_http_clients_and_transports/05_httpx_clients.py) – owned `httpx.Client`, explicit timeouts, and its exception families
     - [`06_transport_contract_and_client_policy.py`](lessons/18_http_clients_and_transports/06_transport_contract_and_client_policy.py) – one small transport `Protocol` and a client policy that validates timeouts and performs one attempt per call
     - **Required applied project:** [Task REST API and clients](projects/tasks/README.md) – implement the shared Task domain, SQLite and Markdown repositories, three server adapters, three client transports, and their contract tests
-19. **[Concurrency](lessons/12_concurrency/)**
-    - [`01_threading_and_multiprocessing.py`](lessons/12_concurrency/01_threading_and_multiprocessing.py) – threads for blocking I/O, processes for CPU-bound work, shared-state hazards, and cleanup
-    - [`02_asyncio_basics.py`](lessons/12_concurrency/02_asyncio_basics.py) – cooperative concurrency, owned tasks, `async`/`await`, and `asyncio.gather`
+19. **[Concurrent execution](lessons/19_concurrency/)**
+    - [`01_concurrency_parallelism_and_workloads.py`](lessons/19_concurrency/01_concurrency_parallelism_and_workloads.py) – sequential, concurrent, and parallel mental models; blocking-I/O versus CPU-bound workloads; and a decision contract with sequential as the default
+    - [`02_threads_shared_state_and_locks.py`](lessons/19_concurrency/02_threads_shared_state_and_locks.py) – thread lifecycle, start-all/join-all, a barrier-proven overlap, a deterministic lost update, and a `Lock` protecting a complete invariant
+    - [`03_processes_serialization_and_pools.py`](lessons/19_concurrency/03_processes_serialization_and_pools.py) – separate memory, the pickle boundary, importable workers, a `__main__` guard, and an owned `spawn` process pool with ordered results
+    - [`04_asyncio_coroutines_tasks_and_scheduling.py`](lessons/19_concurrency/04_asyncio_coroutines_tasks_and_scheduling.py) – coroutine functions versus objects, `await`, `asyncio.run`, `create_task` ownership, event-driven scheduling, and `gather` ordering and failure boundary
+    - [`05_bounded_work_cancellation_and_cleanup.py`](lessons/19_concurrency/05_bounded_work_cancellation_and_cleanup.py) – a `Semaphore` bound, cancellation as an awaited request, `try`/`finally` cleanup, `to_thread`, and `TaskGroup`
 
 Work through the lessons in order, read the comments, then try modifying the
 code to experiment with the concepts. After each module, complete the

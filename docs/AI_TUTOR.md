@@ -307,12 +307,16 @@ no backup or restore command.
 
 ## 🔀 Course and Git version behavior
 
-The manifest declares course version `1.0.0`, but persistent helper versions are
-identified by `git rev-parse HEAD`. Stable manifest IDs allow mastery and review
-state to continue across commits. Attempts remain attached to their original
-commit, while solution unlocks are commit-specific and do not carry to changed
-course content. Uncommitted learner edits are workspace evidence, not part of
-the commit identity.
+The manifest declares course version `2.0.0`, but persistent helper versions are
+identified by `git rev-parse HEAD`. Curriculum v2 introduces new module and
+concept assessment IDs (for example `module.concurrent-execution` and its
+`concept.concurrent-execution.*` concepts), so those units require fresh
+assessment; historical local SQLite rows recorded under retired IDs are left
+untouched rather than migrated or deleted. The Git SHA remains the state-version
+identity: stable manifest IDs let mastery and review state continue across
+commits, attempts remain attached to their original commit, and solution unlocks
+are commit-specific and do not carry to changed course content. Uncommitted
+learner edits are workspace evidence, not part of the commit identity.
 
 When the repository moves to a new commit, the tutor validates the manifest and
 generates a fresh production adapter projection, then initializes that commit's
