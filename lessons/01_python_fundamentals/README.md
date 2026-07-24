@@ -44,67 +44,283 @@ object, not on the name. Getting this mental model right now prevents
 confusion later, when several names can refer to the very same object (a
 topic Chapter 3, Collections, depends on).
 
-## 🧩 Progressive syntax and mechanism
+## 📖 How to study this chapter
 
-1. **Comments and statements.** `#` starts a comment; Python ignores the
-   rest of that line. A statement is one instruction; the interpreter runs
-   statements top to bottom.
-2. **`print()`.** Prints its arguments, separated by a space by default (or
-   by whatever string you pass as `sep=`), followed by a newline.
-3. **Assignment and names.** `name = value` binds `name` to the object
-   `value` produced by evaluating the right-hand side. Rebinding a name does
-   not modify the object it previously pointed to.
-4. **Core scalar types.** `int` (whole numbers), `float` (numbers with a
-   fractional part), `str` (text), `bool` (`True`/`False`), and the single
-   value `None` of type `NoneType`, meaning "no value here."
-5. **Inspection.** `type(value)` reports the exact type; `isinstance(value,
-   SomeType)` asks whether a value counts as that type, including through
-   inheritance (a distinction that matters once the course reaches classes).
-   Check the singleton `None` with the dedicated idiom `value is None`;
-   Chapter 3 later generalizes `is` to object identity.
-6. **Explicit conversion.** `int(text)`, `float(text)`, `str(value)`, and
-   `bool(value)` are constructors used as converters. `int()`/`float()`
-   require text that matches their numeric grammar, or they raise
-   `ValueError`. `bool(value)` tests truthiness, not word content: every
-   non-empty string, including `"False"`, is truthy.
-7. **Comparisons (bounded preview).** `==`, `<`, `>`, `<=`, `>=` all produce
-   a `bool`. Chapter 2, Text and Numbers, covers the complete operator set
-   and its precedence; here they exist only to make truthiness concrete.
-8. **`assert` as a self-check.** `assert condition` does nothing when
-   `condition` is truthy and raises `AssertionError` otherwise. It is the
-   simplest way a script can verify its own expectations.
+Each section below is a small reading lesson followed by a runnable companion.
+Read the explanation and predict the shown output first. Then run the linked
+file from the repository root and compare the real output with your prediction.
+Finally, make the suggested one-value change and rerun. This
+**read-predict-run-modify** loop turns syntax you recognize into behavior you
+can explain.
 
-## 📖 Read-predict-run-modify workflow
+## 1️⃣ Running scripts, comments, and `print()`
 
-Work through the three lesson files in order. For each file:
+A Python source file is a plain text file, conventionally ending in `.py`. The
+command
 
-1. **Read** the module docstring and every `Step` comment before running
-   anything.
-2. **Predict** what each `print()` call will output. Write the prediction
-   down, even briefly.
-3. **Run** the file and compare the real output with your prediction:
+```bash
+python lessons/01_python_fundamentals/01_running_python.py
+```
 
-   ```bash
-   python lessons/01_python_fundamentals/01_running_python.py
-   python lessons/01_python_fundamentals/02_values_names_and_types.py
-   python lessons/01_python_fundamentals/03_conversion_and_truthiness.py
-   ```
+starts the Python interpreter and gives it the path to a source file. For the
+simple scripts in this chapter, the interpreter reads the file from top to
+bottom and executes each statement once in source order.
 
-4. **Modify** one value (see the "One-variable experiment" comment near the
-   bottom of lessons 2 and 3), rerun, and explain the new output before
-   moving on.
+### Statements and comments
 
-### Expected output highlights
+A **statement** is an instruction Python can execute. A call to `print()` is
+one kind of statement:
 
-- `01_running_python.py` prints five lines, ending with an apostrophe inside
-  a double-quoted string.
-- `02_values_names_and_types.py` shows that `type(name)` reports `str` while
-  `isinstance(age, str)` reports `False`, and that rebinding `greeting`
-  leaves `original_greeting` at `"Hello"`.
-- `03_conversion_and_truthiness.py` shows `bool('False') -> True`, followed
-  by silent, passing `assert` statements (no output from a passing
-  `assert`), and a comment describing -- without triggering -- a
-  `ValueError`.
+```python
+# Python ignores this comment.
+print("Hello, World!")
+print("Learning", "Python", "starts", "here.")
+print("2026", "07", "23", sep="-")
+```
+
+The `#` character starts a comment. Python ignores everything from `#` to the
+end of that line, so comments can explain intent without changing the
+program's behavior.
+
+`print(...)` calls Python's built-in `print` function:
+
+1. Text between matching quotes creates a string value.
+2. Commas separate the values passed to `print`.
+3. By default, `print` puts one space between multiple values and a newline
+   after them.
+4. The optional `sep="-"` argument changes the separator for that call only.
+
+The fragment therefore prints:
+
+```text
+Hello, World!
+Learning Python starts here.
+2026-07-23
+```
+
+Single and double quotes both delimit strings. Choose the form that keeps the
+text readable; double quotes make an apostrophe straightforward:
+
+```python
+print("A string can contain an apostrophe, like Ada's notebook.")
+```
+
+The complete runnable companion is
+[`01_running_python.py`](01_running_python.py). It prints five lines and needs
+no hidden entry point or setup.
+
+> **Try one change:** replace `sep="-"` with `sep="/"`. Predict which line
+> changes and which lines stay identical, then rerun the file.
+
+## 2️⃣ Values, names, assignment, and types
+
+Printing literal text is useful, but programs also need to remember values.
+Python separates three ideas:
+
+- an **object** is a value that exists while the program runs;
+- a **name** is a label bound to an object;
+- a **type** describes what kind of object it is and what operations it
+  supports.
+
+Assignment uses one equals sign:
+
+```python
+age = 25
+height = 1.75
+name = "Ada"
+is_learning = True
+favorite_color = None
+```
+
+Python first evaluates the expression on the right of `=`, producing an
+object, and then binds the name on the left to that object. It does not declare
+`age` as a permanently integer-shaped storage box. The type belongs to the
+object, not to the name.
+
+These are the core scalar values used throughout the first chapters:
+
+| Type | Example literal | Meaning |
+| --- | --- | --- |
+| `int` | `25` | a whole number |
+| `float` | `1.75` | an approximate number with a fractional part |
+| `str` | `"Ada"` | Unicode text |
+| `bool` | `True`, `False` | a truth value |
+| `NoneType` | `None` | the single value meaning "no value here" |
+
+`True`, `False`, and `None` are spelled exactly as shown, including the capital
+letter. They are Python values, not quoted text.
+
+### Inspecting a value
+
+Use `type(value)` when you need the exact type and
+`isinstance(value, SomeType)` when you need to ask whether the value counts as
+a given type:
+
+```python
+print(type(age))
+print(isinstance(age, int))
+print(isinstance(age, str))
+print("favorite_color:", favorite_color)
+print(favorite_color is None)
+```
+
+The output is:
+
+```text
+<class 'int'>
+True
+False
+favorite_color: None
+True
+```
+
+`favorite_color is None` is the dedicated idiom for checking the singleton
+`None` value. The broader meaning of object identity is deferred until the
+course has introduced collections.
+
+### Rebinding changes one name
+
+A name can later be rebound to another object:
+
+```python
+original_greeting = "Hello"
+greeting = original_greeting
+greeting = "Hi"
+
+print(greeting)
+print(original_greeting)
+```
+
+This prints:
+
+```text
+Hi
+Hello
+```
+
+After the second assignment, both names refer to the same `"Hello"` string.
+The third assignment rebinds only `greeting` to a new `"Hi"` object. It does
+not edit `"Hello"` and does not move `original_greeting`.
+
+Names are case-sensitive, cannot start with a digit, and conventionally use
+`snake_case`. Avoid names such as `print`, `str`, or `type`, because assigning
+to one would hide the built-in operation with that name.
+
+The complete runnable companion is
+[`02_values_names_and_types.py`](02_values_names_and_types.py). It also shows
+the intentionally surprising fact that `True + True` evaluates to `2`; write
+`True` and `False` for yes/no meaning rather than relying on that numeric
+compatibility.
+
+> **Try one change:** change `favorite_color = None` to
+> `favorite_color = "blue"`. Predict the two lines that report
+> `favorite_color` before rerunning.
+
+## 3️⃣ Explicit conversion, comparisons, and truthiness
+
+Python does not automatically treat numeric text as a number. If a program
+receives `"42"`, that value is still a `str` until the program explicitly asks
+for a conversion:
+
+```python
+whole_number = int("42")
+measurement = float("3.5")
+label = str(123)
+truncated = int(-3.9)
+
+print(whole_number)
+print(measurement)
+print(label)
+print(truncated)
+```
+
+The type names here are being called as **constructors**. Each creates a value
+of its type from the supplied argument:
+
+```text
+42
+3.5
+123
+-3
+```
+
+Although `123` and `"123"` look alike when printed, the first is an `int` and
+the converted result is a `str`. Also notice that `int(-3.9)` truncates toward
+zero; it does not round to the nearest whole number.
+
+Conversion has a contract. The text must match the constructor's grammar:
+`int("42")` works, but `int("3.5")` and `int("not-a-number")` raise
+`ValueError`. Unhandled errors stop a script. Catching errors with
+`try`/`except` comes later, so the runnable lesson documents this boundary
+without deliberately crashing.
+
+### Truthiness is not word parsing
+
+`bool(value)` asks whether a value is **truthy**. It does not read text and
+interpret English words:
+
+```python
+print(bool("False"))
+print(bool(""))
+print(bool(0))
+print(bool(1))
+print(bool(None))
+```
+
+This prints:
+
+```text
+True
+False
+False
+True
+False
+```
+
+Every non-empty string is truthy, even `"False"` or `"0"`. An empty string,
+zero, and `None` are falsy. Later chapters add collections to this model;
+empty collections are falsy too.
+
+### Comparisons produce `bool`
+
+Comparison operators such as `==`, `<`, `>`, `<=`, and `>=` evaluate to a
+`bool`:
+
+```python
+age = 20
+is_adult = age >= 18
+
+print(is_adult)
+print(type(is_adult))
+```
+
+The result is the value `True` of type `bool`. Chapter 2 gives operators and
+precedence their full treatment; this bounded preview is enough to make a
+self-check meaningful.
+
+### `assert` records an expectation
+
+`assert condition` evaluates its condition:
+
+- if the condition is truthy, execution continues with no output;
+- if it is falsy, Python raises `AssertionError` and stops the script.
+
+```python
+assert whole_number == 42
+assert measurement == 3.5
+assert is_adult, "expected the sample age to represent an adult"
+```
+
+All three assertions pass silently. That silence is success, not evidence that
+Python skipped them. Use `assert` here for small executable expectations, not
+for validating untrusted user input.
+
+The complete runnable companion is
+[`03_conversion_and_truthiness.py`](03_conversion_and_truthiness.py).
+
+> **Try one change:** change `age = 20` to `age = 15`. Before running, predict
+> both the value and the type of `is_adult`. The value changes; the type does
+> not.
 
 ## 🔁 Transition to Chapter 2
 
